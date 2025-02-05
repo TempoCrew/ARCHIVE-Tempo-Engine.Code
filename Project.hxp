@@ -9,711 +9,880 @@ using StringTools;
 
 class Project extends HXProject
 {
-	static final metadata:Map<String, Dynamic> = [
-		"title" => "Friday Night Funkin'",
-		"file" => "Tempo Engine",
-		"version" => "0.1.0",
-		"source" => "source",
-		"preloader" => "engine.backend.ui.preload.TempoPreloader",
-		"package.name" => "com.mrzkteam.tempoengine",
-		"main.class" => "Main",
-		"company" => "MrzkTeam",
-		"prebuild.dir" => ".prebuild.hx",
-		"postbuild.dir" => ".postbuild.hx",
-		"file.icons" => [
-			["content/icon16.png", 16],
-			["content/icon32.png", 32],
-			["content/icon64.png", 64],
-			["content/iconOG.png", 0]
-		]
-	];
-
-	static final default_libs:Array<Array<String>> = [
-		["hxp", "1.3.0"],
-		["lime", "8.2.2"],
-		["openfl", "9.4.1"],
-		["flixel", "5.8.0"],
-		["flixel-addons", "3.2.3"],
-		["flixel-text-input", "2.0.2"],
-		["flxanimate", "git"],
-		["thx.core", "git"],
-		["thx.semver", "git"],
-		["tjson", "git"]
-	];
-
-	/**
-	 * Unexporing assets
-	 */
-	static final EXCLUDE_ASSETS:Array<String> = [".*", "cvs", "thumbs.db", "desktop.ini", "*.hash", "*.md"];
-
-	/**
-	 * Unexporting assets for WEB
-	 */
-	static final EXCLUDE_ASSETS_WEB:Array<String> = ["*.ogg"];
-
-	/**
-	 * Unexporting assets for NON-WEB
-	 */
-	static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
-
-	// Feature flags
-
-	/**
-	 * `-DTOUCH_HERE_TO_PLAY`
-	 * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
-	 * requiring them to click anywhere on the screen to start the game.
-	 * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
-	 */
-	static final TOUCH_HERE_TO_PLAY:FeatureFlag = "TOUCH_HERE_TO_PLAY";
-
-	/**
-	 * `-DPRELOAD_ALL`
-	 * Whether to preload all asset libraries.
-	 * Disabled on web, enabled on desktop.
-	 */
-	static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
-
-	/**
-	 * `-DEMBED_ASSETS`
-	 * Whether to embed all asset libraries into the executable.
-	 */
-	static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
-
-	/**
-	 * `-DGITHUB_BUILD`
-	 * Git actions idk why this writed here lmao    ~mrzk
-	 */
-	static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
-
-	/**
-	 * `-DFEATURE_REDIRECT_ASSETS`
-	 * If this flag is enabled, 'assets' folder will redirect from the 'export' folder
-	 */
-	static final FEATURE_REDIRECT_ASSETS:FeatureFlag = "FEATURE_REDIRECT_ASSETS";
-
-	/**
-	 * `-DFEATURE_GAMEPAD_ALLOWED`
-	 * If this flag is enabled, user can playing with gamepad (xbox, ps and etc.)
-	 */
-	static final FEATURE_GAMEPAD_ALLOWED:FeatureFlag = "FEATURE_GAMEPAD_ALLOWED";
-
-	/**
-	 * `-DFFEATURE_GAMEJOLT_CLIENT`
-	 * If this flag is enabled, the game mods will enabled.
-	 */
-	static final FEATURE_GAMEJOLT_CLIENT:FeatureFlag = "FEATURE_GAMEJOLT_CLIENT";
-
-	/**
-	 * `-DFEATURE_CRASH_DIALOG`
-	 * If this flag is enabled, the game mods will enabled.
-	 */
-	static final FEATURE_CRASH_DIALOG:FeatureFlag = "FEATURE_CRASH_DIALOG";
-
-	/**
-	 * `-DFEATURE_MODS_ENABLING`
-	 * If this flag is enabled, the game mods will enabled.
-	 */
-	static final FEATURE_MODS_ENABLING:FeatureFlag = "FEATURE_MODS_ENABLING";
-
-	/**
-	 * `-DFEATURE_DEBUG_FUNCTIONS`
-	 * If this flag is enabled, some variables, functions, commands from debug mode will enabled.
-	 */
-	static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
-
-	/**
-	 * `-DFEATURE_OPEN_URL`
-	 * If this flag is enabled, the game open url commands will loaded.
-	 */
-	static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
-
-	/**
-	 * `-DFEATURE_DISCORD_RPC`
-	 * If this flag is enabled, will enabling a Discord Rich Presence (discord rpc)
-	 */
-	static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
-
-	/**
-	 * `-DFEATURE_FUNKIN_VIS`
-	 * If this flag is enabled, the game will enabling the grid.audio and funkin.vis libraries.
-	 * This is used for ABot visualizer.
-	 */
-	static final FEATURE_FUNKIN_VIS:FeatureFlag = "FEATURE_FUNKIN_VIS";
-
-	/**
-	 * `-DFEATURE_PARTIAL_SOUNDS`
-	 * If this flag is enabled, the game will enable the FlxPartialSound library.
-	 		* This is used to provide audio previews in Freeplay.
-	 		* Disabling this will make those previews not play.
-	 */
-	static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
-
-	/**
-	 * `-DFEATURE_VIDEO_PLAYBACK`
-	 * If this flag is enabled, VLC (VideoLAN Client) will enabled.
-	 */
-	static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
-
-	/**
-	 * `-DFEATURE_LUA_SCRIPTING`
-	 * If this flag is enabled, game will support a lua script's.
-	 */
-	static final FEATURE_LUA_SCRIPTING:FeatureFlag = "FEATURE_LUA_SCRIPTING"; // .lua
-
-	/**
-	 * `-DFEATURE_HSCRIPT_SCRIPTING`
-	 * If this flag is enabled, game will support a hscript's.
-	 */
-	static final FEATURE_HSCRIPT_SCRIPTING:FeatureFlag = "FEATURE_HSCRIPT_SCRIPTING"; // .hxc
-
-	/**
-	 * `-DFEATURE_FILE_DROP`
-	 * If this flag is enabled, game will support a file dragging and dropping.
-	 */
-	static final FEATURE_FILE_DROP:FeatureFlag = "FEATURE_FILE_DROP";
-
-	/**
-	 * `-DFEATURE_CHARTING`
-	 * If this flag is enabled, game will support Chart Editor and charting stuff.
-	 */
-	static final FEATURE_CHARTING:FeatureFlag = "FEATURE_CHARTING";
-
-	/**
-	 * `-DFEATURE_OTHER_EDITORS`
-	 * If this flag is enabled, game will support other editors (animation, stage, level and etc.).
-	 */
-	static final FEATURE_OTHER_EDITORS:FeatureFlag = "FEATURE_OTHER_EDITORS";
-
-	/**
-	 * `-DFEATURE_32_BITS`
-	 * If this flag is enabled, export will builded for 32bits.
-	 */
-	static final FEATURE_32_BITS:FeatureFlag = "FEATURE_32_BITS";
-
-	/**
-	 * `-DFEATURE_CHECKING_UPDATE`
-	 * If this flag is enabled, after title state, will showed a update screen
-	 */
-	static final FEATURE_CHECKING_UPDATE:FeatureFlag = "FEATURE_CHECKING_UPDATE";
-
-	/**
-	 * `-DFEATURE_DEBUG_TRACY`
-	 * If this flag is enabled, the game will have the necessary hooks for the Tracy profiler.
-	 * Only enable this if you're using the correct fork of Haxe to support this.
-	 * @see https://github.com/HaxeFoundation/hxcpp/pull/1153
-	 */
-	static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
-
-	/**
-	 * `-DFEATURE_SYSTOOLS_NDLL`
-	 * If this flag is enabled, a `systools` library will working and spawning a .ndll file.
-	 * Recommended for target OS - `Windows`.
-	 */
-	static final FEATURE_SYSTOOLS_NDLL:FeatureFlag = "FEATURE_SYSTOOLS_NDLL";
-
-	/**
-	 * `-DFEATURE_GIT_TRACE`
-	 * If this flag is enabled, git info (from `GitCommit.hx`) will push in command line.
-	**/
-	static final FEATURE_GIT_TRACE:FeatureFlag = "FEATURE_GIT_TRACE";
-
-	function flair():Void
-	{
-		info("Tempo Engine");
-		info("Initializing build...\n");
-
-		info("Project Version: " + metadata.get('version'));
-		info("Is display?      " + getCommand('display') + '\n');
-
-		info("Git Branch:      " + getGitBranch());
-		info("Git Commit:      " + getGitCommit());
-		info("Git Modified?    " + getGitModified());
-	}
-
-	function displayTarget()
-	{
-		if (getPlatform(PlatformType.DESKTOP))
-			info("Platform Type: Desktop");
-		else if (getPlatform(PlatformType.MOBILE))
-			info("Platform Type: Mobile");
-		else if (getPlatform(PlatformType.WEB))
-			info("Platform Type: Web");
-		else if (getPlatform(PlatformType.CONSOLE))
-			info("Platform Type: Console");
-		else
-			Log.error("Unknown platform type (got " + this.platformType + ")");
-
-		if (getTarget(Platform.WINDOWS))
-			info("Target Platform: Windows");
-		else if (getTarget(Platform.MAC))
-			info("Target Platform: MacOS");
-		else if (getTarget(Platform.LINUX))
-			info("Target Platform: Linux");
-		else if (getTarget(Platform.ANDROID))
-			info("Target Platform: Android");
-		else if (getTarget(Platform.IOS))
-			info("Target Platform: IOS");
-		else if (getTarget(Platform.HTML5))
-			info("Target Platform: HTML5");
-		else
-			Log.error("Unsupported platform (got " + this.target + ")");
-
-		if (getPlatform(PlatformType.WEB))
-			info("Target Language: Javascript (HTML5)");
-		else if (getTargetFlag('hl'))
-			info("Target Language: HashLink");
-		else if (getTargetFlag('neko'))
-			info("Target Language: Neko");
-		else if (getTargetFlag('java'))
-			info("Target Language: Java");
-		else if (getTargetFlag('nodejs'))
-			info("Target Language: JavaScript (NodeJS)");
-		else if (getTargetFlag('cs'))
-			info("Target Language: C#");
-		else
-			info("Target Language: C++");
-
-		for (arch in this.architectures)
-		{
-			switch (arch)
-			{
-				case Architecture.X86:
-					info('Architecture: x86');
-				case Architecture.X64:
-					info('Architecture: x64');
-				case Architecture.ARMV5:
-					info('Architecture: ARMv5');
-				case Architecture.ARMV6:
-					info('Architecture: ARMv6');
-				case Architecture.ARMV7:
-					info('Architecture: ARMv7');
-				case Architecture.ARMV7S:
-					info('Architecture: ARMv7S');
-				case Architecture.ARM64:
-					info('Architecture: ARMx64');
-				case Architecture.MIPS:
-					info('Architecture: MIPS');
-				case Architecture.MIPSEL:
-					info('Architecture: MIPSEL');
-				case null:
-					if (!getPlatform(PlatformType.WEB))
-					{
-						Log.error('Unsupported architecture (got null on non-web platform)');
-					}
-					else
-					{
-						info('Architecture: Web');
-					}
-				default:
-					Log.error('Unsupported architecture (got ${arch})');
-			}
-		}
-	}
-
-	function configureApplication():Void
-	{
-		this.meta.title = metadata.get('title');
-		this.meta.version = metadata.get('version');
-		this.meta.packageName = metadata.get('package.name');
-		this.meta.company = metadata.get('company');
-
-		this.app.main = metadata.get('main.class');
-		this.app.file = metadata.get('file');
-		this.app.preloader = metadata.get('preloader');
-
-		this.sources.push(metadata.get('source'));
-
-		this.preBuildCallbacks.push(CommandHelper.interpretHaxe(metadata.get('prebuild.dir')));
-		this.postBuildCallbacks.push(CommandHelper.interpretHaxe(metadata.get('postbuild.dir')));
-
-		this.window.fps = 60;
-		this.window.width = 1280;
-		this.window.height = 720;
-		this.window.background = (FEATURE_DEBUG_FUNCTIONS.isEnabled(this) ? 0xFFFF00FF : 0xFF000000);
-		this.window.hardware = true;
-		this.window.vsync = false;
-
-		if (getPlatform(PlatformType.WEB))
-			this.window.resizable = true;
-		if (getPlatform(PlatformType.DESKTOP))
-		{
-			this.window.orientation = Orientation.LANDSCAPE;
-			this.window.fullscreen = false;
-			this.window.resizable = true;
-			this.window.vsync = false;
-		}
-		if (getPlatform(PlatformType.MOBILE))
-		{
-			this.window.orientation = Orientation.LANDSCAPE;
-			this.window.fullscreen = false;
-			this.window.resizable = false;
-			this.window.width = 0;
-			this.window.height = 0;
-		}
-	}
-
-	function configureFeatureFlags():Void
-	{
-		// lol false flags
-		GITHUB_BUILD.apply(this, true); // true - this if you building something, and your mod/engine in git repository
-
-		// lol true flags
-		FEATURE_OPEN_URL.apply(this, true);
-		FEATURE_FUNKIN_VIS.apply(this, true);
-		FEATURE_PARTIAL_SOUNDS.apply(this, true);
-		FEATURE_LUA_SCRIPTING.apply(this, true);
-		FEATURE_HSCRIPT_SCRIPTING.apply(this, true);
-
-		// DESKTOP FEATURE FLAGS
-		FEATURE_MODS_ENABLING.apply(this, getPlatform(PlatformType.DESKTOP));
-		FEATURE_CRASH_DIALOG.apply(this, getPlatform(PlatformType.DESKTOP));
-		FEATURE_GAMEJOLT_CLIENT.apply(this, getPlatform(PlatformType.DESKTOP));
-		FEATURE_DISCORD_RPC.apply(this, getPlatform(PlatformType.DESKTOP));
-		FEATURE_CHECKING_UPDATE.apply(this, getPlatform(PlatformType.DESKTOP));
-		FEATURE_VIDEO_PLAYBACK.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('hl') && !FEATURE_32_BITS.isEnabled(this));
-
-		// DEBUG AND ETC. FEATURE FLAGS
-		FEATURE_DEBUG_FUNCTIONS.apply(this, this.debug || GITHUB_BUILD.isEnabled(this));
-		FEATURE_REDIRECT_ASSETS.apply(this, this.debug && FEATURE_MODS_ENABLING.isEnabled(this));
-		FEATURE_GAMEPAD_ALLOWED.apply(this, this.debug);
-
-		// WEB FEATURE FLAGS
-		TOUCH_HERE_TO_PLAY.apply(this, getPlatform(PlatformType.WEB));
-		EMBED_ASSETS.apply(this, getPlatform(PlatformType.WEB));
-
-		// NO MACOS FEATURE FLAGS
-		FEATURE_FILE_DROP.apply(this, !getTarget(Platform.MAC));
-
-		// NO WEB FEATURE FLAGS
-		PRELOAD_ALL.apply(this, !getPlatform(PlatformType.WEB));
-		FEATURE_CHARTING.apply(this, !getPlatform(PlatformType.WEB));
-		FEATURE_OTHER_EDITORS.apply(this, !getPlatform(PlatformType.WEB));
-
-		// OTHER FEATURES
-		FEATURE_SYSTOOLS_NDLL.apply(this, getTarget(Platform.WINDOWS));
-		FEATURE_GIT_TRACE.apply(this, this.debug && GITHUB_BUILD.isEnabled(this));
-	}
-
-	/**
-	 * Configurating a Haxe Defines
-	 */
-	function configureCompileDefines()
-	{
-		// Enable OpenFL's error handler.
-		setHaxedef("openfl-enable-handle-error");
-
-		// Stack trace tracking. For debug is good
-		setHaxedef("HXCPP_CHECK_POINTER");
-		setHaxedef("HXCPP_STACK_LINE");
-		setHaxedef("HXCPP_STACK_TRACE");
-		setHaxedef("hscriptPos");
-		setHaxedef("safeMode");
-
-		// Enabling unfocusing, if flixel project screen is lost
-		setHaxedef("FLX_NO_FOCUS_LOST_SCREEN");
-
-		// Debug stuff
-		if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this))
-			setHaxedef("FLX_NO_DEBUG");
-
-		if (!this.debug)
-			setHaxedef("NAPE_RELEASE_BUILD");
-
-		// Discord RPC Defines
-		if (FEATURE_DISCORD_RPC.isEnabled(this))
-			setHaxedef("DISCORD_DISABLE_IO_THREAD");
-
-		// Linc Lua Defines
-		if (FEATURE_LUA_SCRIPTING.isEnabled(this))
-			setHaxedef("LINC_LUA_RELATIVE_DYNAMIC_LIB");
-
-		// Video Codec Defines
-		if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
-		{
-			setHaxedef("HXC_LIBVLC_LOGGING");
-
-			if (this.debug)
-				setHaxedef("HXC_DEBUG_TRACE");
-		}
-
-		// Linux defines
-		if (getTarget(Platform.LINUX))
-			setHaxedef("NO_PRECOMPILED_HEADERS");
-
-		// Debug tracy defines
-		if (FEATURE_DEBUG_TRACY.isEnabled(this))
-		{
-			setHaxedef("HXCPP_TELEMETRY");
-			setHaxedef("HXCPP_TRACY");
-			setHaxedef("HXCPP_TRACY_MEMORY");
-			setHaxedef("HXCPP_TRACY_ON_DEMAND");
-			setHaxedef("absolute-paths");
-		}
-
-		// Stuff
-		setHaxedef("no-deprecation-warnings");
-		setHaxedef("message.reporting", "pretty");
-	}
-
-	/**
-	 * Configurating a Macro's stuff
-	 */
-	function configureMacros()
-	{
-		// Stuff
-		this.haxeflags.push('-dce no');
-
-		this.haxeflags.push('--macro keep("import")');
-
-		// Includes
-		this.haxeflags.push("--macro include('funkin')");
-		this.haxeflags.push("--macro include('engine')");
-		this.haxeflags.push("--macro include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])");
-
-		// MetaData
-		this.haxeflags.push("--macro addMetadata('@:build(engine.util.macro.FlxMacro.buildFlxBasic())', 'flixel.FlxBasic')");
-
-		// Allow packages
-		this.haxeflags.push("--macro allowPackage('flash')");
-	}
-
-	/**
-	 * Configurate a direction where this game will exported
-	 */
-	function configureOutputDir()
-	{
-		final dir = 'export/${this.debug ? 'debug' : (FEATURE_32_BITS.isEnabled(this) ? '32bits' : 'release')}/';
-		info('\nOutput directory: ${dir}');
-		this.app.path = dir;
-	}
-
-	/*
-	 * Configurating all Haxe Libraries
-	 */
-	function configureHaxelibs()
-	{
-		for (i in 0...default_libs.length)
-			this.haxelibs.push(new Haxelib(default_libs[i][0], default_libs[i][1]));
-
-		if (FEATURE_DEBUG_FUNCTIONS.isEnabled(this))
-			this.haxelibs.push(new Haxelib('hxcpp-debug-server'));
-		if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
-			this.haxelibs.push(new Haxelib('hxCodec', '3.0.2'));
-		if (FEATURE_GAMEJOLT_CLIENT.isEnabled(this))
-			this.haxelibs.push(new Haxelib('HaxeGJClient', 'git'));
-		if (FEATURE_DISCORD_RPC.isEnabled(this))
-			this.haxelibs.push(new Haxelib('hxdiscord_rpc', 'git'));
-		if (FEATURE_LUA_SCRIPTING.isEnabled(this))
-			this.haxelibs.push(new Haxelib('linc_luajit', 'git'));
-		if (FEATURE_SYSTOOLS_NDLL.isEnabled(this))
-			this.haxelibs.push(new Haxelib('systools', 'git'));
-		if (FEATURE_PARTIAL_SOUNDS.isEnabled(this))
-			this.haxelibs.push(new Haxelib('FlxPartialSound', 'git'));
-
-		if (FEATURE_HSCRIPT_SCRIPTING.isEnabled(this))
-		{
-			this.haxelibs.push(new Haxelib('tscript', 'git'));
-			this.haxelibs.push(new Haxelib('hscript', '2.5.0'));
-		}
-
-		if (FEATURE_FUNKIN_VIS.isEnabled(this))
-		{
-			this.haxelibs.push(new Haxelib('funkin.vis', 'git'));
-			this.haxelibs.push(new Haxelib('grig.audio', 'git'));
-		}
-	}
-
-	/**
-	 * Configurating a .ndll files for exporting
-	 */
-	function configureNDLL()
-	{
-		if (FEATURE_SYSTOOLS_NDLL.isEnabled(this))
-			this.ndlls.push(new NDLL('systools', new Haxelib('systools', 'git')));
-	}
-
-	function addAsset(path:String, ?rename:String, ?library:String, embed:Bool = false):Void
-	{
-		var asset = new Asset(path, rename, null, embed, true);
-		@:nullSafety(Off)
-		{
-			asset.library = library ?? "default";
-		}
-
-		this.assets.push(asset);
-	}
-
-	function addAssetPath(path:String, ?rename:String, library:String, ?include:Array<String>, ?exclude:Array<String>, embed:Bool = false):Void
-	{
-		if (path == "")
-			return;
-		if (include == null)
-			include = [];
-		if (exclude == null)
-			exclude = [];
-
-		var paths:String = rename ?? path;
-		if (paths != "")
-			paths += "/";
-
-		if (!FileSystem.exists(path))
-			Log.error("Asset path '" + path + "' not find!");
-		else if (!FileSystem.isDirectory(path))
-			Log.error("Asset path '" + path + "' not parse!");
-
-		for (file in FileSystem.readDirectory(path))
-		{
-			if (FileSystem.isDirectory('$path/$file'))
-			{
-				if (this.filter(file, ["*"], exclude))
-					addAssetPath('$path/$file', '${paths}$file', library, include, exclude, embed);
-			}
-			else if (this.filter(file, include, exclude))
-				addAsset('$path/$file', '${paths}$file', library, embed);
-		}
-	}
-
-	function addAssetLibrary(name:String, embed:Bool = false, preload:Bool = false):Void
-	{
-		this.libraries.push(new Library("", name, null, embed, preload, false, ""));
-	}
-
-	function getGitBranch():String
-	{
-		final process = new Process("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-		if (process.exitCode() != 0)
-			Log.error("Could not determine current git branch; is this a proper Git repository?");
-
-		return process.stdout.readLine();
-	}
-
-	function getGitCommit():String
-	{
-		final process = new Process("git", ["rev-parse", "HEAD"]);
-		if (process.exitCode() != 0)
-			Log.error('Could not determine current git commit; is this a proper Git repository?');
-
-		return process.stdout.readLine().substr(0, 7);
-	}
-
-	function getGitModified():Bool
-	{
-		final process = new Process("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
-		if (process.exitCode() != 0)
-			Log.error('Could not determine current git branch; is this a proper Git repository?');
-
-		var output:String = "";
-		try
-			output = process.stdout.readLine()
-		catch (e)
-			if (e.message != "Eof")
-				throw e;
-
-		return output.length > 0;
-	}
-
-	function getHaxedef(name:String):Null<Dynamic>
-		return this.haxedefs.get(name);
-
-	function setHaxedef(name:String, ?value:String):Void
-	{
-		if (value == null)
-			value = "";
-		this.haxedefs.set(name, value);
-	}
-
-	function removeHaxedef(name:String):Void
-		this.haxedefs.remove(name);
-
-	function info(msg:String):Void
-		if (!getCommand('display'))
-			Sys.println(msg);
-
-	function getTarget(t:Platform):Bool
-		return (this.target == t);
-
-	function getTargetFlag(v:String):Bool
-		return this.targetFlags.exists(v);
-
-	function getPlatform(t:PlatformType):Bool
-		return (this.platformType == t);
-
-	function getCommand(v:String):Bool
-		return (HXProject._command == v);
-
-	// Building start-up
-	function new():Void
-	{
-		super();
-
-		flair();
-		displayTarget();
-	}
+  // First Start
+  function new():Void
+  {
+    super();
+
+    flair();
+    displayTarget();
+
+    configureApp();
+    configureFeatureFlags();
+    configureCompileDefines();
+    configureMacros();
+    configureOutputDir();
+    configureHaxelibs();
+    configureNDLL();
+    configureAssets();
+    configureIcons();
+  }
+
+    // OTHERS
+
+  /**
+   * Default haxe libraries
+   */
+  static final DEFAULT_HAXELIBS:Array<Array<String>> = [
+    ["hxp", "1.3.0"],
+    ["lime", "8.2.2"],
+    ["openfl", "9.4.1"],
+    ["flixel", "6.0.0"],
+    ["flixel-addons", "3.3.2"],
+    ["flixel-text-input", "2.0.2"],
+    ["flxanimate", "git"],
+    ["thx.core", "git"],
+    ["thx.semver", "git"],
+    ["tjson", "git"]
+  ];
+
+  /**
+   * Default levels for libraries
+   */
+  static final LEVELS_NAMES:Array<Array<String>> = [
+    // tag / source path / rename
+    ["tutorial", "assets/levels/tutorial", "assets/levels/tutorial"],
+    ["week1", "assets/levels/week1", "assets/levels/week1"],
+    ["week2", "assets/levels/week2", "assets/levels/week2"],
+    ["week3", "assets/levels/week3", "assets/levels/week3"],
+    ["week4", "assets/levels/week4", "assets/levels/week4"],
+    ["week5", "assets/levels/week5", "assets/levels/week5"],
+    ["week6", "assets/levels/week6", "assets/levels/week6"],
+    ["week7", "assets/levels/week7", "assets/levels/week7"],
+    ["weekend1", "assets/levels/weekend1", "assets/levels/weekend1"]
+  ];
+
+  // Metadata
+
+  /**
+   * Game inside data (application data, file data and etc.)
+   */
+  static final METADATA:Map<String, Dynamic> = [
+    "version" => "0.1.0",
+    "title" => "Friday Night Funkin'",
+    "file" => "Tempo Engine",
+    "source" => "source",
+    "preloader" => "engine.ui.preload.TempoPreloader",
+    "package.name" => "com.mrzkteam.tempo",
+    "main.class" => "Main",
+    "company" => "MrzkTeam",
+    "prebuild.dir" => "project/Prebuild.hx",
+    "postbuild.dir" => "project/Postbuild.hx",
+    "file.icons" => [
+      ["project/icon16.png", 16],
+      ["project/icon32.png", 32],
+      ["project/icon64.png", 64],
+      ["project/iconFULL.png", 0]
+    ]
+  ];
+
+  /**
+   * Unexporing assets
+   */
+  static final EXCLUDE_ASSETS:Array<String> = [".*", "cvs", "thumbs.db", "desktop.ini", "*.hash", "*.md"];
+
+  /**
+   * Unexporting assets for WEB
+   */
+  static final EXCLUDE_ASSETS_WEB:Array<String> = ["*.ogg"];
+
+  /**
+   * Unexporting assets for NON-WEB
+   */
+  static final EXCLUDE_ASSETS_NATIVE:Array<String> = ["*.mp3"];
+
+  // Feature flags
+
+  /**
+   * `-DTOUCH_HERE_TO_PLAY`
+   * If this flag is enabled, the game will display a prompt to the user after the preloader completes,
+   * requiring them to click anywhere on the screen to start the game.
+   * This is done to ensure that the audio context can initialize properly on HTML5. Not necessary on desktop.
+   */
+  static final TOUCH_HERE_TO_PLAY:FeatureFlag = "TOUCH_HERE_TO_PLAY";
+
+  /**
+   * `-DPRELOAD_ALL`
+   * Whether to preload all asset libraries.
+   * Disabled on web, enabled on desktop.
+   */
+  static final PRELOAD_ALL:FeatureFlag = "PRELOAD_ALL";
+
+  /**
+   * `-DEMBED_ASSETS`
+   * Whether to embed all asset libraries into the executable.
+   */
+  static final EMBED_ASSETS:FeatureFlag = "EMBED_ASSETS";
+
+  /**
+   * `-DGITHUB_BUILD`
+   * Git actions idk why this writed here lmao    ~mrzk
+   */
+  static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
+
+  /**
+   * `-DFEATURE_REDIRECT_ASSETS`
+   * If this flag is enabled, 'assets' folder will redirect from the 'export' folder
+   */
+  static final FEATURE_REDIRECT_ASSETS:FeatureFlag = "FEATURE_REDIRECT_ASSETS";
+
+  /**
+   * `-DFEATURE_GAMEPAD_ALLOWED`
+   * If this flag is enabled, user can playing with gamepad (xbox, ps and etc.)
+   */
+  static final FEATURE_GAMEPAD_ALLOWED:FeatureFlag = "FEATURE_GAMEPAD_ALLOWED";
+
+  /**
+   * `-DFFEATURE_GAMEJOLT_CLIENT`
+   * If this flag is enabled, the game mods will enabled.
+   */
+  static final FEATURE_GAMEJOLT_CLIENT:FeatureFlag = "FEATURE_GAMEJOLT_CLIENT";
+
+  /**
+   * `-DFEATURE_CRASH_DIALOG`
+   * If this flag is enabled, the game mods will enabled.
+   */
+  static final FEATURE_CRASH_DIALOG:FeatureFlag = "FEATURE_CRASH_DIALOG";
+
+  /**
+   * `-DFEATURE_MODS_ENABLING`
+   * If this flag is enabled, the game mods will enabled.
+   */
+  static final FEATURE_MODS_ENABLING:FeatureFlag = "FEATURE_MODS_ENABLING";
+
+  /**
+   * `-DFEATURE_DEBUG_FUNCTIONS`
+   * If this flag is enabled, some variables, functions, commands from debug mode will enabled.
+   */
+  static final FEATURE_DEBUG_FUNCTIONS:FeatureFlag = "FEATURE_DEBUG_FUNCTIONS";
+
+  /**
+   * `-DFEATURE_OPEN_URL`
+   * If this flag is enabled, the game open url commands will loaded.
+   */
+  static final FEATURE_OPEN_URL:FeatureFlag = "FEATURE_OPEN_URL";
+
+  /**
+   * `-DFEATURE_DISCORD_RPC`
+   * If this flag is enabled, will enabling a Discord Rich Presence (discord rpc)
+   */
+  static final FEATURE_DISCORD_RPC:FeatureFlag = "FEATURE_DISCORD_RPC";
+
+  /**
+   * `-DFEATURE_FUNKIN_VIS`
+   * If this flag is enabled, the game will enabling the grid.audio and funkin.vis libraries.
+   * This is used for ABot visualizer.
+   */
+  static final FEATURE_FUNKIN_VIS:FeatureFlag = "FEATURE_FUNKIN_VIS";
+
+  /**
+     * `-DFEATURE_PARTIAL_SOUNDS`
+     * If this flag is enabled, the game will enable the FlxPartialSound library.
+   * This is used to provide audio previews in Freeplay.
+   * Disabling this will make those previews not play.
+   */
+  static final FEATURE_PARTIAL_SOUNDS:FeatureFlag = "FEATURE_PARTIAL_SOUNDS";
+
+  /**
+   * `-DFEATURE_VIDEO_PLAYBACK`
+   * If this flag is enabled, VLC (VideoLAN Client) will enabled.
+   */
+  static final FEATURE_VIDEO_PLAYBACK:FeatureFlag = "FEATURE_VIDEO_PLAYBACK";
+
+  /**
+   * `-DFEATURE_LUA_SCRIPTING`
+   * If this flag is enabled, game will support a lua script's.
+   */
+  static final FEATURE_LUA_SCRIPTING:FeatureFlag = "FEATURE_LUA_SCRIPTING"; // .lua
+
+  /**
+   * `-DFEATURE_HSCRIPT_SCRIPTING`
+   * If this flag is enabled, game will support a hscript's.
+   */
+  static final FEATURE_HSCRIPT_SCRIPTING:FeatureFlag = "FEATURE_HSCRIPT_SCRIPTING"; // .hxc
+
+  /**
+   * `-DFEATURE_FILE_DROP`
+   * If this flag is enabled, game will support a file dragging and dropping.
+   */
+  static final FEATURE_FILE_DROP:FeatureFlag = "FEATURE_FILE_DROP";
+
+  /**
+   * `-DFEATURE_CHARTING`
+   * If this flag is enabled, game will support Chart Editor and charting stuff.
+   */
+  static final FEATURE_CHARTING:FeatureFlag = "FEATURE_CHARTING";
+
+  /**
+   * `-DFEATURE_OTHER_EDITORS`
+   * If this flag is enabled, game will support other editors (animation, stage, level and etc.).
+   */
+  static final FEATURE_OTHER_EDITORS:FeatureFlag = "FEATURE_OTHER_EDITORS";
+
+  /**
+   * `-DFEATURE_32_BITS`
+   * If this flag is enabled, export will builded for 32bits.
+   */
+  static final FEATURE_32_BITS:FeatureFlag = "FEATURE_32_BITS";
+
+  /**
+   * `-DFEATURE_CHECKING_UPDATE`
+   * If this flag is enabled, after title state, will showed a update screen
+   */
+  static final FEATURE_CHECKING_UPDATE:FeatureFlag = "FEATURE_CHECKING_UPDATE";
+
+  /**
+   * `-DFEATURE_DEBUG_TRACY`
+   * If this flag is enabled, the game will have the necessary hooks for the Tracy profiler.
+   * Only enable this if you're using the correct fork of Haxe to support this.
+   * @see https://github.com/HaxeFoundation/hxcpp/pull/1153
+   */
+  static final FEATURE_DEBUG_TRACY:FeatureFlag = "FEATURE_DEBUG_TRACY";
+
+  /**
+   * `-DFEATURE_SYSTOOLS_NDLL`
+   * If this flag is enabled, a `systools` library will working and spawning a .ndll file.
+   * Recommended for target OS - `Windows`.
+   */
+  static final FEATURE_SYSTOOLS_NDLL:FeatureFlag = "FEATURE_SYSTOOLS_NDLL";
+
+  /**
+   * `-DFEATURE_GIT_TRACE`
+   * If this flag is enabled, git info (from `GitCommit.hx`) will push in command line.
+   * */
+  static final FEATURE_GIT_TRACE:FeatureFlag = "FEATURE_GIT_TRACE";
+
+  function flair()
+  {
+    info("Tempo Engine");
+    info("Initializing build...\n");
+
+    info("Project Version: " + METADATA.get('version'));
+    info("Git Branch:      " + getGitBranch());
+    info("Git Commit:      " + getGitCommit());
+    info("Git Modified?    " + getGitModified());
+    info("Display?         " + getCommand('display') + '\n');
+  }
+
+  function displayTarget()
+  {
+    if (getPlatform(PlatformType.DESKTOP)) info("Platform Type: Desktop");
+    else if (getPlatform(PlatformType.MOBILE)) info("Platform Type: Mobile");
+    else if (getPlatform(PlatformType.WEB)) info("Platform Type: Web");
+    else if (getPlatform(PlatformType.CONSOLE)) info("Platform Type: Console");
+    else
+      Log.error("Unknown platform type (got " + this.platformType + ")");
+
+    if (getTarget(Platform.WINDOWS)) info("Target Platform: Windows");
+    else if (getTarget(Platform.MAC)) info("Target Platform: MacOS");
+    else if (getTarget(Platform.LINUX)) info("Target Platform: Linux");
+    else if (getTarget(Platform.ANDROID)) info("Target Platform: Android");
+    else if (getTarget(Platform.IOS)) info("Target Platform: IOS");
+    else if (getTarget(Platform.HTML5)) info("Target Platform: HTML5");
+    else
+      Log.error("Unsupported platform (got " + this.target + ")");
+
+    if (getPlatform(PlatformType.WEB)) info("Target Language: Javascript (HTML5)");
+    else if (getTargetFlag('hl')) info("Target Language: HashLink");
+    else if (getTargetFlag('neko')) info("Target Language: Neko");
+    else if (getTargetFlag('java')) info("Target Language: Java");
+    else if (getTargetFlag('nodejs')) info("Target Language: JavaScript (NodeJS)");
+    else if (getTargetFlag('cs')) info("Target Language: C#");
+    else
+      info("Target Language: C++");
+
+    for (arch in this.architectures)
+    {
+      switch (arch)
+      {
+        case Architecture.X86:
+          info('Architecture: x86');
+        case Architecture.X64:
+          info('Architecture: x64');
+        case Architecture.ARMV5:
+          info('Architecture: ARMv5');
+        case Architecture.ARMV6:
+          info('Architecture: ARMv6');
+        case Architecture.ARMV7:
+          info('Architecture: ARMv7');
+        case Architecture.ARMV7S:
+          info('Architecture: ARMv7S');
+        case Architecture.ARM64:
+          info('Architecture: ARMx64');
+        case Architecture.MIPS:
+          info('Architecture: MIPS');
+        case Architecture.MIPSEL:
+          info('Architecture: MIPSEL');
+        case null:
+          if (!getPlatform(PlatformType.WEB))
+          {
+            Log.error('Unsupported architecture (got null on non-web platform)');
+          }
+          else
+          {
+            info('Architecture: Web');
+          }
+        default:
+          Log.error('Unsupported architecture (got ${arch})');
+      }
+    }
+  }
+
+  function configureApp()
+  {
+    this.meta.title = METADATA.get('title');
+    this.meta.version = METADATA.get('version');
+    this.meta.packageName = METADATA.get('package.name');
+    this.meta.company = METADATA.get('company');
+
+    this.app.main = METADATA.get('main.class');
+    this.app.file = METADATA.get('file');
+    this.app.preloader = METADATA.get('preloader');
+
+    this.sources.push(METADATA.get('source'));
+
+    this.preBuildCallbacks.push(CommandHelper.interpretHaxe(METADATA.get('prebuild.dir')));
+    this.postBuildCallbacks.push(CommandHelper.interpretHaxe(METADATA.get('postbuild.dir')));
+
+    this.window.fps = 60;
+    this.window.width = 1280;
+    this.window.height = 720;
+    this.window.background = (FEATURE_DEBUG_FUNCTIONS.isEnabled(this) ? 0xFFFF00FF : 0xFF000000);
+    this.window.hardware = true;
+    this.window.vsync = false;
+
+    if (getPlatform(PlatformType.WEB)) this.window.resizable = true;
+
+    if (getPlatform(PlatformType.DESKTOP))
+    {
+      this.window.orientation = Orientation.LANDSCAPE;
+      this.window.fullscreen = false;
+      this.window.resizable = true;
+      this.window.vsync = false;
+    }
+
+    if (getPlatform(PlatformType.MOBILE))
+    {
+      this.window.orientation = Orientation.LANDSCAPE;
+      this.window.fullscreen = false;
+      this.window.resizable = false;
+      this.window.width = 0;
+      this.window.height = 0;
+    }
+  }
+
+  function configureFeatureFlags()
+  {
+    // lol false flags
+    GITHUB_BUILD.apply(this, true); // true - this if you building something, and your mod/engine in git repository
+
+    // lol true flags
+    FEATURE_OPEN_URL.apply(this, true);
+    FEATURE_FUNKIN_VIS.apply(this, true);
+    FEATURE_PARTIAL_SOUNDS.apply(this, true);
+    FEATURE_LUA_SCRIPTING.apply(this, true);
+    FEATURE_HSCRIPT_SCRIPTING.apply(this, true);
+
+    // DESKTOP FEATURE FLAGS
+    FEATURE_MODS_ENABLING.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_CRASH_DIALOG.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_GAMEJOLT_CLIENT.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_DISCORD_RPC.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_CHECKING_UPDATE.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_VIDEO_PLAYBACK.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('hl') && !FEATURE_32_BITS.isEnabled(this));
+
+    // DEBUG AND ETC. FEATURE FLAGS
+    FEATURE_DEBUG_FUNCTIONS.apply(this, this.debug || GITHUB_BUILD.isEnabled(this));
+    FEATURE_REDIRECT_ASSETS.apply(this, this.debug && FEATURE_MODS_ENABLING.isEnabled(this));
+    FEATURE_GAMEPAD_ALLOWED.apply(this, this.debug);
+
+    // WEB FEATURE FLAGS
+    TOUCH_HERE_TO_PLAY.apply(this, getPlatform(PlatformType.WEB));
+    EMBED_ASSETS.apply(this, getPlatform(PlatformType.WEB));
+
+    // NO MACOS FEATURE FLAGS
+    FEATURE_FILE_DROP.apply(this, !getTarget(Platform.MAC));
+
+    // NO WEB FEATURE FLAGS
+    PRELOAD_ALL.apply(this, !getPlatform(PlatformType.WEB));
+    FEATURE_CHARTING.apply(this, !getPlatform(PlatformType.WEB));
+    FEATURE_OTHER_EDITORS.apply(this, !getPlatform(PlatformType.WEB));
+
+    // OTHER FEATURES
+    FEATURE_SYSTOOLS_NDLL.apply(this, getTarget(Platform.WINDOWS));
+    FEATURE_GIT_TRACE.apply(this, this.debug && GITHUB_BUILD.isEnabled(this));
+  }
+
+  /**
+   * Configurating a Haxe Defines
+   */
+  function configureCompileDefines()
+  {
+    // Enable OpenFL's error handler.
+    setHaxedef("openfl-enable-handle-error");
+
+    // Stack trace tracking. For debug is good
+    setHaxedef("HXCPP_CHECK_POINTER");
+    setHaxedef("HXCPP_STACK_LINE");
+    setHaxedef("HXCPP_STACK_TRACE");
+    setHaxedef("hscriptPos");
+    setHaxedef("safeMode");
+
+    // Enabling unfocusing, if flixel project screen is lost
+    setHaxedef("FLX_NO_FOCUS_LOST_SCREEN");
+
+    // Debug stuff
+    if (FEATURE_DEBUG_FUNCTIONS.isDisabled(this)) setHaxedef("FLX_NO_DEBUG");
+
+    if (!this.debug) setHaxedef("NAPE_RELEASE_BUILD");
+
+    // Discord RPC Defines
+    if (FEATURE_DISCORD_RPC.isEnabled(this)) setHaxedef("DISCORD_DISABLE_IO_THREAD");
+
+    // Linc Lua Defines
+    if (FEATURE_LUA_SCRIPTING.isEnabled(this)) setHaxedef("LINC_LUA_RELATIVE_DYNAMIC_LIB");
+
+    // Video Codec Defines
+    if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    {
+      setHaxedef("HXC_LIBVLC_LOGGING");
+
+      if (this.debug) setHaxedef("HXC_DEBUG_TRACE");
+    }
+
+    // Linux defines
+    if (getTarget(Platform.LINUX)) setHaxedef("NO_PRECOMPILED_HEADERS");
+
+    // Debug tracy defines
+    if (FEATURE_DEBUG_TRACY.isEnabled(this))
+    {
+      setHaxedef("HXCPP_TELEMETRY");
+      setHaxedef("HXCPP_TRACY");
+      setHaxedef("HXCPP_TRACY_MEMORY");
+      setHaxedef("HXCPP_TRACY_ON_DEMAND");
+      setHaxedef("absolute-paths");
+    }
+
+    // Stuff
+    setHaxedef("no-deprecation-warnings");
+    setHaxedef("message.reporting", "pretty");
+  }
+
+  /**
+   * Configurating a Macro's stuff
+   */
+  function configureMacros()
+  {
+    // Stuff
+    this.haxeflags.push('-dce no');
+
+    this.haxeflags.push('--macro keep("import")');
+
+    // Includes
+    this.haxeflags.push("--macro include('funkin')");
+    this.haxeflags.push("--macro include('engine')");
+    this.haxeflags.push("--macro include('flixel', true, [ 'flixel.addons.editors.spine.*', 'flixel.addons.nape.*', 'flixel.system.macros.*' ])");
+
+    // MetaData
+    this.haxeflags.push("--macro addMetadata('@:build(engine.backend.macro.FlixelMacro.buildFlxBasic())', 'flixel.FlxBasic')");
+
+    // Allow packages
+    this.haxeflags.push("--macro allowPackage('flash')");
+  }
+
+  /**
+   * Configurate a direction where this game will exported
+   */
+  function configureOutputDir()
+  {
+    final dir = 'export/${this.debug ? 'debug' : (FEATURE_32_BITS.isEnabled(this) ? '32bits' : 'release')}/';
+    info('\nOutput directory: ${dir}');
+    this.app.path = dir;
+  }
+
+  /*
+   * Configurating all Haxe Libraries
+   */
+  function configureHaxelibs()
+  {
+    for (i in 0...DEFAULT_HAXELIBS.length)
+      this.haxelibs.push(new Haxelib(DEFAULT_HAXELIBS[i][0], DEFAULT_HAXELIBS[i][1]));
+
+    if (FEATURE_DEBUG_FUNCTIONS.isEnabled(this)) this.haxelibs.push(new Haxelib('hxcpp-debug-server'));
+    if (FEATURE_VIDEO_PLAYBACK.isEnabled(this)) this.haxelibs.push(new Haxelib('hxvlc', '1.9.6'));
+    if (FEATURE_GAMEJOLT_CLIENT.isEnabled(this)) this.haxelibs.push(new Haxelib('HaxeGJClient', 'git'));
+    if (FEATURE_DISCORD_RPC.isEnabled(this)) this.haxelibs.push(new Haxelib('hxdiscord_rpc', 'git'));
+    if (FEATURE_LUA_SCRIPTING.isEnabled(this)) this.haxelibs.push(new Haxelib('linc_luajit', 'git'));
+    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) this.haxelibs.push(new Haxelib('systools', 'git'));
+    if (FEATURE_PARTIAL_SOUNDS.isEnabled(this)) this.haxelibs.push(new Haxelib('FlxPartialSound', 'git'));
+
+    if (FEATURE_HSCRIPT_SCRIPTING.isEnabled(this)) {
+      this.haxelibs.push(new Haxelib('tscript', 'git'));
+      this.haxelibs.push(new Haxelib('hscript', '2.5.0'));
+    }
+
+    if (FEATURE_FUNKIN_VIS.isEnabled(this))
+    {
+      this.haxelibs.push(new Haxelib('funkin.vis', 'git'));
+      this.haxelibs.push(new Haxelib('grig.audio', 'git'));
+    }
+  }
+
+  /**
+   * Configurating a .ndll files for exporting
+   */
+  function configureNDLL()
+  {
+    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) this.ndlls.push(new NDLL('systools', new Haxelib('systools', 'git')));
+  }
+
+  /**
+   * Configurating all assets for exporting
+   */
+  function configureAssets()
+  {
+    var exclude = EXCLUDE_ASSETS.concat(getPlatform(PlatformType.WEB) ? EXCLUDE_ASSETS_WEB : EXCLUDE_ASSETS_NATIVE);
+    var willPreload = PRELOAD_ALL.isEnabled(this);
+    var willEmbed = EMBED_ASSETS.isEnabled(this);
+
+    if (willEmbed) info('\nEmbedding assets into executable...\n');
+    else
+      info('\nIncluding assets alongside executable...\n');
+
+    var willPreloadDefault = true;
+
+    addAssetLibrary("default", willEmbed, willPreloadDefault);
+
+    addAssetLibrary("preload", willEmbed, willPreload);
+    addAssetPath("assets/preload", "assets/preload", "preload", ['*'], exclude, willEmbed);
+
+    addAssetLibrary("songs", willEmbed, willPreload);
+    addAssetPath("assets/songs", "assets/songs", "songs", ['*'], exclude, willEmbed);
+
+    if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
+    {
+      addAssetLibrary("videos", willEmbed, willPreload);
+      addAssetPath("assets/videos", "assets/videos", "videos", ['*'], exclude, willEmbed);
+    }
+
+    for(i in 0...LEVELS_NAMES.length)
+    {
+      addAssetLibrary(LEVELS_NAMES[i][0], willEmbed, willPreload);
+      addAssetPath(LEVELS_NAMES[i][1], LEVELS_NAMES[i][2], LEVELS_NAMES[i][0], ['*'], exclude, willEmbed);
+    }
+
+		addAssetPath("project/export", "", "default", ["*"], exclude, willEmbed);
+    addAsset("LICENSE", 'license.md', "default", false);
+  }
+
+  /**
+   * Configurating all icons for .exe program
+   */
+  function configureIcons()
+  {
+    for (i in 0...METADATA.get('file.icons').length)
+      this.icons.push(new Icon(METADATA.get('file.icons')[i][0], METADATA.get('file.icons')[i][1]));
+  }
+
+  /**
+   * Returning Haxe Define Value from `n` value. (idk what i writed, mai inglish is veri bed.,. ermm bad! .. yes .. what you looking for? -_0)
+   */
+  public function getHaxedef(n:String):Null<Dynamic>
+  {
+    return this.haxedefs.get(n);
+  }
+
+  /**
+   * Setting a Haxe Define value and adding for Source Code
+   */
+  public function setHaxedef(n:String, ?v:String)
+  {
+    if (v == null) v = '';
+    this.haxedefs.set(n, v);
+  }
+
+  /**
+   * Remove `n` value Haxe Define
+   */
+  public function unsetHaxedef(n:String)
+  {
+    this.haxedefs.remove(n);
+  }
+
+  /**
+   * Adding asset for exporting stuff
+   */
+  public function addAsset(p:String, ?r:String, ?l:String, e:Bool = false)
+  {
+    var asset = new Asset(p, r, null, e, true);
+    @:nullSafety(Off)
+    {
+      asset.library = l ?? "default";
+    }
+    this.assets.push(asset);
+  }
+
+  /**
+   * Adding asset direction for exporting stuff
+   *
+   * `p` - path | `r` - rename | `l` - library | `i` - include | `e` - exclude | `ed` - embed
+   */
+  public function addAssetPath(p:String, ?r:String, l:String, ?i:Array<String>, ?e:Array<String>, ed:Bool = false)
+  {
+    if (p == "") return;
+    if (i == null) i = [];
+    if (e == null) e = [];
+
+    var path = r ?? p;
+    if (path != "") path += "/";
+
+    if (!FileSystem.exists(p)) Log.error('Asset path \'$p\' not finded!');
+    else if (!FileSystem.isDirectory(p)) Log.error('Asset path \'$p\' not parsed!');
+
+    for (f in FileSystem.readDirectory(p))
+    {
+      if (FileSystem.isDirectory('$p/$f'))
+      {
+        if (this.filter(f, ["*"], e)) addAssetPath('$p/$f', '${path}$f', l, i, e, ed);
+      }
+      else if (this.filter(f, i, e)) addAsset('$p/$f', '${path}$f', l, ed);
+    }
+  }
+
+  /**
+   * Adding for assets Library (for optimization or idk)
+   *
+   * `n` - name | `e` - embed | `p` - preload
+   */
+  public function addAssetLibrary(n:String, e:Bool = false, p:Bool = false)
+  {
+    // s - source path
+    var s:String = '';
+    this.libraries.push(new Library(s, n, null, e, p, false, ''));
+  }
+
+  /**
+   * Returning current `Git` branch
+   */
+  public function getGitBranch():String
+  {
+    var process = new Process("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+    if (process.exitCode() != 0)
+    {
+      var msg = process.stderr.readAll().toString();
+      Log.error("Could not determine current git branch; is this a proper Git repository?");
+    }
+
+    var name:String = process.stdout.readLine();
+    return name;
+  }
+
+  /**
+   * Returning current `Git` commit
+   */
+  public function getGitCommit():String
+  {
+    var process = new Process('git', ['rev-parse', 'HEAD']);
+    if (process.exitCode() != 0)
+    {
+      var message = process.stderr.readAll().toString();
+      Log.error('Could not determine current git commit; is this a proper Git repository?');
+    }
+
+    // read the output of the process
+    var commitHash:String = process.stdout.readLine();
+    var commitHashSplice:String = commitHash.substr(0, 7);
+
+    // Generates a string expression
+    return commitHashSplice;
+  }
+
+  /**
+   * Returning current `Git` branch is modified or not.
+   */
+  public function getGitModified():Bool
+  {
+    var process = new Process("git", ["rev-parse", "--abbrev-ref", "HEAD"]);
+    if (process.exitCode() != 0)
+    {
+      var msg = process.stderr.readAll().toString();
+      Log.error("Could not determine current git branch; is this a proper Git repository?");
+    }
+
+    var output:String = '';
+    try
+      output = process.stdout.readLine()
+    catch (e)
+    {
+      if (e.message != "Eof")
+      {
+        throw e;
+      }
+    }
+
+    return output.length > 0;
+  }
+
+  /**
+   * Creating in Command line `print's`
+   */
+  public function info(msg:String, vmsg = '')
+    if (!getCommand('display')) Sys.println(msg + vmsg);
+
+  /**
+   * Returning a `true` or `false` value, if this platform `WINDOWS`, `LINUX`, `MAC`, `ANDROID` and etc.
+   */
+  public function getTarget(v:Platform):Bool
+    return (this.target == v);
+
+  /**
+   * Returning a `true` or `false` value, if this Code Language `C++` or `C#` and etc.
+   */
+  public function getTargetFlag(v:String):Bool
+    return this.targetFlags.exists(v);
+
+  /**
+   * Returning a `true` or `false` value, if this platform `DESKTOP`, `MOBILE`, `WEB`, `CONSOLE`.
+   */
+  public function getPlatform(v:PlatformType):Bool
+    return (this.platformType == v);
+
+  /**
+   * `Updated for Lime 8.2.0`
+   *
+   * Returning current command to `Bool`
+   */
+  public function getCommand(v:String):Bool
+    return (HXProject._command == v);
 }
 
+/**
+ * COPY/PASTED from `https://github.com/FunkinCrew/Funkin/blob/v0.5.0/project.hxp` because idk how adding Feature Flag's NORMALLY  ~mrzk
+ *
+ * An object representing a feature flag, which can be enabled or disabled.
+ * Includes features such as automatic generation of compile defines and inversion.
+ */
 abstract FeatureFlag(String)
 {
-	public static final INVERSE_PREFIX:String = "NO_";
+  static final INVERSE_PREFIX:String = 'NO_';
 
-	@:from
-	public static function fromString(value:String):FeatureFlag
-		return new FeatureFlag(value);
+  public function new(input:String)
+  {
+    this = input;
+  }
 
-	public function new(value:String):Void
-		this = value;
+  @:from
+  public static function fromString(input:String):FeatureFlag
+  {
+    return new FeatureFlag(input);
+  }
 
-	public function apply(hxp:Project = null, byDefault:Bool = false):Void
-	{
-		if (isEnabled(hxp))
-		{
-			hxp.info("Feature flag '" + this + "' enabling...");
-			getInverse().disable(hxp, false);
-		}
-		else if (getInverse().isEnabled(hxp))
-		{
-			hxp.info("Feature flag '" + this + "' disabling...");
-			disable(hxp, false);
-		}
-		else
-		{
-			if (byDefault)
-			{
-				hxp.info("Feature flag '" + this + "' enabling...");
-				enable(hxp, true);
-			}
-			else
-			{
-				hxp.info("Feature flag '" + this + "' disabling...");
-				disable(hxp, true);
-			}
-		}
-	}
+  /**
+   * Enable/disable a feature flag if it is unset, and handle the inverse flag.
+   * Doesn't override a feature flag that was set explicitly.
+   * @param enableByDefault Whether to enable this feature flag if it is unset.
+   */
+  public function apply(project:Project, enableByDefault:Bool = false):Void
+  {
+    // TODO: Name this function better?
 
-	public function enable(hxp:Project, withInverse:Bool = true):Void
-	{
-		hxp.setHaxedef(this, "");
-		if (withInverse)
-			getInverse().disable(hxp, false);
-	}
+    if (isEnabled(project))
+    {
+      // If this flag was already enabled, disable the inverse.
+      project.info('Enabling feature flag ${this}');
+      getInverse().disable(project, false);
+    }
+    else if (getInverse().isEnabled(project))
+    {
+      // If the inverse flag was already enabled, disable this flag.
+      project.info('Disabling feature flag ${this}');
+      disable(project, false);
+    }
+    else
+    {
+      if (enableByDefault)
+      {
+        // Enable this flag if it was unset, and disable the inverse.
+        project.info('Enabling feature flag ${this}');
+        enable(project, true);
+      }
+      else
+      {
+        // Disable this flag if it was unset, and enable the inverse.
+        project.info('Disabling feature flag ${this}');
+        disable(project, true);
+      }
+    }
+  }
 
-	public function disable(hxp:Project, withInverse:Bool = true):Void
-	{
-		hxp.removeHaxedef(this);
-		if (withInverse)
-			getInverse().enable(hxp, false);
-	}
+  /**
+   * Enable this feature flag by setting the appropriate compile define.
+   *
+   * @param project The project to modify.
+   * @param andInverse Also disable the feature flag's inverse.
+   */
+  public function enable(project:Project, andInverse:Bool = true)
+  {
+    project.setHaxedef(this, "");
+    if (andInverse)
+    {
+      getInverse().disable(project, false);
+    }
+  }
 
-	public function isEnabled(hxp:Project):Bool
-		return (hxp.haxedefs.exists(this) || hxp.defines.exists(this));
+  /**
+   * Disable this feature flag by removing the appropriate compile define.
+   *
+   * @param project The project to modify.
+   * @param andInverse Also enable the feature flag's inverse.
+   */
+  public function disable(project:Project, andInverse:Bool = true)
+  {
+    project.unsetHaxedef(this);
+    if (andInverse)
+    {
+      getInverse().enable(project, false);
+    }
+  }
 
-	public function isDisabled(hxp:Project):Bool
-		return getInverse().isEnabled(hxp);
+  /**
+   * Query if this feature flag is enabled.
+   * @param project The project to query.
+   */
+  public function isEnabled(project:Project):Bool
+  {
+    // Check both Haxedefs and Defines for this flag.
+    return project.haxedefs.exists(this) || project.defines.exists(this);
+  }
 
-	public function getInverse():FeatureFlag
-	{
-		if (this.startsWith(INVERSE_PREFIX))
-			return this.substring(INVERSE_PREFIX.length);
+  /**
+   * Query if this feature flag's inverse is enabled.
+   */
+  public function isDisabled(project:Project):Bool
+  {
+    return getInverse().isEnabled(project);
+  }
 
-		return INVERSE_PREFIX + this;
-	}
+  /**
+   * Return the inverse of this feature flag.
+   * @return A new feature flag that is the inverse of this one.
+   */
+  public function getInverse():FeatureFlag
+  {
+    if (this.startsWith(INVERSE_PREFIX))
+    {
+      return this.substring(INVERSE_PREFIX.length);
+    }
+    return INVERSE_PREFIX + this;
+  }
 }

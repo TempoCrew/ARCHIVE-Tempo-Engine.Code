@@ -1,11 +1,101 @@
 {
   "dependencies": [
     {
+      "name": "flixel",
+      "type": "haxelib",
+      "version": "6.0.0"
+    },
+    {
+      "name": "flixel-addons",
+      "type": "haxelib",
+      "version": "3.3.2"
+    },
+    {
+      "name": "flixel-text-input",
+      "type": "haxelib",
+      "version": "2.0.2"
+    },
+    {
+      "name": "flxanimate",
+      "type": "git",
+      "dir": null,
+      "ref": "0654797e5eb7cd7de0c1b2dbaa1efe5a1e1d9412",
+      "url": "https://github.com/Dot-Stuff/flxanimate"
+    },
+    {
+      "name": "FlxPartialSound",
+      "type": "git",
+      "dir": null,
+      "ref": "a1eab7b9bf507b87200a3341719054fe427f3b15",
+      "url": "https://github.com/FunkinCrew/FlxPartialSound.git"
+    },
+    {
+      "name": "funkin.vis",
+      "type": "git",
+      "dir": null,
+      "ref": "22b1ce089dd924f15cdc4632397ef3504d464e90",
+      "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
+      "name": "grig.audio",
+      "type": "git",
+      "dir": "src",
+      "ref": "57f5d47f2533fd0c3dcd025a86cb86c0dfa0b6d2",
+      "url": "https://gitlab.com/haxe-grig/grig.audio.git"
+    },
+    {
+      "name": "android.tools",
+      "type": "git",
+      "dir": null,
+      "ref": "f9d67d3775d874b788da38a1bcc62bd87353f11b",
+      "url": "https://github.com/MAJigsaw77/extension-androidtools"
+    },
+    {
+      "name": "hscript",
+      "type": "haxelib",
+      "version": "2.5.0"
+    },
+    {
+      "name": "tscript",
+      "type": "git",
+      "dir": null,
+      "ref": "e4cfa80fa93bee1f52dc60ec9378cd70281061e6",
+      "url": "https://github.com/Mr7K-X/T-Script"
+    },
+    {
+      "name": "linc_luajit",
+      "type": "git",
+      "dir": null,
+      "ref": "1906c4a96f6bb6df66562b3f24c62f4c5bba14a7",
+      "url": "https://github.com/superpowers04/linc_luajit"
+    },
+    {
+      "name": "hxvlc",
+      "type": "git",
+      "dir": null,
+      "ref": "4aab583a24e3bdfdf21aa57283419916682e0263",
+      "url": "https://github.com/MAJigsaw77/hxvlc"
+    },
+    {
+      "name": "hxcpp",
+      "type": "git",
+      "dir": null,
+      "ref": "904ea40643b050a5a154c5e4c33a83fd2aec18b1",
+      "url": "https://github.com/HaxeFoundation/hxcpp"
+    },
+    {
       "name": "hxcpp-debug-server",
       "type": "git",
       "dir": "hxcpp-debug-server",
       "ref": "147294123f983e35f50a966741474438069a7a8f",
       "url": "https://github.com/FunkinCrew/hxcpp-debugger"
+    },
+    {
+      "name": "hxdiscord_rpc",
+      "type": "git",
+      "dir": null,
+      "ref": "bf0f15492e07d3deeee173e937a0a857f563508b",
+      "url": "https://github.com/MAJigsaw77/hxdiscord_rpc"
     },
     {
       "name": "HaxeGJClient",
