@@ -1,0 +1,66 @@
+{
+  "dependencies": [
+    {
+      "name": "hxcpp-debug-server",
+      "type": "git",
+      "dir": "hxcpp-debug-server",
+      "ref": "147294123f983e35f50a966741474438069a7a8f",
+      "url": "https://github.com/FunkinCrew/hxcpp-debugger"
+    },
+    {
+      "name": "HaxeGJClient",
+      "type": "git",
+      "dir": null,
+      "ref": "899dd3bdaef815cba9d2aa69d757038ec81c7b55",
+      "url": "https://github.com/GamerPablito/HaxeGJClient"
+    },
+    {
+      "name": "hxp",
+      "type": "haxelib",
+      "version": "1.3.0"
+    },
+    {
+      "name": "lime",
+      "type": "haxelib",
+      "version": "8.2.2"
+    },
+    {
+      "name": "openfl",
+      "type": "haxelib",
+      "version": "9.4.1"
+    },
+    {
+      "name": "systools",
+      "type": "git",
+      "dir": null,
+      "ref": "2055163b700afeaf8f566c32442148cdbc429e44",
+      "url": "https://github.com/haya3218/retools"
+    },
+    {
+      "name": "thx.core",
+      "type": "git",
+      "dir": null,
+      "ref": "76d87418fadd92eb8e1b61f004cff27d656e53dd",
+      "url": "https://github.com/fponticelli/thx.core"
+    },
+    {
+      "name": "thx.semver",
+      "type": "git",
+      "dir": null,
+      "ref": "bdb191fe7cf745c02a980749906dbf22719e200b",
+      "url": "https://github.com/fponticelli/thx.semver"
+    },
+    {
+      "name": "tink_core",
+      "type": "haxelib",
+      "version": "1.26.0"
+    },
+    {
+      "name": "tjson",
+      "type": "git",
+      "dir": null,
+      "ref": "62bc266ef3ce7c1010d234a47715bb490bf6b1b0",
+      "url": "https://github.com/Mr7K-X/t-json"
+    }
+  ]
+}
