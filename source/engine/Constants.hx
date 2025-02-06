@@ -5,6 +5,16 @@ package engine;
  */
 class Constants
 {
+	public static final SETUP_GAME = {
+		width: 1280,
+		height: 720,
+		initialState: engine.ui.InitState,
+		zoom: -1.0,
+		framerate: #if web 60 #else 144 #end,
+		skipSplash: #if debug true #else false #end,
+		startFullScreen: false
+	};
+
 	// WEB URL'S
 
 	/**
@@ -453,7 +463,7 @@ class Constants
 	public static final USER_DATA_FILE:String = "user.dat";
 
 	// DEFAULT CONSTANTS
-	// public static final DEFAULT_DISCORD_CLIENT_ID:{ID:String} = engine.backend.macro.DiscordClientID.getData();
+	public static final DEFAULT_DISCORD_CLIENT_ID:String = "1131981056170545334";
 
 	/**
 	 * Number of steps in a beat.

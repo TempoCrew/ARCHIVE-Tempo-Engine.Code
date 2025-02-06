@@ -5,6 +5,7 @@
 dump/
 export/
 RECOVER_*.fla
+gamejolt.json
 .time
 .swp
 test.bat

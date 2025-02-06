@@ -3,6 +3,13 @@
 import engine.backend.Paths;
 import engine.backend.util.MathUtil;
 import engine.Constants;
+// Sys
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+import sys.thread.Mutex;
+import sys.thread.Thread;
+#end
 // OpenFL
 import openfl.desktop.Icon;
 import openfl.display.Bitmap;

@@ -564,7 +564,10 @@ class Project extends HXProject
     addAssetLibrary("default", willEmbed, willPreloadDefault);
 
     addAssetLibrary("preload", willEmbed, willPreload);
-    addAssetPath("assets/preload", "assets/preload", "preload", ['*'], exclude, willEmbed);
+    addAssetPath("assets/preload", "assets", "preload", ['*'], exclude, willEmbed);
+
+    addAssetLibrary("embed", !getTarget(Platform.LINUX), willPreload);
+    addAssetPath("assets/embed", "assets/embed", "embed", ['*'], exclude, !getTarget(Platform.LINUX));
 
     addAssetLibrary("songs", willEmbed, willPreload);
     addAssetPath("assets/songs", "assets/songs", "songs", ['*'], exclude, willEmbed);
