@@ -1,7 +1,14 @@
 package engine.backend;
 
+import flixel.graphics.frames.FlxAtlasFrames;
+
 class Paths
 {
+	public static var loader:LoaderPaths;
+
+	public static function image(path:String):String
+		return "assets/images/" + path;
+
 	public static function font(file:String):String
 		return 'fonts/$file';
 
@@ -13,5 +20,40 @@ class Paths
 			return "embed:assets/embed/images/" + file;
 
 		return "embed:assets/embed/" + file;
+	}
+}
+
+class LoaderPaths
+{
+	public var atlas:AtlasPaths;
+
+	public function image(path:String):BitmapData
+	{
+		if (!FileSystem.exists(path + '.${Constants.EXT_IMAGE}'))
+		{
+			trace('Not exists!');
+			return null;
+		}
+
+		return BitmapData.fromFile(path + '.${Constants.EXT_IMAGE}');
+	}
+
+	public function text(path:String):String
+	{
+		if (!FileSystem.exists(path))
+		{
+			trace('Not exists!');
+			return null;
+		}
+
+		return OpenFLAssets.getText(path);
+	}
+}
+
+class AtlasPaths
+{
+	public function sparrow(path:String):FlxAtlasFrames
+	{
+		return FlxAtlasFrames.fromSparrow(Paths.loader.image(path), Paths.loader.text(path + '.xml'));
 	}
 }

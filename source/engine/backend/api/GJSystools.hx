@@ -1,6 +1,6 @@
 package engine.backend.api;
 
-#if (systools && FEATURE_GAMEJOLT_CLIENT)
+#if (systools && cpp && FEATURE_GAMEJOLT_CLIENT)
 import systools.win.Tools;
 
 typedef FuckInfo =

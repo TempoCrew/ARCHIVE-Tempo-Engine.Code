@@ -15,7 +15,10 @@ class InitState extends flixel.FlxState
 		if (FlxG.save.data.volume != null)
 			FlxG.sound.volume = FlxG.save.data.volume;
 
+		#if FEATURE_DISCORD_RPC
 		DiscordClient.prepare();
+		#end
+
 		GameJoltClient.instance.initialize();
 
 		new FlxTimer().start(1, (t:FlxTimer) ->

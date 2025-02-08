@@ -88,8 +88,8 @@ class DiscordClient
 		// Parameters
 		presence.details = cast(params.details, Null<String>);
 		presence.state = cast(params.state, Null<String>);
-		presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "Engine " + Constants.VERSION;
-		presence.largeImageText = cast(params.largeImageText, Null<String>) ?? "logo";
+		presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "icon";
+		presence.largeImageText = cast(params.largeImageText, Null<String>) ?? "Project Version: " + Constants.VERSION;
 		presence.smallImageKey = cast(params.smallImageKey, Null<String>);
 		presence.smallImageText = cast(params.smallImageText, Null<String>);
 

@@ -6,10 +6,10 @@ package engine.backend.util.tools;
 class StringTools
 {
 	/**
-	    * Converts a string to title case. For example, "hello world" becomes "Hello World".
-	 *
-	    * @param value The string to convert.
-	    * @return The converted string.
+	 * Converts a string to title case. For example, "hello world" becomes "Hello World".
+	 	 *
+	 * @param value The string to convert.
+	 * @return The converted string.
 	 */
 	public static function toTitleCase(value:String):String
 	{
@@ -25,6 +25,19 @@ class StringTools
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Converts a string to folder case, for ex: "hello World.4pa" becomes "hello-world.4pa"
+	 * @param value The string to convert.
+	 * @return Converted string.
+	 */
+	public static function toFolderCase(value:String):String
+	{
+		final invalidChars = ~/[~&;:<>#\s]/g;
+		final hideChars = ~/[.,'"%?!]/g;
+
+		return hideChars.replace(invalidChars.replace(value, '-'), '').trim().toLowerCase();
 	}
 
 	/**

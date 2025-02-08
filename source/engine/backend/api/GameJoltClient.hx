@@ -12,7 +12,9 @@ import gamejolt.GameJolt.GJRequest as Request;
 import openfl.utils.ByteArray;
 
 @:access(gamejolt.GameJolt)
+#if (systools && cpp && FEATURE_GAMEJOLT_CLIENT)
 @:access(engine.backend.api.GJSystools)
+#end
 @:access(engine.backend.macro.GameJoltMacro)
 class GameJoltClient
 {
@@ -105,9 +107,12 @@ class GameJoltClient
 			if (FlxG.state != null)
 			{
 				FlxG.state.persistentUpdate = false;
-				FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () ->
-				{
+				FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () -> {
+					#if cpp
 					GJSystools.restart();
+					#else
+					System.exit(1337);
+					#end
 				}));
 			}
 		}

@@ -310,44 +310,50 @@ class Constants
 	/**
 	 * `InitState` bar empty color
 	 */
-	public static final COLOR_INITIALIZE_BAR_EMPTY:FlxColor = 0xFF16062B;
+	public static final COLOR_INITIALIZE_BAR_EMPTY:FlxColor = FlxColor.fromString('0xFF16062B');
 
 	/**
 	 * `InitState` bar fill color
 	 */
-	public static final COLOR_INITIALIZE_BAR_FILL:FlxColor = 0xFF1CF3B2;
+	public static final COLOR_INITIALIZE_BAR_FILL:FlxColor = FlxColor.fromString('0xFF1CF3B2');
+
+	// EDITOR CONSTANTS
+	public static final COLOR_EDITOR_UPPERBOX_LIGHT:FlxColor = FlxColor.fromString('0xFF71E7C4');
+	public static final COLOR_EDITOR_UPPERBOX:FlxColor = FlxColor.fromString('0xFF0B251E');
+	public static final COLOR_EDITOR_LIST_BUTTON:FlxColor = FlxColor.fromString('0xFF207E65');
+	public static final COLOR_EDITOR_LIST_BOX:FlxColor = FlxColor.fromString('0xff51aa91');
 
 	// PRELOADER CONSTANTS
 
 	/**
 	 * Color for the preloader background
 	 */
-	public static final COLOR_PRELOADER_BG:FlxColor = 0xFF000000;
+	public static final COLOR_PRELOADER_BG:FlxColor = FlxColor.fromString('0xFF000000');
 
 	/**
 	 * Color for the preloader progress bar
 	 */
-	public static final COLOR_PRELOADER_BAR:FlxColor = 0xFF1CF3B2;
+	public static final COLOR_PRELOADER_BAR:FlxColor = FlxColor.fromString('0xFF1CF3B2');
 
 	/**
 	 * Color for the preloader site lock background
 	 */
-	public static final COLOR_PRELOADER_LOCK_BG:FlxColor = 0xFF1B1717;
+	public static final COLOR_PRELOADER_LOCK_BG:FlxColor = FlxColor.fromString('0xFF1B1717');
 
 	/**
 	 * Color for the preloader site lock foreground
 	 */
-	public static final COLOR_PRELOADER_LOCK_FG:FlxColor = 0xB96F10;
+	public static final COLOR_PRELOADER_LOCK_FG:FlxColor = FlxColor.fromString('0xB96F10');
 
 	/**
 	 * Color for the preloader site lock text
 	 */
-	public static final COLOR_PRELOADER_LOCK_FONT:FlxColor = 0xCCCCCC;
+	public static final COLOR_PRELOADER_LOCK_FONT:FlxColor = FlxColor.fromString('0xCCCCCC');
 
 	/**
 	 * Color for the preloader site lock link
 	 */
-	public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = 0xEEB211;
+	public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = FlxColor.fromString('0xEEB211');
 
 	/**
 	 * Each step of the preloader has to be on screen at least this long.

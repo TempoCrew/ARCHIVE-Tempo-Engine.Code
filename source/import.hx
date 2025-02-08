@@ -1,5 +1,11 @@
 #if !macro
 // Engine
+#if FEATURE_DISCORD_RPC
+import engine.backend.api.DiscordClient;
+#end
+#if FEATURE_GAMEJOLT_CLIENT
+import engine.backend.api.GameJoltClient;
+#end
 import engine.backend.Paths;
 import engine.backend.util.MathUtil;
 import engine.Constants;
@@ -10,6 +16,9 @@ import sys.FileSystem;
 import sys.thread.Mutex;
 import sys.thread.Thread;
 #end
+// Tempo
+import tempo.util.TempoSave;
+import tempo.TempoInput;
 // OpenFL
 import openfl.desktop.Icon;
 import openfl.display.Bitmap;

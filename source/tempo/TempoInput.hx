@@ -360,7 +360,7 @@ class TempoInput
 	public static var cursorWheel(get, never):Float;
 
 	static function get_cursorWheel():Float
-		return cursor.wheel.toFloat();
+		return cursor.wheel;
 
 	/**
 	 * Mouse wheel is moved or not

@@ -6,6 +6,8 @@ class Setup
 {
 	public static function create():Void
 	{
+		FlxSprite.defaultAntialiasing = true;
+
 		FlxG.save.bind('tempo');
 
 		Main.instance.addChild(tempo.TempoGame.setup(Constants.SETUP_GAME.width, Constants.SETUP_GAME.height, Constants.SETUP_GAME.initialState,

@@ -150,9 +150,15 @@ class Project extends HXProject
 
   /**
    * `-DFEATURE_CRASH_DIALOG`
-   * If this flag is enabled, the game mods will enabled.
+   * If this flag is enabled, after crashing a game, will opened a dialog.
    */
   static final FEATURE_CRASH_DIALOG:FeatureFlag = "FEATURE_CRASH_DIALOG";
+
+  /**
+   * `-DFEATURE_CRITICAL_CRASH`
+   * If this flag is enabled, after crashing a game, will opened critical dialog.
+   */
+  static final FEATURE_CRITICAL_CRASH:FeatureFlag = "FEATURE_CRITICAL_CRASH";
 
   /**
    * `-DFEATURE_MODS_ENABLING`
@@ -385,6 +391,7 @@ class Project extends HXProject
   {
     // lol false flags
     GITHUB_BUILD.apply(this, true); // true - this if you building something, and your mod/engine in git repository
+    FEATURE_CRITICAL_CRASH.apply(this, false); // true - this if you want a critical dialog
 
     // lol true flags
     FEATURE_OPEN_URL.apply(this, true);
@@ -397,7 +404,7 @@ class Project extends HXProject
     FEATURE_MODS_ENABLING.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_CRASH_DIALOG.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_GAMEJOLT_CLIENT.apply(this, getPlatform(PlatformType.DESKTOP));
-    FEATURE_DISCORD_RPC.apply(this, getPlatform(PlatformType.DESKTOP));
+    FEATURE_DISCORD_RPC.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('neko'));
     FEATURE_CHECKING_UPDATE.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_VIDEO_PLAYBACK.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('hl') && !FEATURE_32_BITS.isEnabled(this));
 
@@ -505,7 +512,7 @@ class Project extends HXProject
    */
   function configureOutputDir()
   {
-    final dir = 'export/${this.debug ? 'debug' : (FEATURE_32_BITS.isEnabled(this) ? '32bits' : 'release')}/';
+    final dir = 'export/${this.debug ? 'debug' : (FEATURE_32_BITS.isEnabled(this) ? '32bits' : 'release')}/${getTarget(Platform.MAC) ? 'macos/' : (getTarget(Platform.LINUX) ? 'linux/' : '')}';
     info('\nOutput directory: ${dir}');
     this.app.path = dir;
   }
@@ -585,6 +592,10 @@ class Project extends HXProject
     }
 
 		addAssetPath("project/export", "", "default", ["*"], exclude, willEmbed);
+
+    if (getTarget(Platform.WINDOWS))
+      addAssetPath("project/windows", "", "default", ["*"], exclude, willEmbed);
+
     addAsset("LICENSE", 'license.md', "default", false);
   }
 
