@@ -1,5 +1,6 @@
 package engine.ui.debug;
 
+import engine.types.ListData;
 import tempo.ui.TempoUIList;
 import lime.graphics.Image;
 import funkin.ui.menus.TitleState;
@@ -8,6 +9,9 @@ import tempo.TempoSprite;
 
 class ChartEditorState extends flixel.FlxState
 {
+	public static var instance(get, never):ChartEditorState;
+	static var _instance:Null<ChartEditorState> = null;
+
 	var file_listButton:TempoUIListButton;
 	var edit_listButton:TempoUIListButton;
 	var view_listButton:TempoUIListButton;
@@ -17,10 +21,18 @@ class ChartEditorState extends flixel.FlxState
 
 	var file_listBox:TempoUIList;
 
+	var listButtons:Array<TempoUIListButton> = [];
+	var listBoxes:Array<TempoUIList> = [];
+
 	var camEditor:FlxCamera;
 	var camHUD:FlxCamera;
 	var camWindow:FlxCamera;
 	var camMenu:FlxCamera;
+
+	public function new():Void
+	{
+		super();
+	}
 
 	override function create():Void
 	{
@@ -50,100 +62,115 @@ class ChartEditorState extends flixel.FlxState
 			FlxG.switchState(() -> new TitleState());
 		}
 
-		if (file_listButton.bg.alpha >= 1)
-			file_listBox.visible = true;
-		else
-			file_listBox.visible = false;
+		if (listButtons.length != 0 && listBoxes.length != 0)
+		{
+			for (i in 0...listButtons.length)
+			{
+				if (listButtons[i].bg.alpha >= 1)
+					listBoxes[i].visible = true;
+				else
+					listBoxes[i].visible = false;
+			}
+		}
+
+		// if (file_listButton.bg.alpha >= 1)
+		//	file_listBox.visible = true;
+		// else
+		//	file_listBox.visible = false;
 
 		super.update(elapsed);
 	}
 
 	function addListButton():Void
 	{
-		file_listButton = new TempoUIListButton(5, 'File');
-		file_listButton.cameras = [camHUD];
-		add(file_listButton);
+		final fileData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.file.json')));
+		final editData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.edit.json')));
+		final audioData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.audio.json')));
+		final viewData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.view.json')));
+		final toolsData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.tools.json')));
+		final pluginsData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.plugins.json')));
+		final helpData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.help.json')));
 
-		file_listBox = new TempoUIList(file_listButton.bg.x, getListY(file_listButton), [
-			{text: "New Chart...", bind: "CTRL+N"},
-			{text: "Open Chart...", bind: "CTRL+O"},
-			{text: "Open Recent"},
-			null,
-			{text: "Save", bind: "CTRL+S"},
-			{text: "Save as...", bind: "CTRL+SHIFT+S"},
-			null,
-			{text: "Import"},
-			{text: "Export"},
-			null,
-			{text: "Exit", bind: "CTRL+F4"}
-		]);
-		file_listBox.cameras = [camHUD];
-		file_listBox.visible = false;
-		add(file_listBox);
+		listButtons.push(new TempoUIListButton(5, "File"));
+		listBoxes.push(new TempoUIList(listButtons[0].bg.x, getListY(listButtons[0]), fileData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[0]) + 1, "Edit"));
+		listBoxes.push(new TempoUIList(listButtons[1].bg.x, getListY(listButtons[1]), editData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[1]) + 1, "Audio"));
+		listBoxes.push(new TempoUIList(listButtons[2].bg.x, getListY(listButtons[2]), audioData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[2]) + 1, "View"));
+		listBoxes.push(new TempoUIList(listButtons[3].bg.x, getListY(listButtons[3]), viewData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[3]) + 1, "Tools"));
+		listBoxes.push(new TempoUIList(listButtons[4].bg.x, getListY(listButtons[4]), toolsData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[4]) + 1, "Plugins"));
+		listBoxes.push(new TempoUIList(listButtons[5].bg.x, getListY(listButtons[5]), pluginsData.data));
+		listButtons.push(new TempoUIListButton(getListX(listButtons[5]) + 1, "Help"));
+		listBoxes.push(new TempoUIList(listButtons[6].bg.x, getListY(listButtons[6]), helpData.data));
 
-		edit_listButton = new TempoUIListButton(getListX(file_listButton), 'Edit');
-		edit_listButton.cameras = [camHUD];
-		add(edit_listButton);
-
-		view_listButton = new TempoUIListButton(getListX(edit_listButton), 'View');
-		view_listButton.cameras = [camHUD];
-		add(view_listButton);
-
-		audio_listButton = new TempoUIListButton(getListX(view_listButton), 'Audio');
-		audio_listButton.cameras = [camHUD];
-		add(audio_listButton);
-
-		tools_listButton = new TempoUIListButton(getListX(audio_listButton), 'Tools');
-		tools_listButton.cameras = [camHUD];
-		add(tools_listButton);
-
-		help_listButton = new TempoUIListButton(getListX(tools_listButton), 'Help');
-		help_listButton.cameras = [camHUD];
-		add(help_listButton);
-
-		file_listButton.others = [
-			edit_listButton,
-			view_listButton,
-			audio_listButton,
-			tools_listButton,
-			help_listButton
+		listButtons[0].others = [
+			listButtons[1],
+			listButtons[2],
+			listButtons[3],
+			listButtons[4],
+			listButtons[5],
+			listButtons[6]
 		];
-		edit_listButton.others = [
-			file_listButton,
-			view_listButton,
-			audio_listButton,
-			tools_listButton,
-			help_listButton
+		listButtons[1].others = [
+			listButtons[0],
+			listButtons[2],
+			listButtons[3],
+			listButtons[4],
+			listButtons[5],
+			listButtons[6]
+		];
+		listButtons[2].others = [
+			listButtons[1],
+			listButtons[0],
+			listButtons[3],
+			listButtons[4],
+			listButtons[5],
+			listButtons[6]
+		];
+		listButtons[3].others = [
+			listButtons[1],
+			listButtons[2],
+			listButtons[0],
+			listButtons[4],
+			listButtons[5],
+			listButtons[6]
+		];
+		listButtons[4].others = [
+			listButtons[1],
+			listButtons[2],
+			listButtons[3],
+			listButtons[0],
+			listButtons[5],
+			listButtons[6]
+		];
+		listButtons[5].others = [
+			listButtons[1],
+			listButtons[2],
+			listButtons[3],
+			listButtons[4],
+			listButtons[0],
+			listButtons[6]
+		];
+		listButtons[6].others = [
+			listButtons[1],
+			listButtons[2],
+			listButtons[3],
+			listButtons[4],
+			listButtons[5],
+			listButtons[0]
 		];
 
-		view_listButton.others = [
-			file_listButton,
-			edit_listButton,
-			audio_listButton,
-			tools_listButton,
-			help_listButton
-		];
-		audio_listButton.others = [
-			file_listButton,
-			edit_listButton,
-			view_listButton,
-			tools_listButton,
-			help_listButton
-		];
-		tools_listButton.others = [
-			file_listButton,
-			edit_listButton,
-			view_listButton,
-			audio_listButton,
-			help_listButton
-		];
-		help_listButton.others = [
-			file_listButton,
-			edit_listButton,
-			view_listButton,
-			audio_listButton,
-			tools_listButton
-		];
+		for (i in 0...listButtons.length)
+		{
+			listButtons[i].cameras = [camHUD];
+			add(listButtons[i]);
+
+			listBoxes[i].cameras = [camHUD];
+			add(listBoxes[i]);
+		}
 	}
 
 	function getListX(prev:TempoUIListButton):Float
@@ -206,5 +233,14 @@ class ChartEditorState extends flixel.FlxState
 			smallImageText: "BF (Week 6)",
 			smallImageKey: "bf-pixel"
 		});
+	}
+
+	static function get_instance():ChartEditorState
+	{
+		if (ChartEditorState._instance == null)
+			_instance = new ChartEditorState();
+		if (ChartEditorState._instance == null)
+			throw "Could not initialize singleton ChartEditorState";
+		return ChartEditorState._instance;
 	}
 }

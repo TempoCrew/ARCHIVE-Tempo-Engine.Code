@@ -1,5 +1,6 @@
 package funkin.ui.menus;
 
+import haxe.Serializer;
 import flixel.FlxState;
 import engine.ui.debug.*;
 
@@ -30,6 +31,18 @@ class TitleState extends FlxState
 			FlxG.switchState(new GameJoltState());
 		else if (TempoInput.keyJustPressed.F5)
 			FlxG.state.openSubState(new FreeplaySubState());
+		else if (TempoInput.keyJustPressed.R)
+		{
+			GameJoltClient.instance.fetchData('data_test', true);
+		}
+		else if (TempoInput.keyJustPressed.E)
+			GameJoltClient.instance.removeData('test_key', false);
+		else if (TempoInput.keyJustPressed.W)
+			GameJoltClient.instance.setData('flixel_save', Serializer.run(FlxG.save.data), true);
+		else if (TempoInput.keyJustPressed.ALT)
+		{
+			GameJoltClient.instance.getKeysData(true);
+		}
 
 		super.update(elapsed);
 	}

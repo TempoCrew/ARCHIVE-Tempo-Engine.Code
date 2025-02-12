@@ -164,7 +164,7 @@ class GameJoltClient
 		trRequest.onError = constErr;
 		trRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		trRequest.send();
 	}
@@ -176,7 +176,7 @@ class GameJoltClient
 		trRequest.onError = constErr;
 		trRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		trRequest.send();
 	}
@@ -188,7 +188,7 @@ class GameJoltClient
 		trRequest.onError = constErr;
 		trRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		trRequest.send();
 	}
@@ -200,7 +200,7 @@ class GameJoltClient
 		scRequest.onError = constErr;
 		scRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		scRequest.send();
 	}
@@ -212,7 +212,7 @@ class GameJoltClient
 		scRequest.onError = constErr;
 		scRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		scRequest.send();
 	}
@@ -224,7 +224,7 @@ class GameJoltClient
 		scRequest.onError = constErr;
 		scRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.scores == null ? "N/A" : Std.string(res.scores))} / ${res.rank == null ? 'N/A' : Std.string(res.rank)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		scRequest.send();
 
@@ -238,7 +238,7 @@ class GameJoltClient
 		scRequest.onError = constErr;
 		scRequest.onComplete = (res:Response) ->
 		{
-			trace('Completed! ($ID ${(res.scores == null ? "N/A" : Std.string(res.scores))} / ${res.rank == null ? 'N/A' : Std.string(res.rank)})');
+			trace('Completed! ($ID ${Std.string(res)})');
 		};
 		scRequest.send();
 	}
@@ -250,19 +250,22 @@ class GameJoltClient
 		daRequ.onError = constErr;
 		daRequ.onComplete = (res:Response) ->
 		{
-			trace('Completed! (${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! (${Std.string(res)})');
 		};
 		daRequ.send();
 	}
 
-	public function fetchData(key:String, isPrivate:Bool = true):Void
+	var _lastData:String;
+
+	public function fetchData(key:String, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
 		var daRequ:Request = new Request(DATA_FETCH(key, isPrivate));
 		daRequ.onProgress = constProgress;
 		daRequ.onError = constErr;
 		daRequ.onComplete = (res:Response) ->
 		{
-			trace('Completed! (${(res.message == null ? "N/A" : res.message)})');
+			onComplete(res);
+			trace('Completed! (${Std.string(res)})');
 		};
 		daRequ.send();
 	}
@@ -274,7 +277,17 @@ class GameJoltClient
 		daRequ.onError = constErr;
 		daRequ.onComplete = (res:Response) ->
 		{
-			trace('Completed! (${(res.message == null ? "N/A" : res.message)})');
+			var jsonD:Array<Dynamic> = [];
+			for (i in 0...res.keys.length)
+			{
+				fetchData(res.keys[i].key, isPrivate, (res2:Response) ->
+				{
+					jsonD.push({key: res.keys[i].key, data: res2.data});
+				});
+			}
+
+			FileUtil.createTJSON('./Resource/gj_cloud.dat', {cloud: jsonD});
+			trace('Completed! (${Std.string(jsonD)})');
 		};
 		daRequ.send();
 	}
@@ -286,7 +299,7 @@ class GameJoltClient
 		daRequ.onError = constErr;
 		daRequ.onComplete = (res:Response) ->
 		{
-			trace('Completed! (${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! (${Std.string(res)})');
 		};
 		daRequ.send();
 	}
@@ -298,7 +311,7 @@ class GameJoltClient
 		daRequ.onError = constErr;
 		daRequ.onComplete = (res:Response) ->
 		{
-			trace('Completed! (${(res.message == null ? "N/A" : res.message)})');
+			trace('Completed! (${Std.string(res)})');
 		};
 		daRequ.send();
 	}
@@ -314,27 +327,21 @@ class GameJoltClient
 		{
 			FileUtil.createTJSON('./Resource/gj_user.dat', res);
 
+			print("Connected! User - " + getUser(res).username + " [" + getUser(res).id + "]");
+
+			getKeysData();
+
 			if (getUser(res).avatar_url != null)
 			{
 				urlL = new URLLoader();
 				urlL.dataFormat = BINARY;
-				urlL.addEventListener(Event.COMPLETE, completedImage);
+				urlL.addEventListener(Event.COMPLETE, onCompleteImage);
 				if (getUser(res).avatar_url.startsWith('https://secure.gravatar.com/'))
-				{
 					urlL.load(new URLRequest('https://s.gjcdn.net/img/no-avatar-3.png'));
-
-					#if debug
-					trace('no-avatar-url');
-					#end
-				}
 				else
-				{
 					urlL.load(new URLRequest(getUser(res).avatar_url));
 
-					#if debug
-					trace(getUser(res).avatar_url);
-					#end
-				}
+				print("User Avatar Exists!");
 			}
 		};
 		avatRequest.send();
@@ -360,7 +367,7 @@ class GameJoltClient
 		print('ERROR: ' + msg);
 	}
 
-	function completedImage(e:Event):Void
+	function onCompleteImage(e:Event):Void
 	{
 		var byteA:ByteArray;
 		if ((urlL.data is ByteArrayData))

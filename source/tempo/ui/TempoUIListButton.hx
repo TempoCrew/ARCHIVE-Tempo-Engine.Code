@@ -69,7 +69,7 @@ class TempoUIListButton extends FlxGroup
 			cursorClicked = false;
 			bg.alpha = .6;
 		}
-		else if (!overlaped && cursorClicked && TempoInput.cursorJustPressed)
+		else if (!overlaped && cursorClicked && TempoInput.cursorJustReleased)
 		{
 			cursorClicked = false;
 			cursorOverlaped = false;
@@ -80,6 +80,9 @@ class TempoUIListButton extends FlxGroup
 		{
 			for (other in others)
 			{
+				if (other == this)
+					others.remove(other);
+
 				if (!overlaped && TempoInput.cursorOverlaps(other, other.cameras[other.cameras.length - 1]) && cursorClicked)
 				{
 					other.bg.alpha = 1.0;

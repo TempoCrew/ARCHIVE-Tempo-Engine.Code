@@ -14,6 +14,8 @@ class TempoUIList extends FlxGroup
 
 	public var addHeight:Float = 0;
 
+	public var types:Array<TempoUIListType> = [];
+
 	public function new(x:Float, y:Float, data:Array<TempoUIListData>):Void
 	{
 		super();
@@ -25,17 +27,26 @@ class TempoUIList extends FlxGroup
 		{
 			if (data[i] != null)
 			{
-				var text:FlxText = new FlxText(x + 5, 0, 500, data[i].text, 16);
+				var text:FlxText = new FlxText(x + 5, 0, 500, (data[i].text == null ? "Button" : data[i].text), 16);
 				text.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, LEFT, OUTLINE);
 				text.scrollFactor.set();
 				text.fieldWidth = text.textField.textWidth + 6.5;
+
+				this.types.push(data[i].type);
 
 				var bind:FlxText = null;
 
 				if (data[i].bind != null)
 				{
 					bind = new FlxText(x + 5, 0, 500, data[i].bind, 16);
-					bind.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, OUTLINE);
+					bind.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, OUTLINE_FAST);
+					bind.scrollFactor.set();
+					bind.fieldWidth = bind.textField.textWidth + 6.5;
+				}
+				else if (data[i].type == HOVER)
+				{
+					bind = new FlxText(x + 5, 0, 500, ">", 16);
+					bind.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, OUTLINE_FAST);
 					bind.scrollFactor.set();
 					bind.fieldWidth = bind.textField.textWidth + 6.5;
 				}
@@ -45,9 +56,12 @@ class TempoUIList extends FlxGroup
 				bg.y += (bg.height * (i - addHeight)) + addHeight;
 				bg.scrollFactor.set();
 
-				text.y = bg.y + 4;
+				text.y = bg.y + 2.5;
 				if (bind != null)
-					bind.y = bg.y + 4;
+				{
+					bind.x = (text.x + text.textField.textWidth) + TEXT_BIND_POS;
+					bind.y = bg.y + 2.5;
+				}
 
 				listBG.push(bg);
 				listText.push(text);
@@ -78,18 +92,14 @@ class TempoUIList extends FlxGroup
 			{
 				for (bind in listBind)
 				{
-					add(bind);
-
 					if ((bind.textField.textWidth + text.textField.textWidth + TEXT_BIND_POS) >= maxWidth)
 						maxWidth = (bind.textField.textWidth + text.textField.textWidth + TEXT_BIND_POS);
+
+					bind.setPosition(text.x + (maxWidth - bind.fieldWidth), bind.y);
+					bind.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.WHITE, RIGHT, OUTLINE_FAST);
+					add(bind);
 				}
 			}
-		}
-
-		for (bind in listBind)
-		{
-			bind.x = maxWidth - bind.textField.textWidth;
-			bind.alignment = RIGHT;
 		}
 
 		for (bg in listBG)
@@ -97,7 +107,7 @@ class TempoUIList extends FlxGroup
 			bg.makeRoundRect({
 				width: maxWidth + 5,
 				height: bg.height,
-				color: Constants.COLOR_EDITOR_LIST_BUTTON,
+				color: Constants.COLOR_EDITOR_LIST_BOX,
 				roundRect: {elWidth: 10, elHeight: 10}
 			});
 
@@ -107,7 +117,7 @@ class TempoUIList extends FlxGroup
 		bg.makeRoundRect({
 			width: maxWidth + 10,
 			height: maxHeight + 2.5 + (addHeight != 0 ? addHeight + 2.5 : 0),
-			color: Constants.COLOR_EDITOR_LIST_BOX,
+			color: Constants.COLOR_EDITOR_LIST_BUTTON,
 			roundRect: {elWidth: 10, elHeight: 10}
 		});
 
@@ -140,14 +150,32 @@ class TempoUIList extends FlxGroup
 	{
 		if (visible)
 		{
-			for (abg in listBG)
+			for (i in 0...listBG.length)
 			{
-				var overlaped:Bool = TempoInput.cursorOverlaps(abg, this.cameras[this.cameras.length - 1]);
+				var overlaped:Bool = TempoInput.cursorOverlaps(listBG[i], this.cameras[this.cameras.length - 1]);
 
 				if (overlaped)
-					abg.alpha = .6;
+				{
+					listBG[i].alpha = .6;
+
+					if (types[i] == HOVER)
+					{
+						// nothing, for now
+					}
+					else if (types[i] == BUTTON)
+					{
+						if (TempoInput.cursorJustReleased)
+						{
+							listBG[i].alpha = .25;
+							trace('clicked!');
+							visible = false;
+						}
+						else if (TempoInput.cursorPressed)
+							listBG[i].alpha = 1;
+					}
+				}
 				else
-					abg.alpha = .001;
+					listBG[i].alpha = .25;
 			}
 		}
 
@@ -157,7 +185,21 @@ class TempoUIList extends FlxGroup
 
 typedef TempoUIListData =
 {
-	text:String,
+	tag:String,
+	type:TempoUIListType,
+	?text:String,
 	?bind:String,
-	?onClick:TempoUIList->Void
+	?radio:Array<String>,
+	?hoverData:Array<TempoUIListData>
+}
+
+enum abstract TempoUIListType(String) from String to String
+{
+	var BUTTON:String = "_button";
+	var HOVER:String = "_hover";
+	var DROPDOWN:String = "_dropdown";
+	var STEPPER:String = "_stepper";
+	var SLIDER:String = "_slider";
+	var RADIO:String = "_radio";
+	var CHECKBOX:String = "_checkbox";
 }

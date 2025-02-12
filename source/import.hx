@@ -9,6 +9,7 @@ import engine.backend.api.GameJoltClient;
 import engine.backend.Paths;
 import engine.backend.util.MathUtil;
 import engine.Constants;
+import tjson.TJSON;
 // Sys
 #if sys
 import sys.io.File;
@@ -16,6 +17,9 @@ import sys.FileSystem;
 import sys.thread.Mutex;
 import sys.thread.Thread;
 #end
+// Haxe
+import haxe.Json;
+import haxe.Exception;
 // Tempo
 import tempo.util.TempoSave;
 import tempo.TempoInput;
