@@ -5,6 +5,9 @@ import openfl.net.SharedObjectFlushStatus;
 import openfl.errors.Error;
 import openfl.net.SharedObject;
 
+//Want to sync with GameJoltClient
+import engine.backend.api.GameJoltClient;
+
 @:allow(tempo.util.TempoSharedObject)
 class TempoSave implements IFlxDestroyable
 {
