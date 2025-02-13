@@ -265,6 +265,8 @@ class TempoPreloader extends flixel.system.FlxBasePreloader
 		updateGraphics(loadPercent, elapsed);
 
 		lastElapsed = elapsed;
+
+. super.update(percent);
 	}
 
 	#if TOUCH_HERE_TO_PLAY
