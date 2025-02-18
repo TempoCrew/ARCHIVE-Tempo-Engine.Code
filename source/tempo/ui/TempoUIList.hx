@@ -15,10 +15,14 @@ class TempoUIList extends FlxGroup
 	public var addHeight:Float = 0;
 
 	public var types:Array<TempoUIListType> = [];
+	public var data:Array<TempoUIListData> = [];
+	public var addList:Array<TempoUIList> = [];
 
 	public function new(x:Float, y:Float, data:Array<TempoUIListData>):Void
 	{
 		super();
+
+		this.data = data;
 
 		bg = new TempoSprite(x, y);
 		add(bg);
@@ -55,6 +59,11 @@ class TempoUIList extends FlxGroup
 				bg.makeGraphic(1, Math.floor(text.textField.textHeight + 5), FlxColor.TRANSPARENT);
 				bg.y += (bg.height * (i - addHeight)) + addHeight;
 				bg.scrollFactor.set();
+
+				if (data[i].type == HOVER)
+				{
+					addList.push(new TempoUIList(x, bg.y, data[i].hoverData));
+				}
 
 				text.y = bg.y + 2.5;
 				if (bind != null)
@@ -100,6 +109,15 @@ class TempoUIList extends FlxGroup
 					add(bind);
 				}
 			}
+		}
+
+		for (list in addList)
+		{
+			final oldList:TempoUIList = list;
+
+			list = new TempoUIList(oldList.bg.x + maxWidth, oldList.bg.y, oldList.data);
+			list.visible = false;
+			add(list);
 		}
 
 		for (bg in listBG)
@@ -161,6 +179,7 @@ class TempoUIList extends FlxGroup
 					if (types[i] == HOVER)
 					{
 						// nothing, for now
+						addList[i].visible = true;
 					}
 					else if (types[i] == BUTTON)
 					{

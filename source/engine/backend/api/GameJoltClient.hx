@@ -34,22 +34,21 @@ class GameJoltClient
 		Api.gameID = GameJoltMacro.getData().ID;
 		Api.gameKey = GameJoltMacro.getData().Key;
 
-		if ((FlxG.save.data.gjUser == null || FlxG.save.data.gjUser == "")
-			&& (FlxG.save.data.gjToken == null || FlxG.save.data.gjToken == ""))
+		if ((Save.gjData.userName == null || Save.gjData.userName == "") && (Save.gjData.userToken == null || Save.gjData.userToken == ""))
 		{
 			print('User data not exists!');
 			return;
 		}
 
-		Api.userName = FlxG.save.data.gjUser;
-		Api.userToken = FlxG.save.data.gjToken;
+		Api.userName = Save.gjData.userName;
+		Api.userToken = Save.gjData.userToken;
 	}
 
 	static var pingTimer:FlxTimer;
 
 	var urlL:URLLoader;
 
-	public function initialize(?printAllowed:Bool = true):Void
+	public function initialize(?printAllowed:Bool = true, ?onComplete:Response->Void):Void
 	{
 		if (Api.gameID != 0 && Api.gameKey != "")
 		{
@@ -65,6 +64,8 @@ class GameJoltClient
 				initRequest.onError = constErr;
 				initRequest.onComplete = (res:Response) ->
 				{
+					if (onComplete != null)
+						onComplete(res);
 					openSession();
 
 					Lib.application.onExit.add((_) ->
@@ -77,7 +78,7 @@ class GameJoltClient
 		}
 	}
 
-	public function login(name:String, token:String):Void
+	public function login(name:String, token:String, ?onComplete:Response->Void):Void
 	{
 		#if debug
 		print('User - $name ($token)');
@@ -86,11 +87,11 @@ class GameJoltClient
 		Api.userName = name;
 		Api.userToken = token;
 
-		FlxG.save.data.gjUser = name;
-		FlxG.save.data.gjToken = token;
-		FlxG.save.flush();
+		Save.gjData.userName = name;
+		Save.gjData.userToken = token;
+		Save.save(GAMEJOLT);
 
-		initialize(false);
+		initialize(false, onComplete);
 	}
 
 	public function logout():Void
@@ -100,16 +101,16 @@ class GameJoltClient
 			Api.userName = "";
 			Api.userToken = "";
 
-			FlxG.save.data.gjUser = null;
-			FlxG.save.data.gjToken = null;
-			FlxG.save.flush();
+			Save.gjData.userName = null;
+			Save.gjData.userToken = null;
+			Save.save(GAMEJOLT);
 
 			if (FlxG.state != null)
 			{
 				FlxG.state.persistentUpdate = false;
 				FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () -> {
 					#if cpp
-					GJSystools.restart();
+					new GJSystools();
 					#else
 					System.exit(1337);
 					#end
@@ -135,6 +136,7 @@ class GameJoltClient
 	{
 		if (pingTimer != null)
 			pingTimer.cancel();
+
 		sessionOpened = true;
 		sessionPinged = false;
 
@@ -318,11 +320,11 @@ class GameJoltClient
 
 	function checkUserData():Void
 	{
-		if (FlxG.save.data.gjUser == null || FlxG.save.data.gjUser == "")
+		if (Save.gjData.userName == null || Save.gjData.userName == "")
 			return;
 
 		#if sys
-		var avatRequest:Request = new Request(USER_FETCH(['${FlxG.save.data.gjUser}']));
+		var avatRequest:Request = new Request(USER_FETCH(['${Save.gjData.userName}']));
 		avatRequest.onComplete = (res:Response) ->
 		{
 			FileUtil.createTJSON('./Resource/gj_user.dat', res);

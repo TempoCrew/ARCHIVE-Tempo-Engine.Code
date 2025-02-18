@@ -2,3 +2,7 @@
 [submodule "assets"]
     path = assets
     url = https://github.com/Mr7K-X/FNF-Tempo-Engine.Assets.git
+
+[submodule "art"]
+    path = art
+    url = https://github.com/Mr7k-X/FNF-Tempo-Engine.Art.git

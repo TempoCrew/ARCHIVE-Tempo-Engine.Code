@@ -7,13 +7,12 @@ class InitState extends flixel.FlxState
 {
 	override function create():Void
 	{
+		Save.load();
+
 		super.create();
 
-		if (FlxG.save.data.mute != null)
-			FlxG.sound.muted = FlxG.save.data.mute;
-
-		if (FlxG.save.data.volume != null)
-			FlxG.sound.volume = FlxG.save.data.volume;
+		FlxG.sound.muted = Save.otherData.muted;
+		FlxG.sound.volume = Save.otherData.volume;
 
 		#if FEATURE_DISCORD_RPC
 		DiscordClient.prepare();

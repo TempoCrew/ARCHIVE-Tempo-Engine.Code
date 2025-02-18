@@ -92,19 +92,26 @@ class ChartEditorState extends flixel.FlxState
 		final helpData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.help.json')));
 
 		listButtons.push(new TempoUIListButton(5, "File"));
-		listBoxes.push(new TempoUIList(listButtons[0].bg.x, getListY(listButtons[0]), fileData.data));
+		listBoxes.push(new TempoUIList(listButtons[0].bg.x, getListY(listButtons[0]), [
+			{
+				type: HOVER,
+				text: "Test Hover",
+				tag: "Test",
+				hoverData: [{type: BUTTON, text: "GOVNO", tag: "govno"}]
+			}
+		]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[0]) + 1, "Edit"));
-		listBoxes.push(new TempoUIList(listButtons[1].bg.x, getListY(listButtons[1]), editData.data));
+		listBoxes.push(new TempoUIList(listButtons[1].bg.x, getListY(listButtons[1]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[1]) + 1, "Audio"));
-		listBoxes.push(new TempoUIList(listButtons[2].bg.x, getListY(listButtons[2]), audioData.data));
+		listBoxes.push(new TempoUIList(listButtons[2].bg.x, getListY(listButtons[2]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[2]) + 1, "View"));
-		listBoxes.push(new TempoUIList(listButtons[3].bg.x, getListY(listButtons[3]), viewData.data));
+		listBoxes.push(new TempoUIList(listButtons[3].bg.x, getListY(listButtons[3]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[3]) + 1, "Tools"));
-		listBoxes.push(new TempoUIList(listButtons[4].bg.x, getListY(listButtons[4]), toolsData.data));
+		listBoxes.push(new TempoUIList(listButtons[4].bg.x, getListY(listButtons[4]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[4]) + 1, "Plugins"));
-		listBoxes.push(new TempoUIList(listButtons[5].bg.x, getListY(listButtons[5]), pluginsData.data));
+		listBoxes.push(new TempoUIList(listButtons[5].bg.x, getListY(listButtons[5]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 		listButtons.push(new TempoUIListButton(getListX(listButtons[5]) + 1, "Help"));
-		listBoxes.push(new TempoUIList(listButtons[6].bg.x, getListY(listButtons[6]), helpData.data));
+		listBoxes.push(new TempoUIList(listButtons[6].bg.x, getListY(listButtons[6]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
 
 		listButtons[0].others = [
 			listButtons[1],
