@@ -347,6 +347,10 @@ class Save
 	 */
 	public static function load(?value:SaveTag = null)
 	{
+		#if FEATURE_GAMEJOLT_DATA_STORAGE
+		GameJoltClient.instance.syncSaveWithCloud();
+		#end
+
 		if (value == null)
 		{
 			_load_main();
@@ -411,6 +415,10 @@ class Save
 					_save_stuff();
 			}
 		}
+
+		#if FEATURE_GAMEJOLT_DATA_STORAGE
+		GameJoltClient.instance.syncCloudFiles();
+		#end
 	}
 
 	/**

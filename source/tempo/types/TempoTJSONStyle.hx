@@ -1,7 +1,7 @@
-package tempo.tjson;
+package tempo.types;
 
 #if tjson
-class TempoStyle implements tjson.interfaces.EncodeStyle
+class TempoTJSONStyle implements tjson.interfaces.EncodeStyle
 {
 	public var tab(default, null):String;
 
@@ -38,5 +38,5 @@ class TempoStyle implements tjson.interfaces.EncodeStyle
 		return (depth < charTimesNCache.length ? charTimesNCache[depth] : charTimesNCache[depth] = charTimesN(depth - 1) + tab);
 }
 #else
-typedef TempoStyle = {}
+typedef TempoTJSONStyle = {}
 #end

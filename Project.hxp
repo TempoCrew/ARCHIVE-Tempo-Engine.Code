@@ -143,6 +143,14 @@ class Project extends HXProject
   static final FEATURE_GAMEPAD_ALLOWED:FeatureFlag = "FEATURE_GAMEPAD_ALLOWED";
 
   /**
+   * `-DFEATURE_GAMEJOLT_DATA_STORAGE`
+   * If this flag is enabled, a game saves will sync with gamejolt data cloud storage!
+   *
+   * (NOW THIS IN EXPERIMENTAL)
+   */
+  static final FEATURE_GAMEJOLT_DATA_STORAGE:FeatureFlag = "FEATURE_GAMEJOLT_DATA_STORAGE";
+
+  /**
    * `-DFFEATURE_GAMEJOLT_CLIENT`
    * If this flag is enabled, the game mods will enabled.
    */
@@ -411,6 +419,7 @@ class Project extends HXProject
     // DEBUG AND ETC. FEATURE FLAGS
     FEATURE_DEBUG_FUNCTIONS.apply(this, this.debug || GITHUB_BUILD.isEnabled(this));
     FEATURE_REDIRECT_ASSETS.apply(this, this.debug && FEATURE_MODS_ENABLING.isEnabled(this));
+    FEATURE_GAMEJOLT_DATA_STORAGE.apply(this, this.debug);
     FEATURE_GAMEPAD_ALLOWED.apply(this, this.debug);
 
     // WEB FEATURE FLAGS

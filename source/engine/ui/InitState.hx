@@ -7,20 +7,34 @@ class InitState extends flixel.FlxState
 {
 	override function create():Void
 	{
-		Save.load();
+		#if FEATURE_GAMEJOLT_DATA_STORAGE
+		Save.load(GAMEJOLT);
+
+		Sys.sleep(1);
+
+		GameJoltClient.instance.initialize();
+
+		Sys.sleep(1);
+		#end
+
+		new FlxTimer().start(1, (_) ->
+		{
+			Thread.create(() ->
+			{
+				Save.load();
+
+				FlxG.sound.muted = Save.otherData.muted;
+				FlxG.sound.volume = Save.otherData.volume;
+			});
+		});
 
 		super.create();
-
-		FlxG.sound.muted = Save.otherData.muted;
-		FlxG.sound.volume = Save.otherData.volume;
 
 		#if FEATURE_DISCORD_RPC
 		DiscordClient.prepare();
 		#end
 
-		GameJoltClient.instance.initialize();
-
-		new FlxTimer().start(1, (t:FlxTimer) ->
+		new FlxTimer().start(#if FEATURE_GAMEJOLT_DATA_STORAGE 3 #else 1 #end, (t:FlxTimer) ->
 		{
 			t = null;
 
