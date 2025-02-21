@@ -32,17 +32,9 @@ class TitleState extends FlxState
 		else if (TempoInput.keyJustPressed.F5)
 			FlxG.state.openSubState(new FreeplaySubState());
 		else if (TempoInput.keyJustPressed.R)
-		{
-			GameJoltClient.instance.fetchData('data_test', true);
-		}
+			GameJoltClient.instance.syncCloudFiles();
 		else if (TempoInput.keyJustPressed.E)
-			GameJoltClient.instance.removeData('test_key', false);
-		else if (TempoInput.keyJustPressed.W)
-			GameJoltClient.instance.setData('flixel_save', Serializer.run(FlxG.save.data), true);
-		else if (TempoInput.keyJustPressed.ALT)
-		{
-			GameJoltClient.instance.getKeysData(true);
-		}
+			GameJoltClient.instance.syncSaveWithCloud();
 
 		super.update(elapsed);
 	}

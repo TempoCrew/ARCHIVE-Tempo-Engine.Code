@@ -401,6 +401,11 @@ class Constants
 	 */
 	public static final TITLE:String = "Friday Night Funkin'";
 
+	/**
+	 * Discord Rich Presence Client ID.
+	 */
+	public static final DISCORD_CLIENT_ID:String = "1131981056170545334";
+
 	// VERSIONS
 
 	/**
@@ -463,13 +468,29 @@ class Constants
 	 */
 	public static final SCREENSHOT_FOLDER:String = "engine/screenshots";
 
+	#if FEATURE_GAMEJOLT_CLIENT
+	/**
+	 * GameJolt User Avatar image generate path.
+	 */
+	public static final GAMEJOLT_AVATAR_PATH:String = './Resource/gj_user.png';
+
+	/**
+	 * GameJolt User Data text generate path.
+	 */
+	public static final GAMEJOLT_DATA_FILE_PATH:String = './Resource/gj_user.dat';
+
+	/**
+	 * GameJolt User Cloud Data text generate path.
+	 */
+	public static final GAMEJOLT_CLOUD_PATH:String = './Resource/.cloud/';
+	#end
+
 	/**
 	 * User data path.
 	 */
 	public static final USER_DATA_FILE:String = "user.dat";
 
 	// DEFAULT CONSTANTS
-	public static final DEFAULT_DISCORD_CLIENT_ID:String = "1131981056170545334";
 
 	/**
 	 * Number of steps in a beat.

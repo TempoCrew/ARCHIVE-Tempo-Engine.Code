@@ -3,37 +3,19 @@ package engine.backend.api;
 #if (systools && cpp && FEATURE_GAMEJOLT_CLIENT)
 import systools.win.Tools;
 
-typedef FuckInfo =
-{
-	var os:String;
-	var cmds:String;
-	var app:String;
-	var workdir:String;
-}
-
 @:keep
 @:access(engine.backend.api.GameJoltClient)
 class GJSystools
 {
-	static var fuck:FuckInfo = null;
-
-	static function restart():Void
+	public function new():Void
 	{
-		// args fuck
-		fuck = {
-			os: Sys.systemName(),
-			cmds: "Test.hx",
-			app: Sys.programPath(),
-			workdir: Sys.getCwd()
-		};
+		GameJoltClient.print(Sys.programPath());
 
-		GameJoltClient.print(fuck.app);
-
-		final result:Int = Tools.createProcess(fuck.app, fuck.cmds, fuck.workdir, false, false);
+		final result:Int = Tools.createProcess(Sys.programPath(), "GameJoltClient.hx", Sys.getCwd(), false, false);
 		if (result == 0)
 		{
-			GameJoltClient.print('RESTARTING NOW!');
-			Sys.exit(1337);
+			GameJoltClient.print("RESTART SKIBIDI DOP DOP!!");
+			System.exit(1337);
 		}
 		else
 			throw "Fail for restarting the game!";

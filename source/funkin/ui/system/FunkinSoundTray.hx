@@ -95,9 +95,9 @@ class FunkinSoundTray extends flixel.system.ui.FlxSoundTray
 			#if FLX_SAVE
 			if (FlxG.save.isBound)
 			{
-				FlxG.save.data.mute = FlxG.sound.muted;
-				FlxG.save.data.volume = FlxG.sound.volume;
-				FlxG.save.flush();
+				Save.otherData.muted = FlxG.sound.muted;
+				Save.otherData.volume = FlxG.sound.volume;
+				Save.save(STUFF);
 			}
 			#end
 		}

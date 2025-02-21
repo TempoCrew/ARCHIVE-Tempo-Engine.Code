@@ -12,7 +12,7 @@ import Sys.println as Print;
 
 class DiscordClient
 {
-	public static var clientID(default, set):String = Constants.DEFAULT_DISCORD_CLIENT_ID;
+	public static var clientID(default, set):String = Constants.DISCORD_CLIENT_ID;
 	public static var instance(get, never):DiscordClient;
 	static var _instance:Null<DiscordClient> = null;
 	static var initialized:Bool = false;

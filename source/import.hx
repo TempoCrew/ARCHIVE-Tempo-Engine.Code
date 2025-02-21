@@ -8,6 +8,7 @@ import engine.backend.api.GameJoltClient;
 #end
 import engine.backend.Paths;
 import engine.backend.util.MathUtil;
+import engine.data.Save;
 import engine.Constants;
 import tjson.TJSON;
 // Sys
@@ -21,6 +22,7 @@ import sys.thread.Thread;
 import haxe.Json;
 import haxe.Exception;
 // Tempo
+import tempo.TempoSprite;
 import tempo.util.TempoSave;
 import tempo.TempoInput;
 // OpenFL
