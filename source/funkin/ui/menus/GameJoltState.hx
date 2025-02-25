@@ -125,16 +125,17 @@ class GameJoltState extends FlxState
 		}
 		else
 		{
-			var avatar:TempoSprite = new TempoSprite(blank.x + 20, (blankT.y + blankT.height) + 20, GRAPHIC).makeImage({
+			var avatar:TempoSprite = new TempoSprite(blank.x + 25, (blankT.y + blankT.height) + 25, GRAPHIC).makeImage({
 				path: "Resource/gj_user",
 				cache: true
 			});
-			avatar.setGraphicSize(150, 150);
+			avatar.setGraphicSize(125, 125);
 			avatar.updateHitbox();
 			add(avatar);
 
 			final userData = TJSON.parse(File.getContent('./Resource/gj_user.dat')).users[0];
-			var text:FlxText = new FlxText(avatar.x + avatar.width + 5, avatar.y + 5, 500, '${userData.username}', 32);
+			var text:FlxText = new FlxText(avatar.x + avatar.width + 10, avatar.y + 5, 500, '${userData.username.toUpperCase()}', 32);
+			text.setFormat(Paths.font('GameJoltInspired.ttf'), 20, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.fromString('0x7F111F16'));
 			add(text);
 		}
 

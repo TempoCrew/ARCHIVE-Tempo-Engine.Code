@@ -25,19 +25,22 @@ class Constants
 	/**
 	 * Engine [`Discord`](https://discord.gg/) server URL
 	 */
-	public static final DISCORD_SERVER_URL:String = '';
+	public static final DISCORD_SERVER_URL:String = 'https://discord.gg/qzYCuHXxhS';
 
 	#if FEATURE_GAMEJOLT_CLIENT
 	/**
 	 * Engine [`GameJolt`](https://gamejolt.com/) page URL
 	 */
-	public static final GAMEJOLT_URL:String = "https://marazakx.gamejolt.io/tempo";
+	public static final GAMEJOLT_URL:String = "https://gamejolt.com/games/tempo/916558";
 	#end
 
 	/**
-	 * Engine `Update` download URL
+	 * Engine `Git-Update` download URL
 	 */
-	public static final UPDATING_URL:String = "https://github.com/Mr7K-X/FNF-Tempo-Engine/releases"; // NOW IS FOR GITHUB, IN FUTURE THIS CHANGED TO GAMEBANANA/GAMEJOLT
+	public static var GIT_UPDATING_URL(get, never):String;
+
+	static function get_GIT_UPDATING_URL():String
+		return Constants.GITHUB_URL + "/releases";
 
 	// DURATIONS
 
@@ -152,7 +155,7 @@ class Constants
 	/**
 	 * Crashing dialog version
 	 */
-	public static var CRASH_GENERATED_VERSION:String = "0.1.0-beta";
+	public static var CRASH_GENERATED_VERSION:String = "0.1.0";
 
 	/**
 	 * Tempo `lua` scripting version
@@ -491,6 +494,13 @@ class Constants
 	public static final USER_DATA_FILE:String = "user.dat";
 
 	// DEFAULT CONSTANTS
+	#if windows
+	public static final DPI_DIVIDE:Int = 96;
+	#end
+
+	#if desktop
+	public static final ALSOFT_DATA:String = "[general]\nsample=type=float32\nfrequency=48000\nperiod_size=960\nperiods=3\nstereo-mode=speakers\nstereo-encoding=uhj\nhrtf=false\ncf_level=0\nresampler=fast_bsinc24\nfront-stablizer=false\nvolume-adjust=0\noutput-limiter=false\n[decoder]\nhq-mode=false\ndistance-comp=false\nnfc=false";
+	#end
 
 	/**
 	 * Number of steps in a beat.

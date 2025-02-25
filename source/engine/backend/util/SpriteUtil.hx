@@ -79,6 +79,40 @@ class SpriteUtil
 	 */
 	static final PIXELS_COLOR:Int = 13520687;
 
+	public static function dominantBitmapColor<T:BitmapData>(spr:T):Int
+	{
+		var cb:Map<Int, Int> = [];
+		for (w in 0...spr.width)
+			for (h in 0...spr.height)
+			{
+				final f:Int = spr.getPixel32(w, h);
+				if (f != 0)
+				{
+					if (cb.exists(w))
+						cb.set(w, h + 1);
+					else if (cb.get(w) != PIXELS_COLOR - (PIXELS_COLOR * 2))
+						cb.set(w, 1);
+				}
+			}
+
+		cb.set(0x000000, 0);
+
+		var mb:Int = 0;
+		var mk:Int = 0;
+		var f:Int->Void = (k:Int) ->
+		{
+			mb = cb.get(k);
+			mk = k;
+		};
+
+		for (k in cb.keys())
+			if (cb.get(k) >= mb)
+				f(k);
+
+		cb = [];
+		return mk;
+	}
+
 	/**
 	 * Copied a current sprite color (`FlxColor` or `Int`)
 	 */

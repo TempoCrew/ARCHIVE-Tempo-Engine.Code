@@ -5,6 +5,11 @@ import openfl.net.SharedObjectFlushStatus;
 import openfl.errors.Error;
 import openfl.net.SharedObject;
 
+/**
+ * Rewrited `FlxSave` with cool changes.
+ *
+ * @author [Mrzk(X)](https://github.com/Mr7K-X)
+ */
 @:allow(tempo.util.TempoSharedObject)
 class TempoSave implements IFlxDestroyable
 {

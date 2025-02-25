@@ -6,11 +6,28 @@ import engine.backend.api.DiscordClient;
 #if FEATURE_GAMEJOLT_CLIENT
 import engine.backend.api.GameJoltClient;
 #end
+#if FEATURE_HSCRIPT_SCRIPTING
+import tscript.TScript;
+import tscript.backend.*;
+import tscript.base.*;
+#end
+#if FEATURE_LUA_SCRIPTING
+import llua.Lua;
+import llua.LuaJIT;
+import llua.State as LuaState;
+import llua.Buffer as LuaBuffer;
+import llua.Convert as LuaConvert;
+import llua.LuaCallback;
+import llua.LuaL;
+import llua.LuaOpen;
+#end
 import engine.backend.Paths;
 import engine.backend.util.MathUtil;
 import engine.data.Save;
 import engine.Constants;
+#if tjson
 import tjson.TJSON;
+#end
 // Sys
 #if sys
 import sys.io.File;
@@ -23,8 +40,8 @@ import haxe.Json;
 import haxe.Exception;
 // Tempo
 import tempo.TempoSprite;
-import tempo.util.TempoSave;
 import tempo.TempoInput;
+import tempo.util.TempoSave;
 // OpenFL
 import openfl.desktop.Icon;
 import openfl.display.Bitmap;

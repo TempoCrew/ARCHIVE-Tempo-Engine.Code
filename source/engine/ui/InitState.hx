@@ -8,23 +8,19 @@ class InitState extends flixel.FlxState
 	override function create():Void
 	{
 		#if FEATURE_GAMEJOLT_DATA_STORAGE
-		Save.load(GAMEJOLT);
-
-		Sys.sleep(1);
-
-		GameJoltClient.instance.initialize();
-
-		Sys.sleep(1);
-		#end
+		Save.load([GAMEJOLT]);
 
 		new FlxTimer().start(1, (_) ->
 		{
+			GameJoltClient.instance.initialize();
+		});
+		#end
+
+		new FlxTimer().start(2, (_) ->
+		{
 			Thread.create(() ->
 			{
-				Save.load();
-
-				FlxG.sound.muted = Save.otherData.muted;
-				FlxG.sound.volume = Save.otherData.volume;
+				Save.load([MAIN, OPTIONS, INPUT, FLIXEL]);
 			});
 		});
 

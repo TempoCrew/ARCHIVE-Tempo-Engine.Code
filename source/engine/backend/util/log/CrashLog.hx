@@ -43,6 +43,10 @@ class CrashLog
 		DiscordClient.instance.shutdown();
 		#end
 
+		#if FEATURE_GAMEJOLT_CLIENT
+		GameJoltClient.instance.stopSession();
+		#end
+
 		try
 		{
 			standardSignal.dispatch(CrashReference.generateMsg(e));
@@ -74,6 +78,10 @@ class CrashLog
 	{
 		#if FEATURE_DISCORD_RPC
 		DiscordClient.instance.shutdown();
+		#end
+
+		#if FEATURE_GAMEJOLT_CLIENT
+		GameJoltClient.instance.stopSession();
 		#end
 
 		try
@@ -151,12 +159,11 @@ private class CrashReference
 	{
 		#if windows
 		final appName:String = (openfl.Lib.application.meta.get('file') != null ? openfl.Lib.application.meta.get('file') : 'Tempo Engine') + ".exe";
-		final parentDir:String = Sys.programPath().substr(0, Sys.programPath().length - appName.length);
 
 		trace(appName);
-		trace(parentDir);
+		trace(Sys.getCwd());
 
-		Sys.command("cd " + parentDir);
+		Sys.command("cd " + Sys.getCwd());
 
 		try
 			Sys.command('start', [

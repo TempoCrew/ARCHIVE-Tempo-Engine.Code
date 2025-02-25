@@ -1,7 +1,7 @@
 package engine.data;
 
-import flixel.util.FlxSave;
-import engine.helpers.SaveHelpers;
+import engine.backend.util.SysUtil;
+import engine.types.SaveTag;
 import tempo.util.TempoSave;
 
 // you can write here custom save variables
@@ -11,22 +11,24 @@ import tempo.util.TempoSave;
 	/**
 	 * Level score (1 - level name, 2 - score)
 	 */
-	public var levelScore:Map<String, Int> = new Map<String, Int>();
+	public var levelData:Map<String,
+		{
+			score:Int,
+			accuracy:Float,
+			rating:String,
+			ratingFC:String
+		}> = [];
 
 	/**
-	 * Song score (1 - song name, 2 - score)
+	 * Song Map Data
 	 */
-	public var songScore:Map<String, Int> = new Map<String, Int>();
-
-	/**
-	 * Song accuracy (1 - song name, 2 - accuracy)
-	 */
-	public var songAccuracy:Map<String, Float> = new Map<String, Float>();
-
-	/**
-	 * Song rating (1 - song name, 2 - rating)
-	 */
-	public var songRating:Map<String, String> = new Map<String, String>();
+	public var songData:Map<String,
+		{
+			score:Int,
+			accuracy:Float,
+			rating:String,
+			ratingFC:String
+		}> = [];
 }
 
 // and here custom options save variables
@@ -124,8 +126,8 @@ import tempo.util.TempoSave;
 	public var enemyStrums:Bool = true;
 }
 
-// here a other saves
-@:structInit class OtherVariables
+// here a flixel saves
+@:structInit class FlixelVariables
 {
 	/**
 	 * In starting (and not only for that), game will full-screen'ed?
@@ -152,7 +154,6 @@ import tempo.util.TempoSave;
 }
 #end
 
-@:access(flixel.util.FlxSave)
 @:access(tempo.util.TempoSave)
 class Save
 {
@@ -167,9 +168,9 @@ class Save
 	public static var optionsData:OptionsVariables = {};
 
 	/**
-	 * `Other`, save data.
+	 * `Flixel`, save data.
 	 */
-	public static var otherData:OtherVariables = {};
+	public static var flixelData:FlixelVariables = {};
 
 	#if FEATURE_GAMEJOLT_CLIENT
 	/**
@@ -205,7 +206,7 @@ class Save
 	 *
 	 * 1'st - Bind name, 2'nd - Binds List (or one bind)
 	 */
-	public static var binds_key:Map<String, Array<flixel.input.keyboard.FlxKey>> = [
+	public static var binds_key:Map<String, Array<FlxKey>> = [
 		// notes input
 		'_strumleft' => [A, LEFT],
 		'_strumdown' => [S, DOWN],
@@ -247,7 +248,7 @@ class Save
 	 *
 	 * 1'st - Bind name, 2'nd - Binds List (or one bind)
 	 */
-	public static var binds_joy:Map<String, Array<flixel.input.gamepad.FlxGamepadInputID>> = [
+	public static var binds_joy:Map<String, Array<FlxGamepadInputID>> = [
 		// notes input
 		'_strumleft' => [DPAD_LEFT, X],
 		'_strumdown' => [DPAD_DOWN, A],
@@ -274,12 +275,12 @@ class Save
 	/**
 	 * Parent keyboard binds.
 	 */
-	public static var parentKeys:Map<String, Array<flixel.input.keyboard.FlxKey>> = null;
+	public static var parentKeys:Map<String, Array<FlxKey>> = null;
 
 	/**
 	 * Parent gamepad binds.
 	 */
-	public static var parentJoyKeys:Map<String, Array<flixel.input.gamepad.FlxGamepadInputID>> = null;
+	public static var parentJoyKeys:Map<String, Array<FlxGamepadInputID>> = null;
 
 	/**
 	 * Reset binds to default
@@ -318,11 +319,11 @@ class Save
 	{
 		var bind:Array<Dynamic> = [binds_key.get(key), binds_joy.get(key)];
 
-		while (bind[0] != null && bind[0].contains(flixel.input.keyboard.FlxKey.NONE))
-			bind[0].remove(flixel.input.keyboard.FlxKey.NONE);
+		while (bind[0] != null && bind[0].contains(FlxKey.NONE))
+			bind[0].remove(FlxKey.NONE);
 
-		while (bind[1] != null && bind[1].contains(flixel.input.gamepad.FlxGamepadInputID.NONE))
-			bind[1].remove(flixel.input.gamepad.FlxGamepadInputID.NONE);
+		while (bind[1] != null && bind[1].contains(FlxGamepadInputID.NONE))
+			bind[1].remove(FlxGamepadInputID.NONE);
 	}
 
 	/**
@@ -330,28 +331,31 @@ class Save
 	 */
 	public static function loadBinds()
 	{
-		FlxG.save.bind('funkin_other', _path());
-		mainSave.bind('funkin_main', _path());
-		optionsSave.bind('funkin_options', _path());
+		FlxG.save.bind('${SysUtil.getFileName().toFolderCase()}_flixel', _path());
+		mainSave.bind('${SysUtil.getFileName().toFolderCase()}_main', _path());
+		optionsSave.bind('${SysUtil.getFileName().toFolderCase()}_options', _path());
 
 		#if FEATURE_GAMEJOLT_CLIENT
-		gjSave.bind('funkin_gamejolt', _path());
+		gjSave.bind('${SysUtil.getFileName().toFolderCase()}_gamejolt', _path());
 		#end
 
-		inputSave.bind('funkin_input_v' + Constants.INPUT_DATA_VERSION, _path());
+		inputSave.bind('${SysUtil.getFileName().toFolderCase()}_input_v' + Constants.INPUT_DATA_VERSION, _path());
 	}
 
 	/**
 	 * Load function for load variables... yes
-	 * @param value - miss is if you want save all.
+	 * @param values - If miss this, will loaded all saves
+	 * Save Tags: [
+	 *    FLIXEL,
+	 *    MAIN,
+	 *    INPUT,
+	 *    OPTIONS,
+	 *    GAMEJOLT
+	 * ]
 	 */
-	public static function load(?value:SaveTag = null)
+	public static function load(?values:Array<SaveTag> = null)
 	{
-		#if FEATURE_GAMEJOLT_DATA_STORAGE
-		GameJoltClient.instance.syncSaveWithCloud();
-		#end
-
-		if (value == null)
+		if (values == null)
 		{
 			_load_main();
 			_load_options();
@@ -359,66 +363,103 @@ class Save
 			_load_gj();
 			#end
 			_load_input();
-			_load_stuff();
+			_load_flixel();
 		}
 		else
 		{
-			switch (value)
-			{
-				case MAIN:
-					_load_main();
-				case OPTIONS:
-					_load_options();
-				#if FEATURE_GAMEJOLT_CLIENT
-				case GAMEJOLT:
-					_load_gj();
-				#end
-				case INPUT:
-					_load_input();
-				default:
-					_load_stuff();
-			}
+			for (value in values)
+				switch (value)
+				{
+					case MAIN:
+						_load_main();
+					case OPTIONS:
+						_load_options();
+					#if FEATURE_GAMEJOLT_CLIENT
+					case GAMEJOLT:
+						_load_gj();
+					#end
+					case INPUT:
+						_load_input();
+					default:
+						_load_flixel();
+				}
 		}
 	}
 
 	/**
 	 * Save function for save variables... yes
-	 * @param value - miss is if you want save all.
+	 * @param values - If miss this, will saved all saves
+	 * Save Tags: [
+	 *    FLIXEL,
+	 *    MAIN,
+	 *    INPUT,
+	 *    OPTIONS,
+	 *    GAMEJOLT
+	 * ]
 	 */
-	public static function save(?value:SaveTag = null)
+	public static function save(?values:Array<SaveTag> = null)
 	{
-		if (value == null)
+		if (values == null)
 		{
 			_save_main();
 			_save_options();
 			#if FEATURE_GAMEJOLT_CLIENT
 			_save_gj();
 			#end
-			_save_stuff();
+			_save_flixel();
 			_save_input();
 		}
 		else
 		{
-			switch (value)
-			{
-				case MAIN:
-					_save_main();
-				case OPTIONS:
-					_save_options();
-				#if FEATURE_GAMEJOLT_CLIENT
-				case GAMEJOLT:
-					_save_gj();
-				#end
-				case INPUT:
-					_save_input();
-				default:
-					_save_stuff();
-			}
+			for (value in values)
+				switch (value)
+				{
+					case MAIN:
+						_save_main();
+					case OPTIONS:
+						_save_options();
+					#if FEATURE_GAMEJOLT_CLIENT
+					case GAMEJOLT:
+						_save_gj();
+					#end
+					case INPUT:
+						_save_input();
+					default:
+						_save_flixel();
+				}
 		}
+	}
 
-		#if FEATURE_GAMEJOLT_DATA_STORAGE
-		GameJoltClient.instance.syncCloudFiles();
-		#end
+	public static function mergeData(v:{tag:SaveTag, value:Dynamic}):Void
+	{
+		switch (v.tag)
+		{
+			case MAIN:
+				for (key in Reflect.fields(mainData))
+					if (Reflect.hasField(v.value, key))
+						Reflect.setField(mainData, key, Reflect.field(v.value, key));
+
+				save([MAIN]);
+			case OPTIONS:
+				for (key in Reflect.fields(optionsData))
+					if (Reflect.hasField(v.value, key))
+						Reflect.setField(optionsData, key, Reflect.field(v.value, key));
+
+				save([OPTIONS]);
+			case FLIXEL:
+				for (key in Reflect.fields(flixelData))
+					if (Reflect.hasField(v.value, key))
+						Reflect.setField(flixelData, key, Reflect.field(v.value, key));
+
+				save([FLIXEL]);
+			case GAMEJOLT:
+				for (key in Reflect.fields(gjData))
+					if (Reflect.hasField(v.value, key))
+						Reflect.setField(gjData, key, Reflect.field(v.value, key));
+
+				save([GAMEJOLT]);
+			default: // nothing
+		}
 	}
 
 	/**
@@ -481,11 +522,14 @@ class Save
 		}
 	}
 
-	static function _load_stuff():Void
+	static function _load_flixel():Void
 	{
-		for (key in Reflect.fields(otherData))
+		for (key in Reflect.fields(flixelData))
 			if (Reflect.hasField(FlxG.save.data, key))
-				Reflect.setField(otherData, key, Reflect.field(FlxG.save.data, key));
+				Reflect.setField(flixelData, key, Reflect.field(FlxG.save.data, key));
+
+		FlxG.sound.volume = flixelData.volume;
+		FlxG.sound.muted = flixelData.muted;
 	}
 
 	static function _save_main():Void
@@ -517,11 +561,15 @@ class Save
 	}
 	#end
 
-	static function _save_stuff():Void
+	static function _save_flixel():Void
 	{
-		for (key in Reflect.fields(otherData))
-			Reflect.setField(FlxG.save.data, key, Reflect.field(otherData, key));
+		for (key in Reflect.fields(flixelData))
+			Reflect.setField(FlxG.save.data, key, Reflect.field(flixelData, key));
+
 		FlxG.save.flush();
+
+		FlxG.sound.volume = FlxG.save.data.volume;
+		FlxG.sound.muted = FlxG.save.data.muted;
 	}
 
 	static function _save_input():Void

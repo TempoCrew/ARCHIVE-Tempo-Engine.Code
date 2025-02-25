@@ -34,10 +34,15 @@ class StringTools
 	 */
 	public static function toFolderCase(value:String):String
 	{
-		final invalidChars = ~/[~&;:<>#\s]/g;
-		final hideChars = ~/[.,'"%?!]/g;
+		if (value == "" || value == null)
+			return "";
 
-		return hideChars.replace(invalidChars.replace(value, '-'), '').trim().toLowerCase();
+		final chars = {
+			invalid: ~/[~&;:<>#\s]/g,
+			hide: ~/[.,'"%?!]/g
+		}
+
+		return chars.hide.replace(chars.invalid.replace(value, '-'), '').trim().toLowerCase();
 	}
 
 	/**

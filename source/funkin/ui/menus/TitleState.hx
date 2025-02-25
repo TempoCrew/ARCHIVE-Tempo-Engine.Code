@@ -31,10 +31,6 @@ class TitleState extends FlxState
 			FlxG.switchState(new GameJoltState());
 		else if (TempoInput.keyJustPressed.F5)
 			FlxG.state.openSubState(new FreeplaySubState());
-		else if (TempoInput.keyJustPressed.R)
-			GameJoltClient.instance.syncCloudFiles();
-		else if (TempoInput.keyJustPressed.E)
-			GameJoltClient.instance.syncSaveWithCloud();
 
 		super.update(elapsed);
 	}
