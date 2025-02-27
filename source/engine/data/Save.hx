@@ -139,6 +139,11 @@ import tempo.util.TempoSave;
 	public var volume:Float = 1.0;
 }
 
+@:structInit class EditorVariables
+{
+	public var bgColor:{r:Int, g:Int, b:Int} = {r: 75, g: 0, b: 130};
+}
+
 #if FEATURE_GAMEJOLT_CLIENT
 @:structInit class GJVariables
 {
@@ -172,6 +177,11 @@ class Save
 	 */
 	public static var flixelData:FlixelVariables = {};
 
+	/**
+	 * `Editor`, save data.
+	 */
+	public static var editorData:EditorVariables = {};
+
 	#if FEATURE_GAMEJOLT_CLIENT
 	/**
 	 * `GameJolt`, save data
@@ -195,6 +205,11 @@ class Save
 	 */
 	public static var gjSave:TempoSave = new TempoSave();
 	#end
+
+	/**
+	 * `Editor`, saving stuff.
+	 */
+	public static var editorSave:TempoSave = new TempoSave();
 
 	/**
 	 * `Input`, saving stuff.
@@ -334,6 +349,7 @@ class Save
 		FlxG.save.bind('${SysUtil.getFileName().toFolderCase()}_flixel', _path());
 		mainSave.bind('${SysUtil.getFileName().toFolderCase()}_main', _path());
 		optionsSave.bind('${SysUtil.getFileName().toFolderCase()}_options', _path());
+		editorSave.bind('${SysUtil.getFileName().toFolderCase()}_editor', _path());
 
 		#if FEATURE_GAMEJOLT_CLIENT
 		gjSave.bind('${SysUtil.getFileName().toFolderCase()}_gamejolt', _path());
@@ -362,6 +378,7 @@ class Save
 			#if FEATURE_GAMEJOLT_CLIENT
 			_load_gj();
 			#end
+			_load_editor();
 			_load_input();
 			_load_flixel();
 		}
@@ -378,6 +395,8 @@ class Save
 					case GAMEJOLT:
 						_load_gj();
 					#end
+					case EDITOR:
+						_load_editor();
 					case INPUT:
 						_load_input();
 					default:
@@ -406,6 +425,7 @@ class Save
 			#if FEATURE_GAMEJOLT_CLIENT
 			_save_gj();
 			#end
+			_save_editor();
 			_save_flixel();
 			_save_input();
 		}
@@ -422,6 +442,8 @@ class Save
 					case GAMEJOLT:
 						_save_gj();
 					#end
+					case EDITOR:
+						_save_editor();
 					case INPUT:
 						_save_input();
 					default:
@@ -458,6 +480,11 @@ class Save
 						Reflect.setField(gjData, key, Reflect.field(v.value, key));
 
 				save([GAMEJOLT]);
+
+			case EDITOR:
+				for (key in Reflect.fields(editorData))
+					if (Reflect.hasField(v.value, key))
+						Reflect.setField(editorData, key, Reflect.field(v.value, key));
 			default: // nothing
 		}
 	}
@@ -499,6 +526,16 @@ class Save
 		}
 	}
 	#end
+
+	static function _load_editor():Void
+	{
+		if (editorSave.data != null && editorSave != null)
+		{
+			for (key in Reflect.fields(editorData))
+				if (Reflect.hasField(editorSave.data, key))
+					Reflect.setField(editorData, key, Reflect.field(editorSave.data, key));
+		}
+	}
 
 	static function _load_input():Void
 	{
@@ -560,6 +597,15 @@ class Save
 		}
 	}
 	#end
+
+	static function _save_editor():Void
+	{
+		if (editorData != null)
+		{
+			for (key in Reflect.fields(editorData))
+				Reflect.setField(editorSave.data, key, Reflect.field(editorData, key));
+		}
+	}
 
 	static function _save_flixel():Void
 	{

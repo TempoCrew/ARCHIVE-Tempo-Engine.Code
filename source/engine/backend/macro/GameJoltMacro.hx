@@ -1,5 +1,6 @@
 package engine.backend.macro;
 
+#if FEATURE_GAMEJOLT_CLIENT
 class GameJoltMacro
 {
 	static macro function getData():haxe.macro.Expr.ExprOf<{ID:Int, Key:String}>
@@ -21,3 +22,4 @@ class GameJoltMacro
 	}
 	#end
 }
+#end

@@ -1,253 +1,355 @@
 package engine.ui.debug;
 
-import engine.types.ListData;
-import tempo.ui.TempoUIList;
-import lime.graphics.Image;
-import funkin.ui.menus.TitleState;
-import tempo.ui.TempoUIListButton;
-import tempo.TempoSprite;
+import engine.backend.Conductor;
+import engine.ui.debug.charting.*;
+import funkin.backend.song.ChartFile;
+import funkin.backend.song.MetaFile;
+import tempo.ui.interfaces.ITempoUI;
+import tempo.ui.interfaces.ITempoUIState;
 
-class ChartEditorState extends flixel.FlxState
+class ChartEditorState extends EditorState implements ITempoUIState
 {
-	public static var instance(get, never):ChartEditorState;
-	static var _instance:Null<ChartEditorState> = null;
+	public static var instance:Null<ChartEditorState> = null;
 
-	var file_listButton:TempoUIListButton;
-	var edit_listButton:TempoUIListButton;
-	var view_listButton:TempoUIListButton;
-	var audio_listButton:TempoUIListButton;
-	var tools_listButton:TempoUIListButton;
-	var help_listButton:TempoUIListButton;
+	public var curDifficulty:String = "normal";
 
-	var file_listBox:TempoUIList;
+	public static var chartData(default, set):ChartFile = null;
 
-	var listButtons:Array<TempoUIListButton> = [];
-	var listBoxes:Array<TempoUIList> = [];
-
-	var camEditor:FlxCamera;
-	var camHUD:FlxCamera;
-	var camWindow:FlxCamera;
-	var camMenu:FlxCamera;
-
-	public function new():Void
+	static function set_chartData(v:ChartFile):ChartFile
 	{
-		super();
+		chartData = v;
+
+		return chartData;
 	}
+
+	public static var metaData(default, set):MetaFile = null;
+
+	static function set_metaData(v:MetaFile):MetaFile
+	{
+		metaData = v;
+
+		return metaData;
+	}
+
+	var zoomList:Array<Float> = [0.25, 0.5, 1.0, 1.5, 2, 4, 6, 8, 12, 16];
+
+	var curZoom:Int = 2;
+
+	public function new(?chartData:ChartFile, ?metaData:MetaFile):Void
+	{
+		super(CHART);
+
+		if (chartData != null)
+			ChartEditorState.chartData = chartData;
+		if (metaData != null)
+			ChartEditorState.metaData = metaData;
+	}
+
+	var bg:Null<TempoSprite> = null;
+
+	function addBG():Void
+	{
+		bg = new TempoSprite(0, 0, GRAPHIC).makeImage({path: Paths.image('menuDesat')});
+		bg.setGraphicSize(bg.width * 1.175);
+		bg.updateHitbox();
+		bg.screenCenter();
+		bg.scrollFactor.set(0, 0);
+		reloadBGColor();
+		add(bg);
+	}
+
+	final GRID_SELECTION_BORDER_WIDTH:Int = 6;
+
+	var gridBG:FlxSprite;
+	final GRID_SIZE:Int = 40;
+	var strumLine:FlxSprite;
+	var dummyArrow:FlxSprite;
 
 	override function create():Void
 	{
+		if (chartData == null)
+			chartData = {
+				scrollSpeeds: ["easy" => 1.0, "normal" => 1.2, "hard" => 1.4],
+				notes: ["easy" => [], "normal" => [], "hard" => []],
+				sections: ["easy" => [], "normal" => [], "hard" => []]
+			};
+		if (metaData == null)
+			metaData = {
+				artist: "Kawai Sprite",
+				songName: "Test",
+				bpm: 150,
+				album: "placeHolder",
+				generatedBy: "template",
+				charter: "Unknown",
+				playData: {
+					stage: "mainStage",
+					players: ["opponent" => "bf-pixel", "player" => "bf", "gf" => "gf"],
+					ratings: ["easy" => 2, "normal" => 3, "hard" => 4],
+					difficulties: ["easy", "normal", "hard"],
+					uiStyle: "funkin",
+					previewStart: 0,
+					previewEnd: 14000
+				}
+			};
+
+		instance = this;
+
 		addCameras();
-		getWindowData();
+		addBG();
+		addUpperStuff();
 
-		var bg:TempoSprite = new TempoSprite(-5, -5, GRAPHIC).makeImage({
-			path: Paths.image('menuDesat'),
-			width: 1290,
-			height: 730,
-			color: FlxColor.PURPLE
-		});
-		bg.scrollFactor.set();
-		add(bg);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
+		gridBG.antialiasing = false;
+		gridBG.screenCenter();
+		add(gridBG);
 
-		addUpperBox();
-		addListButton();
+		strumLine = new FlxSprite(gridBG.x).makeGraphic(Std.int(gridBG.width), 4, FlxColor.RED);
+		add(strumLine);
+
+		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
+		add(dummyArrow);
+
+		addSection();
+
+		updateGrid();
+
+		loadSong(metaData.songName.toFolderCase());
+		Conductor.instance.bpm = metaData.bpm;
+		Conductor.instance.changeMapBPM(chartData, metaData, curDifficulty);
 
 		super.create();
+
+		camGrid.follow(strumLine);
+
+		updateWindow('--C Chart Editor', 'icon-1', ["Chart Editor", null, null, null, 'chart-editor', "Charting"]);
+	}
+
+	function loadSong(daSong:String):Void
+	{
+		if (FlxG.sound.music != null)
+			FlxG.sound.music.stop();
+
+		FlxG.sound.playMusic(FlxAssets.getSound('songs:assets/songs/${daSong}/Inst.ogg'), 0.6);
+		FlxG.sound.music.pause();
+	}
+
+	function getStrumTime(yPos:Float):Float
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.instance.stepCrochet);
+
+	function getYFromStrum(time:Float):Float
+		return FlxMath.remapToRange(time, 0, 16 * Conductor.instance.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+
+	function updateGrid():Void {}
+
+	function addSection():Void
+	{
+		for (diff => section in chartData.sections)
+		{
+			if (diff == curDifficulty)
+			{
+				final dat:ChartSectionData = {
+					beats: 4
+				};
+
+				section.push(dat);
+			}
+		}
+
+		trace(chartData.sections.toString());
 	}
 
 	override function update(elapsed:Float):Void
 	{
-		if (TempoInput.keyJustPressed.BACKSPACE)
+		final curMouse:FlxMouse = FlxG.mouse;
+
+		if (FlxG.sound.music.time < 0)
 		{
-			DiscordClient.instance.changePresence();
-			FlxG.switchState(() -> new TitleState());
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = 0;
+		}
+		else if (FlxG.sound.music.time > FlxG.sound.music.length)
+		{
+			FlxG.sound.music.pause();
+			FlxG.sound.music.time = FlxG.sound.music.endTime - 728;
 		}
 
-		if (listButtons.length != 0 && listBoxes.length != 0)
+		Conductor.instance.songPos = FlxG.sound.music.time;
+
+		strumLine.y = getYFromStrum((Conductor.instance.songPos - sectionStartTime()) % (Conductor.instance.stepCrochet * 16));
+
+		if (curBeat % 4 == 0 && curStep >= 16 * (curEditSection + 1))
 		{
-			for (i in 0...listButtons.length)
+			if (chartData.sections.get(curDifficulty)[curEditSection + 1] == null)
+				addSection();
+
+			changeSection(curEditSection + 1, false);
+		}
+
+		if (!tempoUIFocused)
+		{
+			if (FlxG.mouse.x > gridBG.x
+				&& FlxG.mouse.x < gridBG.x + gridBG.width
+				&& FlxG.mouse.y > gridBG.y
+				&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
 			{
-				if (listButtons[i].bg.alpha >= 1)
-					listBoxes[i].visible = true;
+				dummyArrow.x = Math.floor(FlxG.mouse.viewX / GRID_SIZE) * GRID_SIZE;
+				if (FlxG.keys.pressed.SHIFT)
+					dummyArrow.y = FlxG.mouse.y;
 				else
-					listBoxes[i].visible = false;
+					dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
 			}
-		}
 
-		// if (file_listButton.bg.alpha >= 1)
-		//	file_listBox.visible = true;
-		// else
-		//	file_listBox.visible = false;
+			if (TempoInput.keyJustPressed.SPACE)
+			{
+				if (FlxG.sound.music.playing)
+					FlxG.sound.music.pause();
+				else
+					FlxG.sound.music.play();
+			}
+
+			if (FlxG.mouse.wheel != 0)
+			{
+				FlxG.sound.music.pause();
+				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.instance.stepCrochet * .4);
+			}
+
+			if (TempoInput.keyJustPressed.HOME)
+				FlxTween.tween(FlxG.sound.music, {time: 0}, 1, {ease: FlxEase.cubeInOut});
+			else if (TempoInput.keyJustPressed.END)
+				FlxTween.tween(FlxG.sound.music, {time: FlxG.sound.music.endTime - 728}, 1, {ease: FlxEase.cubeInOut});
+		}
 
 		super.update(elapsed);
 	}
 
-	function addListButton():Void
+	var mouseCount:Int = 0;
+
+	function overlapedToUpper(value:Bool->Void):Void
 	{
-		final fileData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.file.json')));
-		final editData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.edit.json')));
-		final audioData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.audio.json')));
-		final viewData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.view.json')));
-		final toolsData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.tools.json')));
-		final pluginsData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.plugins.json')));
-		final helpData:ListData = TJSON.parse(File.getContent(Paths.engine('ui/data/chart.help.json')));
+		final mouseOverlapedToUpper:Bool = TempoInput.cursorOverlaps(upperBoxHitbox, camHUD);
 
-		listButtons.push(new TempoUIListButton(5, "File"));
-		listBoxes.push(new TempoUIList(listButtons[0].bg.x, getListY(listButtons[0]), [
-			{
-				type: HOVER,
-				text: "Test Hover",
-				tag: "Test",
-				hoverData: [{type: BUTTON, text: "GOVNO", tag: "govno"}]
-			}
-		]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[0]) + 1, "Edit"));
-		listBoxes.push(new TempoUIList(listButtons[1].bg.x, getListY(listButtons[1]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[1]) + 1, "Audio"));
-		listBoxes.push(new TempoUIList(listButtons[2].bg.x, getListY(listButtons[2]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[2]) + 1, "View"));
-		listBoxes.push(new TempoUIList(listButtons[3].bg.x, getListY(listButtons[3]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[3]) + 1, "Tools"));
-		listBoxes.push(new TempoUIList(listButtons[4].bg.x, getListY(listButtons[4]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[4]) + 1, "Plugins"));
-		listBoxes.push(new TempoUIList(listButtons[5].bg.x, getListY(listButtons[5]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-		listButtons.push(new TempoUIListButton(getListX(listButtons[5]) + 1, "Help"));
-		listBoxes.push(new TempoUIList(listButtons[6].bg.x, getListY(listButtons[6]), [{type: BUTTON, text: "TeST", tag: "TEst"}]));
-
-		listButtons[0].others = [
-			listButtons[1],
-			listButtons[2],
-			listButtons[3],
-			listButtons[4],
-			listButtons[5],
-			listButtons[6]
-		];
-		listButtons[1].others = [
-			listButtons[0],
-			listButtons[2],
-			listButtons[3],
-			listButtons[4],
-			listButtons[5],
-			listButtons[6]
-		];
-		listButtons[2].others = [
-			listButtons[1],
-			listButtons[0],
-			listButtons[3],
-			listButtons[4],
-			listButtons[5],
-			listButtons[6]
-		];
-		listButtons[3].others = [
-			listButtons[1],
-			listButtons[2],
-			listButtons[0],
-			listButtons[4],
-			listButtons[5],
-			listButtons[6]
-		];
-		listButtons[4].others = [
-			listButtons[1],
-			listButtons[2],
-			listButtons[3],
-			listButtons[0],
-			listButtons[5],
-			listButtons[6]
-		];
-		listButtons[5].others = [
-			listButtons[1],
-			listButtons[2],
-			listButtons[3],
-			listButtons[4],
-			listButtons[0],
-			listButtons[6]
-		];
-		listButtons[6].others = [
-			listButtons[1],
-			listButtons[2],
-			listButtons[3],
-			listButtons[4],
-			listButtons[5],
-			listButtons[0]
-		];
-
-		for (i in 0...listButtons.length)
+		if (mouseOverlapedToUpper && mouseCount < 1)
 		{
-			listButtons[i].cameras = [camHUD];
-			add(listButtons[i]);
+			mouseCount++;
 
-			listBoxes[i].cameras = [camHUD];
-			add(listBoxes[i]);
+			value(true);
+		}
+		else if (!mouseOverlapedToUpper && mouseCount == 1)
+		{
+			mouseCount = 0;
+
+			value(false);
 		}
 	}
 
-	function getListX(prev:TempoUIListButton):Float
-		return prev.bg.x + prev.bg.width;
-
-	function getListY(prev:TempoUIListButton):Float
-		return prev.bg.y + prev.bg.height;
+	var camGrid:Null<FlxCamera> = null;
+	var camHUD:Null<FlxCamera> = null;
+	var camOther:Null<FlxCamera> = null;
 
 	function addCameras():Void
 	{
-		camEditor = new FlxCamera();
+		camGrid = new FlxCamera();
+		camGrid.bgColor.alpha = 0;
+		FlxG.cameras.reset(camGrid);
+
 		camHUD = new FlxCamera();
-		camWindow = new FlxCamera();
-		camMenu = new FlxCamera();
-
-		camEditor.bgColor.alpha = 0;
 		camHUD.bgColor.alpha = 0;
-		camWindow.bgColor.alpha = 0;
-		camMenu.bgColor.alpha = 0;
-
-		FlxG.cameras.reset(camEditor);
 		FlxG.cameras.add(camHUD, false);
-		FlxG.cameras.add(camWindow, false);
-		FlxG.cameras.add(camMenu, false);
+
+		camOther = new FlxCamera();
+		camOther.bgColor.alpha = 0;
+		FlxG.cameras.add(camOther, false);
 	}
 
-	function addUpperBox():Void
+	function sectionStartTime():Float
 	{
-		var upperBox_1:TempoSprite = new TempoSprite().makeRoundRectComplex({
-			width: FlxG.width + 1,
-			height: 41,
-			color: Constants.COLOR_EDITOR_UPPERBOX_LIGHT,
-			roundRect: {elBottomLeft: 2.5, elBottomRight: 2.5}
-		});
-		upperBox_1.scrollFactor.set();
-		upperBox_1.cameras = [camHUD];
-		add(upperBox_1);
+		var daBPM:Float = metaData.bpm;
+		var daPos:Float = 0;
+		for (i in 0...curEditSection)
+		{
+			if (chartData.sections.get(curDifficulty)[i].changeBPM)
+				daBPM = chartData.sections.get(curDifficulty)[i].bpm;
 
-		var upperBox:TempoSprite = new TempoSprite().makeRoundRectComplex({
-			width: FlxG.width + 1,
-			height: 40,
-			color: Constants.COLOR_EDITOR_UPPERBOX,
-			roundRect: {elBottomLeft: 5, elBottomRight: 5}
-		});
-		upperBox.scrollFactor.set();
-		upperBox.cameras = [camHUD];
-		add(upperBox);
+			daPos += 4 * (1000 * 60 / daBPM);
+		}
+
+		return daPos;
 	}
 
-	var curSong:String = 'test';
+	var curEditSection:Int = 0;
 
-	function getWindowData():Void
+	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
 	{
-		Application.current.window.title = "Chart Editor - " + curSong.toFolderCase() + "." + Constants.EXT_CHART + "";
-		Application.current.window.setIcon(Image.fromFile(Paths.image('ui/icon-1.${Constants.EXT_DEBUG_IMAGE}')));
-		DiscordClient.instance.changePresence({
-			details: "Editing " + curSong.toFolderCase() + "." + Constants.EXT_CHART,
-			largeImageKey: "chart-editor",
-			largeImageText: "Chart Editor",
-			smallImageText: "BF (Week 6)",
-			smallImageKey: "bf-pixel"
-		});
+		if (chartData.sections.get(curDifficulty)[sec] != null)
+		{
+			curEditSection = sec;
+
+			updateGrid();
+		}
 	}
 
-	static function get_instance():ChartEditorState
+	var upperBoxHitbox:TempoSprite;
+	var upperBoxList:TempoUIList;
+
+	function addUpperStuff():Void
 	{
-		if (ChartEditorState._instance == null)
-			_instance = new ChartEditorState();
-		if (ChartEditorState._instance == null)
-			throw "Could not initialize singleton ChartEditorState";
-		return ChartEditorState._instance;
+		var upper:TempoSprite = new TempoSprite(-1);
+		upper.makeGraphic(FlxG.width + 2, 40, TempoUIConstants.COLOR_BASE_BG);
+		upper.scrollFactor.set();
+		upper.cameras = [camHUD];
+		upper.alpha = 0.915;
+		upper.zIndex = 3;
+		add(upper);
+
+		var upper2:TempoSprite = new TempoSprite(-1, upper.y + upper.height);
+		upper2.makeGraphic(FlxG.width + 2, 1, TempoUIConstants.COLOR_BASE_LINE);
+		upper2.scrollFactor.set();
+		upper2.cameras = [camHUD];
+		upper2.zIndex = 3;
+		add(upper2);
+
+		upperBoxList = new TempoUIList(5, 5, ChartingData.ui_list_data);
+		upperBoxList.cameras = [camHUD];
+		upperBoxList.scrollFactor.set();
+		upperBoxList.zIndex = 4;
+		add(upperBoxList);
+
+		upperBoxHitbox = new TempoSprite(upper.x, upper.y);
+		upperBoxHitbox.makeGraphic(Std.int(upper.width), Std.int(upper.height), FlxColor.TRANSPARENT);
+		upperBoxHitbox.alpha = .001;
+		upperBoxHitbox.cameras = [camHUD];
+		upperBoxHitbox.zIndex = 8;
+		add(upperBoxHitbox);
+	}
+
+	function reloadBGColor():TempoSprite
+	{
+		bg.color = FlxColor.fromRGB(Save.editorData.bgColor.r, Save.editorData.bgColor.g, Save.editorData.bgColor.b);
+		return bg;
+	}
+
+	function getSectionBeats(?section:Int):Int
+	{
+		if (section == null)
+			section = curEditSection;
+		var val:Null<Float> = null;
+
+		if (chartData.sections.get(curDifficulty)[section] != null)
+			val = chartData.sections.get(curDifficulty)[section].beats;
+
+		return val != null ? Std.int(val) : 4;
+	}
+
+	public function getEvent(name:String, sender:ITempoUI)
+	{
+		trace(name + ' {${Std.string(sender)}}');
+	}
+
+	var tempoUIFocused:Bool = false;
+
+	public function getFocus(value:Bool, thing:ITempoUI)
+	{
+		if (thing != null)
+			tempoUIFocused = value;
 	}
 }

@@ -38,7 +38,7 @@ class GameJoltState extends FlxState
 		blank.screenCenter();
 		add(blank);
 
-		var blankT:FlxText = new FlxText(0, blank.y + 50, 525, "GAME%JOLT%", 46);
+		var blankT:FlxText = new FlxText(0, blank.y + 50, 525, "GAME$JOLT$", 46);
 		blankT.setFormat(Paths.font('GameJoltInspired.ttf'), 46, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		blankT.applyMarkup("GAME$JOLT$", [new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.LIME), "$")]);
 		blankT.scrollFactor.set();

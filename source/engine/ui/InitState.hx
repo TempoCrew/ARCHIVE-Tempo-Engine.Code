@@ -7,7 +7,7 @@ class InitState extends flixel.FlxState
 {
 	override function create():Void
 	{
-		#if FEATURE_GAMEJOLT_DATA_STORAGE
+		#if FEATURE_GAMEJOLT_CLIENT
 		Save.load([GAMEJOLT]);
 
 		new FlxTimer().start(1, (_) ->
@@ -20,7 +20,7 @@ class InitState extends flixel.FlxState
 		{
 			Thread.create(() ->
 			{
-				Save.load([MAIN, OPTIONS, INPUT, FLIXEL]);
+				Save.load([MAIN, OPTIONS, INPUT, FLIXEL, EDITOR]);
 			});
 		});
 
@@ -30,7 +30,7 @@ class InitState extends flixel.FlxState
 		DiscordClient.prepare();
 		#end
 
-		new FlxTimer().start(#if FEATURE_GAMEJOLT_DATA_STORAGE 3 #else 1 #end, (t:FlxTimer) ->
+		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT 3 #else 1 #end, (t:FlxTimer) ->
 		{
 			t = null;
 

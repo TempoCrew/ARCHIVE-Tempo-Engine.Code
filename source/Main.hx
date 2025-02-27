@@ -37,8 +37,9 @@ class Main extends Sprite
 		if (display != null)
 		{
 			final dpiScale:Float = display.dpi / Constants.DPI_DIVIDE;
-			Lib.application.window.width = Std.int(Constants.SETUP_GAME.width * dpiScale);
-			Lib.application.window.height = Std.int(Constants.SETUP_GAME.height * dpiScale);
+			Application.current.window.setMaxSize(Std.int(Constants.SETUP_GAME.width * dpiScale), Std.int(Constants.SETUP_GAME.height * dpiScale));
+			Application.current.window.resizable = false;
+			trace(Application.current.window.context.attributes.vsync);
 		}
 		#end
 

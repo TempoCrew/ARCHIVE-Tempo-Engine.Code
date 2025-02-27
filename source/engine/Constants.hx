@@ -320,12 +320,6 @@ class Constants
 	 */
 	public static final COLOR_INITIALIZE_BAR_FILL:FlxColor = FlxColor.fromString('0xFF1CF3B2');
 
-	// EDITOR CONSTANTS
-	public static final COLOR_EDITOR_UPPERBOX_LIGHT:FlxColor = FlxColor.fromString('0xFF71E7C4');
-	public static final COLOR_EDITOR_UPPERBOX:FlxColor = FlxColor.fromString('0xFF0B251E');
-	public static final COLOR_EDITOR_LIST_BUTTON:FlxColor = FlxColor.fromString('0xFF207E65');
-	public static final COLOR_EDITOR_LIST_BOX:FlxColor = FlxColor.fromString('0xff51aa91');
-
 	// PRELOADER CONSTANTS
 
 	/**
@@ -357,6 +351,11 @@ class Constants
 	 * Color for the preloader site lock link
 	 */
 	public static final COLOR_PRELOADER_LOCK_LINK:FlxColor = FlxColor.fromString('0xEEB211');
+
+	/**
+	 * Constant pixels color num
+	 */
+	public static final PIXELS_COLOR:Int = 13520687;
 
 	/**
 	 * Each step of the preloader has to be on screen at least this long.
@@ -507,6 +506,12 @@ class Constants
 	 * One step is one 16th note and one beat is one quarter note.
 	 */
 	public static final STEPS_PER_BEAT:Int = 4;
+
+	public static final DEFAULT_SCROLLSPEED:Float = 1.;
+
+	public static final DEFAULT_TIME_SIGNATURE_NUM:Int = 4;
+
+	public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
 
 	/**
 	 * Default transition time.

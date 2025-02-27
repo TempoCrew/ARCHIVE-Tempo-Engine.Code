@@ -1,6 +1,5 @@
 package engine.backend.api;
 
-import engine.types.SaveTag;
 #if FEATURE_GAMEJOLT_CLIENT
 import flixel.FlxSubState;
 import engine.ui.GameJoltNotification;
@@ -14,13 +13,16 @@ import gamejolt.GameJolt as Api;
 import gamejolt.GameJolt.GJRequest as Request;
 import openfl.utils.ByteArray;
 import openfl.events.ErrorEvent;
+#if FEATURE_GAMEJOLT_DATA_STORAGE
+import engine.types.SaveTag;
 import haxe.io.Path;
 import haxe.Unserializer;
 import haxe.Serializer;
-
-#if (systools && cpp)
-@:access(engine.backend.api.GJSystools)
 #end
+#if (FEATURE_SYSTOOLS_NDLL && cpp)
+import systools.win.Tools;
+#end
+
 @:access(gamejolt.GameJolt)
 @:access(engine.backend.macro.GameJoltMacro)
 class GameJoltClient
@@ -90,7 +92,9 @@ class GameJoltClient
 		if (Api.userName == "" && Api.userToken == "")
 			return;
 
+		#if FEATURE_GAMEJOLT_DATA_STORAGE
 		removeCloudFiles();
+		#end
 		stopSession();
 
 		Api.userName = "";
@@ -106,8 +110,8 @@ class GameJoltClient
 		{
 			FlxG.state.persistentUpdate = false;
 			FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () -> {
-				#if cpp
-				new GJSystools();
+				#if (cpp && FEATURE_SYSTOOLS_NDLL)
+				__systools_exit();
 				#else
 				System.exit(1337);
 				#end
@@ -115,6 +119,7 @@ class GameJoltClient
 		}
 	}
 
+	#if FEATURE_GAMEJOLT_DATA_STORAGE
 	public function setCloudFiles(?isCheckingUser:Bool = false):Void
 	{
 		if (sessionOpened && !sessionPinged)
@@ -146,10 +151,30 @@ class GameJoltClient
 		}
 	}
 
+	var restartTimer:FlxTimer;
+
 	public function syncSaveWithCloud(tag:String, data:String):Void
 	{
 		if (sessionOpened && !sessionPinged)
 		{
+			if (restartTimer != null)
+				restartTimer.cancel();
+
+			restartTimer = new FlxTimer().start(5, (_) ->
+			{
+				if (FlxG.state != null)
+				{
+					FlxG.state.persistentUpdate = false;
+					FlxG.state.openSubState(new RestartGameSubState("For GameJolt Cloud Data Sync, a game will restarting.\nWant to restart for sync?", () -> {
+						#if (cpp && FEATURE_SYSTOOLS_NDLL)
+						__systools_exit();
+						#else
+						System.exit(1337);
+						#end
+					}));
+				}
+			});
+
 			switch (tag)
 			{
 				case "flixel_save":
@@ -161,6 +186,7 @@ class GameJoltClient
 				case "options_save":
 					Save.mergeData({tag: OPTIONS, value: Unserializer.run(data)});
 					Save.save([OPTIONS]);
+				default: // nothing
 			}
 		}
 	}
@@ -225,6 +251,7 @@ class GameJoltClient
 				syncing();
 		}
 	}
+	#end
 
 	public function pingSession():Void
 	{
@@ -270,7 +297,9 @@ class GameJoltClient
 			if (pingTimer != null)
 				pingTimer.cancel();
 
+			#if FEATURE_GAMEJOLT_DATA_STORAGE
 			syncCloudFiles(true);
+			#end
 			print("Session Closed!");
 
 			var request = new Request(SESSION_CLOSE);
@@ -385,6 +414,7 @@ class GameJoltClient
 		scoreRequest.send();
 	}
 
+	#if FEATURE_GAMEJOLT_DATA_STORAGE
 	public function setData(key:String, data:String, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
 		var dataRequest = new Request(DATA_SET(key, data, isPrivate));
@@ -461,6 +491,7 @@ class GameJoltClient
 		};
 		keyRequest.send();
 	}
+	#end
 
 	static final GRAVATAR_START_URL:String = 'https://secure.gravatar.com/';
 	static final NO_AVATAR_URL:String = 'https://s.gjcdn.net/img/no-avatar-3.png';
@@ -478,7 +509,9 @@ class GameJoltClient
 
 			print("Connected! (User: " + getUser(r).username + " [" + getUser(r).id + "]");
 
+			#if FEATURE_GAMEJOLT_DATA_STORAGE
 			setCloudFiles(true);
+			#end
 
 			if (getUser(r).avatar_url != null)
 			{
@@ -573,6 +606,17 @@ class GameJoltClient
 			throw "Could not initialize singleton GameJoltClient!";
 		return GameJoltClient._instance;
 	}
+
+	#if (cpp && FEATURE_SYSTOOLS_NDLL)
+	@:keep function __systools_exit():Void
+	{
+		final result:Int = Tools.createProcess(Sys.programPath(), "GameJoltClient.hx", Sys.getCwd(), false, false);
+		if (result == 0)
+			System.exit(1337);
+		else
+			throw "Fail for restarting the game!";
+	}
+	#end
 }
 
 class WaitingSubState extends FlxSubState

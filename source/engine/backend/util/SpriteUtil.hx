@@ -19,7 +19,7 @@ class SpriteUtil
 		if (MemoryUtil.curTrackedGraphic.exists(path))
 			graphic = MemoryUtil.curTrackedGraphic.get(path);
 
-		FlxG.bitmap.add(graphic, graphic.unique);
+		FlxG.bitmap.add(graphic, graphic.unique, graphic.key);
 	}
 
 	/**
@@ -75,9 +75,35 @@ class SpriteUtil
 	}
 
 	/**
-	 * Constant pixels color index
+	 * I'mma lazy
+	 * @param graphic
+	 * @param invertX
+	 * @param invertY
+	 * @param roundRectSize
 	 */
-	static final PIXELS_COLOR:Int = 13520687;
+	public static function drawRoundRectBitmap(graphic:BitmapData, invertX:Bool, invertY:Bool, ?roundRectSize:Int = 11, ?cornerColor:Int = 0x0):Void
+	{
+		var antiPoint:FlxPoint = FlxPoint.get((graphic.width - roundRectSize), invertY ? (graphic.height - 1) : 0);
+
+		if (invertY)
+			antiPoint.y -= 2;
+
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 1), Math.floor(Math.abs(antiPoint.y - 8)), 10, 3), cornerColor);
+
+		if (invertY)
+			antiPoint.y += 1;
+
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 2), Math.floor(Math.abs(antiPoint.y - 6)), 9, 2), cornerColor);
+
+		if (invertY)
+			antiPoint.y += 1;
+
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 3), Math.floor(Math.abs(antiPoint.y - 5)), 8, 1), cornerColor);
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 4), Math.floor(Math.abs(antiPoint.y - 4)), 7, 1), cornerColor);
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 5), Math.floor(Math.abs(antiPoint.y - 3)), 6, 1), cornerColor);
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 6), Math.floor(Math.abs(antiPoint.y - 2)), 5, 1), cornerColor);
+		graphic.fillRect(new Rectangle((invertX ? antiPoint.x : 8), Math.floor(Math.abs(antiPoint.y - 1)), 3, 1), cornerColor);
+	}
 
 	public static function dominantBitmapColor<T:BitmapData>(spr:T):Int
 	{
@@ -90,7 +116,7 @@ class SpriteUtil
 				{
 					if (cb.exists(w))
 						cb.set(w, h + 1);
-					else if (cb.get(w) != PIXELS_COLOR - (PIXELS_COLOR * 2))
+					else if (cb.get(w) != Constants.PIXELS_COLOR - (Constants.PIXELS_COLOR * 2))
 						cb.set(w, 1);
 				}
 			}
@@ -133,7 +159,7 @@ class SpriteUtil
 				{
 					if (countByColor.exists(PX))
 						countByColor.set(PX, PX + 1)
-					else if (countByColor.get(PX) != PIXELS_COLOR - (PIXELS_COLOR * 2))
+					else if (countByColor.get(PX) != Constants.PIXELS_COLOR - (Constants.PIXELS_COLOR * 2))
 						countByColor.set(PX, 1);
 				}
 			}

@@ -7,7 +7,7 @@ typedef ChartFile =
 {
 	var scrollSpeeds:Map<String, Float>;
 	var notes:Map<String, Array<ChartNoteData>>;
-	var sections:Array<ChartSectionData>;
+	var sections:Map<String, Array<ChartSectionData>>;
 	var ?events:Map<String, Array<ChartEventData>>;
 }
 

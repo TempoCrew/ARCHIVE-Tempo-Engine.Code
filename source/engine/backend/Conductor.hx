@@ -36,18 +36,18 @@ class Conductor
 		return last;
 	}
 
-	public function changeMapBPM(chart:ChartFile, metadata:MetaFile):Void
+	public function changeMapBPM(chart:ChartFile, metadata:MetaFile, diff:String):Void
 	{
 		this.bpmChangeMap = [];
 
 		var currentBPM:Float = metadata.bpm;
 		var totalSteps:Int = 0;
 		var totalPosition:Float = .0;
-		for (i in 0...chart.sections.length)
+		for (i in 0...chart.sections.get(diff).length)
 		{
-			if (chart.sections[i].changeBPM && chart.sections[i].bpm != currentBPM)
+			if (chart.sections.get(diff)[i].changeBPM && chart.sections.get(diff)[i].bpm != currentBPM)
 			{
-				currentBPM = chart.sections[i].bpm;
+				currentBPM = chart.sections.get(diff)[i].bpm;
 				final event:Map<String, Float> = [
 					"stepTime" => totalSteps,
 					"songTime" => totalPosition,
@@ -57,7 +57,7 @@ class Conductor
 				this.bpmChangeMap.push(event);
 			}
 
-			final deltaSteps = this.getSectionBeats(chart, i) * Constants.STEPS_PER_BEAT;
+			final deltaSteps = this.getSectionBeats(chart, i, diff) * Constants.STEPS_PER_BEAT;
 			totalSteps += Math.floor(deltaSteps.round());
 			totalPosition += (ConductorUtil.bpmToCrochet(currentBPM) / Constants.STEPS_PER_BEAT) * deltaSteps.round();
 		}
@@ -65,11 +65,11 @@ class Conductor
 		trace("Change BPM Map (" + bpmChangeMap + ")");
 	}
 
-	function getSectionBeats(chart:ChartFile, section:Int):Float
+	function getSectionBeats(chart:ChartFile, section:Int, diff:String):Float
 	{
 		var val:Null<Float> = null;
-		if (chart.sections[section] != null)
-			val = chart.sections[section].beats;
+		if (chart.sections.get(diff)[section] != null)
+			val = chart.sections.get(diff)[section].beats;
 
 		return val != null ? val : Constants.STEPS_PER_BEAT;
 	}

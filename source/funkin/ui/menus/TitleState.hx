@@ -20,15 +20,17 @@ class TitleState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		if (TempoInput.keyJustPressed.F1)
-			FlxG.switchState(new ChartEditorState());
+			FlxG.switchState(() -> new ChartEditorState());
 		else if (TempoInput.keyJustPressed.F2)
-			FlxG.switchState(new AnimationEditorState());
+			FlxG.switchState(() -> new AnimationEditorState());
 		else if (TempoInput.keyJustPressed.F3)
-			FlxG.switchState(new StageEditorState());
+			FlxG.switchState(() -> new StageEditorState());
 		else if (TempoInput.keyJustPressed.F4)
-			FlxG.switchState(new LevelEditorState());
+			FlxG.switchState(() -> new LevelEditorState());
+		else if (TempoInput.keyJustPressed.F6)
+			FlxG.switchState(() -> new TrophiesState());
 		else if (TempoInput.keyJustPressed.TAB)
-			FlxG.switchState(new GameJoltState());
+			FlxG.switchState(() -> new GameJoltState());
 		else if (TempoInput.keyJustPressed.F5)
 			FlxG.state.openSubState(new FreeplaySubState());
 

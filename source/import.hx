@@ -35,12 +35,18 @@ import sys.FileSystem;
 import sys.thread.Mutex;
 import sys.thread.Thread;
 #end
+// Funkin
+import funkin.MusicBeatState;
+import funkin.MusicBeatSubState;
 // Haxe
 import haxe.Json;
 import haxe.Exception;
 // Tempo
 import tempo.TempoSprite;
 import tempo.TempoInput;
+import tempo.TempoState;
+import tempo.TempoSubState;
+import tempo.ui.*;
 import tempo.util.TempoSave;
 // OpenFL
 import openfl.desktop.Icon;
@@ -88,6 +94,8 @@ import flixel.animation.FlxAnimation;
 import flixel.animation.FlxAnimationController;
 import flixel.effects.FlxFlicker;
 import flixel.graphics.FlxGraphic;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 #if android

@@ -419,7 +419,6 @@ class Project extends HXProject
     // DEBUG AND ETC. FEATURE FLAGS
     FEATURE_DEBUG_FUNCTIONS.apply(this, this.debug || GITHUB_BUILD.isEnabled(this));
     FEATURE_REDIRECT_ASSETS.apply(this, this.debug && FEATURE_MODS_ENABLING.isEnabled(this));
-    FEATURE_GAMEJOLT_DATA_STORAGE.apply(this, this.debug);
     FEATURE_GAMEPAD_ALLOWED.apply(this, this.debug);
 
     // WEB FEATURE FLAGS
@@ -591,6 +590,9 @@ class Project extends HXProject
     addAssetLibrary("engine", willEmbed, willPreload);
     addAssetPath("assets/engine", "assets/engine", "engine", ['*'], exclude, willEmbed);
 
+    addAssetLibrary("trophies", willEmbed, willPreload);
+    addAssetPath("assets/trophies", "assets/trophies", "trophies", ['*'], exclude, willEmbed);
+
     if (FEATURE_VIDEO_PLAYBACK.isEnabled(this))
     {
       addAssetLibrary("videos", willEmbed, willPreload);
@@ -609,6 +611,12 @@ class Project extends HXProject
       addAssetPath("project/windows", "", "default", ["*"], exclude, willEmbed);
 
     addAsset("LICENSE", 'license.md', "default", false);
+
+    //Icons
+    addAsset('project/icon16.png', 'Resource/logo/x16.png', "default", false);
+    addAsset('project/icon32.png', 'Resource/logo/x32.png', "default", false);
+    addAsset('project/icon64.png', "Resource/logo/x64.png", "default", false);
+    addAsset("project/iconFULL.png", "Resource/logo/OG.png", "default", false);
   }
 
   /**

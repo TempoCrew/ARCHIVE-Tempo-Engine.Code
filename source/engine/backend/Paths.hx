@@ -15,6 +15,9 @@ class Paths
 	public static function engine(path:String):String
 		return "assets/engine/" + path;
 
+	public static function trophies(path:String):String
+		return "assets/trophies/" + path;
+
 	public static function embed(file:String):String
 	{
 		if (file.endsWith('.ogg') || file.endsWith('.mp3'))
