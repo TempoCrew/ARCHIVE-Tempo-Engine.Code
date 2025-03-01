@@ -10,7 +10,7 @@ import openfl.display.Bitmap;
 import openfl.events.MouseEvent;
 #end
 import engine.ui.preload.bitmaps.*;
-import engine.backend.util.flixel.FlxEaseUtil;
+import engine.backend.util.EaseUtil;
 
 class TempoPreloader extends flixel.system.FlxBasePreloader
 {
@@ -444,9 +444,9 @@ class TempoPreloader extends flixel.system.FlxBasePreloader
 		// Fade-out takes Constants.PRELOADER_LOGO_FADE_TIME seconds.
 		var elapsedFinished = elapsed - completeTime;
 
-		logo.alpha = 1.0 - FlxEaseUtil.easeInOutCirc(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME);
-		logo.scaleX = (1.0 - FlxEaseUtil.easeInBack(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME)) * ratio / 1.95;
-		logo.scaleY = (1.0 - FlxEaseUtil.easeInBack(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME)) * ratio / 1.95;
+		logo.alpha = 1.0 - EaseUtil.easeInOutCirc(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME);
+		logo.scaleX = (1.0 - EaseUtil.easeInBack(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME)) * ratio / 1.95;
+		logo.scaleY = (1.0 - EaseUtil.easeInBack(elapsedFinished / Constants.PRELOADER_LOGO_FADE_TIME)) * ratio / 1.95;
 		logo.x = (this._width - logo.width) / 2;
 		logo.y = (this._height - logo.height) / 2 - 100;
 
@@ -471,9 +471,9 @@ class TempoPreloader extends flixel.system.FlxBasePreloader
 	function renderLogoFadeIn(elapsed:Float):Void
 	{
 		// Fade-in takes Constants.PRELOADER_LOGO_FADE_TIME seconds.
-		logo.alpha = FlxEaseUtil.easeInOutCirc(elapsed / Constants.PRELOADER_LOGO_FADE_TIME);
-		logo.scaleX = FlxEaseUtil.easeOutBack(elapsed / Constants.PRELOADER_LOGO_FADE_TIME) * ratio;
-		logo.scaleY = FlxEaseUtil.easeOutBack(elapsed / Constants.PRELOADER_LOGO_FADE_TIME) * ratio;
+		logo.alpha = EaseUtil.easeInOutCirc(elapsed / Constants.PRELOADER_LOGO_FADE_TIME);
+		logo.scaleX = EaseUtil.easeOutBack(elapsed / Constants.PRELOADER_LOGO_FADE_TIME) * ratio;
+		logo.scaleY = EaseUtil.easeOutBack(elapsed / Constants.PRELOADER_LOGO_FADE_TIME) * ratio;
 		logo.x = (this._width - logo.width) / 2;
 		logo.y = (this._height - logo.height) / 2;
 	}

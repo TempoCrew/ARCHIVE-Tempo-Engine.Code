@@ -65,7 +65,7 @@ class Conductor
 		trace("Change BPM Map (" + bpmChangeMap + ")");
 	}
 
-	function getSectionBeats(chart:ChartFile, section:Int, diff:String):Float
+	public function getSectionBeats(chart:ChartFile, section:Int, diff:String):Float
 	{
 		var val:Null<Float> = null;
 		if (chart.sections.get(diff)[section] != null)

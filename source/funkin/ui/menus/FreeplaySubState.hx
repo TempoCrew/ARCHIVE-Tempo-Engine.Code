@@ -2,7 +2,7 @@ package funkin.ui.menus;
 
 import flixel.FlxSubState;
 
-class FreeplaySubState extends FlxSubState
+class FreeplaySubState extends MusicBeatSubState
 {
 	override function create():Void
 	{

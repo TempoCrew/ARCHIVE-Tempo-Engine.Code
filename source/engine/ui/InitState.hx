@@ -1,5 +1,7 @@
 package engine.ui;
 
+import engine.backend.util.plugins.ScreenshotPlugin;
+import engine.backend.util.plugins.EvacuatePlugin;
 import engine.backend.api.GameJoltClient;
 import engine.backend.api.DiscordClient;
 
@@ -25,6 +27,10 @@ class InitState extends flixel.FlxState
 		});
 
 		super.create();
+
+		// Plugins
+		EvacuatePlugin.init();
+		ScreenshotPlugin.init();
 
 		#if FEATURE_DISCORD_RPC
 		DiscordClient.prepare();

@@ -1,4 +1,4 @@
-package engine.backend.util.log;
+package engine.backend.util.plugins;
 
 #if FEATURE_CRASH_DIALOG
 import engine.backend.util.DateUtil;
@@ -11,7 +11,7 @@ import openfl.events.UncaughtErrorEvent;
  * `NULL OBJECT REFERENCE` and etc.
  */
 @:nullSafety
-class CrashLog
+class CrashPlugin
 {
 	/**
 	 * Initialize a crash dialog.
@@ -145,7 +145,7 @@ class CrashLog
 }
 
 @:keep
-@:access(engine.util.log.CrashLog)
+@:access(engine.util.plugins.CrashPlugin)
 private class CrashReference
 {
 	static var file:String = "";
@@ -209,7 +209,7 @@ private class CrashReference
 
 		file = "tempo-crash" + (c ? '-critical' : '') + '-' + DateUtil.generateTimestamp();
 
-		File.saveContent('./logs/$file.log', CrashLog.createContent(e));
+		File.saveContent('./logs/$file.log', CrashPlugin.createContent(e));
 	}
 	#end
 

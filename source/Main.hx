@@ -59,7 +59,7 @@ class Main extends Sprite
 				removeEventListener(Event.ADDED_TO_STAGE, _init);
 
 			@:privateAccess
-			engine.backend.Setup.create();
+			engine.Setup.create();
 		}
 
 		if (stage == null)

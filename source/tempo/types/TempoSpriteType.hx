@@ -6,6 +6,7 @@ enum TempoSpriteType
 	ROUND_RECT;
 	ROUND_RECT_COMPLEX;
 	GRAPHIC;
+	EVERYONE;
 	ATLAS;
 	ANIMATE;
 }

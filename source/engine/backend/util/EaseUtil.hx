@@ -1,6 +1,6 @@
-package engine.backend.util.flixel;
+package engine.backend.util;
 
-class FlxEaseUtil
+class EaseUtil
 {
 	public static function easeInOutCirc(x:Float):Float
 	{

@@ -4,7 +4,7 @@ import haxe.Serializer;
 import flixel.FlxState;
 import engine.ui.debug.*;
 
-class TitleState extends FlxState
+class TitleState extends MusicBeatState
 {
 	override public function create()
 	{
@@ -20,19 +20,19 @@ class TitleState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		if (TempoInput.keyJustPressed.F1)
-			FlxG.switchState(() -> new ChartEditorState());
+			TempoState.switchState(new ChartEditorState());
 		else if (TempoInput.keyJustPressed.F2)
-			FlxG.switchState(() -> new AnimationEditorState());
+			TempoState.switchState(new AnimationEditorState());
 		else if (TempoInput.keyJustPressed.F3)
-			FlxG.switchState(() -> new StageEditorState());
+			TempoState.switchState(new StageEditorState());
 		else if (TempoInput.keyJustPressed.F4)
-			FlxG.switchState(() -> new LevelEditorState());
+			TempoState.switchState(new LevelEditorState());
 		else if (TempoInput.keyJustPressed.F6)
-			FlxG.switchState(() -> new TrophiesState());
+			TempoState.switchState(new TrophiesState());
 		else if (TempoInput.keyJustPressed.TAB)
-			FlxG.switchState(() -> new GameJoltState());
+			TempoState.switchState(new GameJoltState());
 		else if (TempoInput.keyJustPressed.F5)
-			FlxG.state.openSubState(new FreeplaySubState());
+			openSubState(new FreeplaySubState());
 
 		super.update(elapsed);
 	}

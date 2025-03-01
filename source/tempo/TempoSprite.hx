@@ -1,7 +1,6 @@
 package tempo;
 
 import engine.backend.util.SpriteUtil;
-import openfl.display.Graphics;
 import tempo.animation.TempoAnimationController;
 import tempo.types.*;
 
@@ -68,8 +67,8 @@ class TempoSprite extends FlxSprite
 
 		trace(data.path);
 
-		loadGraphic(BitmapData.fromFile('${data.path}.png'), (data.animated != null ? data.animated : false), (data.frameWidth != null ? data.frameWidth : 0),
-			(data.frameHeight != null ? data.frameHeight : 0));
+		loadGraphic(FlxAssets.getBitmapData('${data.path}.png'), (data.animated != null ? data.animated : false),
+			(data.frameWidth != null ? data.frameWidth : 0), (data.frameHeight != null ? data.frameHeight : 0));
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);
@@ -83,6 +82,11 @@ class TempoSprite extends FlxSprite
 				this.animation.add(data.animations[i][0], data.animations[i][1], (data.animations[i][2] != null ? data.animations[i][2] : 24),
 					(data.animations[i][3] != null ? data.animations[i][3] : false));
 		}
+
+		if (data.antialiasing != null)
+			this.antialiasing = data.antialiasing;
+		else
+			this.antialiasing = Save.optionsData.antialiasing;
 
 		if (data.color != null)
 			this.color = data.color;
@@ -102,6 +106,11 @@ class TempoSprite extends FlxSprite
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);
+
+		if (data.antialiasing != null)
+			this.antialiasing = data.antialiasing;
+		else
+			this.antialiasing = Save.optionsData.antialiasing;
 
 		if (data.animations != null)
 		{
@@ -202,6 +211,7 @@ class TempoSprite extends FlxSprite
 			this.flashGfx.beginFill(fillColor.to24Bit(), fillColor.alphaFloat);
 	}
 
+	@:default([])
 	@:noUsing public inline function endDraw():TempoSprite
 	{
 		this.flashGfx.endFill();

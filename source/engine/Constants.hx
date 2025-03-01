@@ -408,6 +408,11 @@ class Constants
 	 */
 	public static final DISCORD_CLIENT_ID:String = "1131981056170545334";
 
+	/**
+	 * Discord Rich Presence Default Client icon;
+	 */
+	public static final DISCORD_CLIENT_ICON:String = "engine";
+
 	// VERSIONS
 
 	/**

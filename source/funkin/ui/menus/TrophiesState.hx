@@ -1,6 +1,6 @@
 package funkin.ui.menus;
 
-class TrophiesState extends flixel.FlxState
+class TrophiesState extends MusicBeatState
 {
 	override function create():Void
 	{

@@ -81,5 +81,5 @@ typedef List_Type_Data =
 	/**
 	 * If `type` is `SLIDER`, this option main (changed position for list / not change this if you want a default value)
 	 */
-	?sliderPosition:{x:Float, y:Float},
+	?sliderPosition:{x:Float, y:Float}
 }

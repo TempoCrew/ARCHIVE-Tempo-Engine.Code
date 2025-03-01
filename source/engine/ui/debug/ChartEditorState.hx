@@ -5,9 +5,8 @@ import engine.ui.debug.charting.*;
 import funkin.backend.song.ChartFile;
 import funkin.backend.song.MetaFile;
 import tempo.ui.interfaces.ITempoUI;
-import tempo.ui.interfaces.ITempoUIState;
 
-class ChartEditorState extends EditorState implements ITempoUIState
+class ChartEditorState extends EditorState
 {
 	public static var instance:Null<ChartEditorState> = null;
 
@@ -31,8 +30,10 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		return metaData;
 	}
 
-	var zoomList:Array<Float> = [0.25, 0.5, 1.0, 1.5, 2, 4, 6, 8, 12, 16];
+	var quantList:Array<Int> = [4, 8, 12, 16, 20, 24, 32, 48, 64, 96, 192];
+	var curQuant:Int = 0;
 
+	var zoomList:Array<Float> = [0.25, 0.5, 1.0, 1.5, 2, 4, 6, 8, 12, 16];
 	var curZoom:Int = 2;
 
 	public function new(?chartData:ChartFile, ?metaData:MetaFile):Void
@@ -60,7 +61,9 @@ class ChartEditorState extends EditorState implements ITempoUIState
 
 	final GRID_SELECTION_BORDER_WIDTH:Int = 6;
 
+	var prevGridBG:FlxSprite;
 	var gridBG:FlxSprite;
+	var nextGridBG:FlxSprite;
 	final GRID_SIZE:Int = 40;
 	var strumLine:FlxSprite;
 	var dummyArrow:FlxSprite;
@@ -97,11 +100,9 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		addCameras();
 		addBG();
 		addUpperStuff();
+		addBottomStuff();
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
-		gridBG.antialiasing = false;
-		gridBG.screenCenter();
-		add(gridBG);
+		reloadGridBGs();
 
 		strumLine = new FlxSprite(gridBG.x).makeGraphic(Std.int(gridBG.width), 4, FlxColor.RED);
 		add(strumLine);
@@ -109,11 +110,14 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
 		add(dummyArrow);
 
-		addSection();
+		loadSong(metaData.songName.toFolderCase());
+
+		if (maxSections != 0)
+			for (i in 0...maxSections)
+				addSection();
 
 		updateGrid();
 
-		loadSong(metaData.songName.toFolderCase());
 		Conductor.instance.bpm = metaData.bpm;
 		Conductor.instance.changeMapBPM(chartData, metaData, curDifficulty);
 
@@ -124,6 +128,8 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		updateWindow('--C Chart Editor', 'icon-1', ["Chart Editor", null, null, null, 'chart-editor', "Charting"]);
 	}
 
+	var maxSections:Int = 0;
+
 	function loadSong(daSong:String):Void
 	{
 		if (FlxG.sound.music != null)
@@ -131,6 +137,60 @@ class ChartEditorState extends EditorState implements ITempoUIState
 
 		FlxG.sound.playMusic(FlxAssets.getSound('songs:assets/songs/${daSong}/Inst.ogg'), 0.6);
 		FlxG.sound.music.pause();
+
+		if (FlxG.sound.music != null)
+			maxSections = Math.floor(FlxG.sound.music.length / (16 * 100));
+	}
+
+	var prevGrp:FlxGroup;
+	var nextGrp:FlxGroup;
+
+	function reloadGridBGs():Void
+	{
+		prevGrp = new FlxGroup();
+		add(prevGrp);
+
+		nextGrp = new FlxGroup();
+		add(nextGrp);
+
+		prevGridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
+		prevGridBG.antialiasing = false;
+		prevGridBG.screenCenter(X);
+		prevGrp.add(prevGridBG);
+
+		var prevBlackBG:FlxSprite = new FlxSprite(prevGridBG.x).makeGraphic(Std.int(prevGridBG.width), Std.int(prevGridBG.height), FlxColor.BLACK);
+		prevBlackBG.antialiasing = false;
+		prevBlackBG.alpha = .6;
+		prevGrp.add(prevBlackBG);
+
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
+		gridBG.antialiasing = false;
+		gridBG.screenCenter();
+		add(gridBG);
+
+		prevBlackBG.y = prevGridBG.y = gridBG.y - gridBG.height;
+
+		var previngLine:FlxSprite = new FlxSprite(prevBlackBG.x, prevBlackBG.y + prevBlackBG.height).makeGraphic(Std.int(prevBlackBG.width), 4, FlxColor.BLACK);
+		previngLine.antialiasing = false;
+		previngLine.alpha = .4;
+		prevGrp.add(previngLine);
+
+		nextGridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 9, GRID_SIZE * 16);
+		nextGridBG.y = gridBG.y + gridBG.height;
+		nextGridBG.antialiasing = false;
+		nextGridBG.screenCenter(X);
+		nextGrp.add(nextGridBG);
+
+		var nextingLine:FlxSprite = new FlxSprite(nextGridBG.x, nextGridBG.y).makeGraphic(Std.int(nextGridBG.width), 4, FlxColor.BLACK);
+		nextingLine.antialiasing = false;
+		nextingLine.alpha = .4;
+		nextGrp.add(nextingLine);
+
+		var nextBlackBG:FlxSprite = new FlxSprite(nextGridBG.x,
+			nextGridBG.y).makeGraphic(Std.int(nextGridBG.width), Std.int(nextGridBG.height), FlxColor.BLACK);
+		nextBlackBG.antialiasing = false;
+		nextBlackBG.alpha = .6;
+		nextGrp.add(nextBlackBG);
 	}
 
 	function getStrumTime(yPos:Float):Float
@@ -139,7 +199,11 @@ class ChartEditorState extends EditorState implements ITempoUIState
 	function getYFromStrum(time:Float):Float
 		return FlxMath.remapToRange(time, 0, 16 * Conductor.instance.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 
-	function updateGrid():Void {}
+	function updateGrid():Void
+	{
+		if (curEditSection < 1)
+			prevGrp.visible = false;
+	}
 
 	function addSection():Void
 	{
@@ -154,13 +218,13 @@ class ChartEditorState extends EditorState implements ITempoUIState
 				section.push(dat);
 			}
 		}
-
-		trace(chartData.sections.toString());
 	}
+
+	var mousePressedForTime:Bool = false;
 
 	override function update(elapsed:Float):Void
 	{
-		final curMouse:FlxMouse = FlxG.mouse;
+		final curMouse:FlxMouse = TempoInput.cursor;
 
 		if (FlxG.sound.music.time < 0)
 		{
@@ -170,76 +234,76 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		else if (FlxG.sound.music.time > FlxG.sound.music.length)
 		{
 			FlxG.sound.music.pause();
-			FlxG.sound.music.time = FlxG.sound.music.endTime - 728;
+			FlxG.sound.music.time = FlxG.sound.music.length - 728;
 		}
 
 		Conductor.instance.songPos = FlxG.sound.music.time;
 
 		strumLine.y = getYFromStrum((Conductor.instance.songPos - sectionStartTime()) % (Conductor.instance.stepCrochet * 16));
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curEditSection + 1))
-		{
-			if (chartData.sections.get(curDifficulty)[curEditSection + 1] == null)
-				addSection();
+		/*
+			if (curBeat % 4 == 0 && curStep >= 16 * (curEditSection + 1))
+			{
+				if (chartData.sections.get(curDifficulty)[curEditSection + 1] == null)
+					addSection();
 
+				changeSection(curEditSection + 1, false);
+		}*/
+
+		if (strumLine.y > (GRID_SIZE * 16))
+		{
 			changeSection(curEditSection + 1, false);
 		}
+		else if (strumLine.y < gridBG.y)
+			changeSection(curEditSection - 1, false);
+
+		if (TempoInput.cursorOverlaps(bg, camGrid) && TempoInput.cursorJustPressed_M)
+			mousePressedForTime = !mousePressedForTime;
 
 		if (!tempoUIFocused)
 		{
-			if (FlxG.mouse.x > gridBG.x
-				&& FlxG.mouse.x < gridBG.x + gridBG.width
-				&& FlxG.mouse.y > gridBG.y
-				&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * getSectionBeats() * 4) * zoomList[curZoom])
+			if (!mousePressedForTime)
 			{
-				dummyArrow.x = Math.floor(FlxG.mouse.viewX / GRID_SIZE) * GRID_SIZE;
-				if (FlxG.keys.pressed.SHIFT)
-					dummyArrow.y = FlxG.mouse.y;
-				else
-					dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
-			}
+				if (TempoInput.cursor.x > gridBG.x
+					&& TempoInput.cursor.x < gridBG.x + gridBG.width
+					&& TempoInput.cursor.y > gridBG.y
+					&& TempoInput.cursor.y < gridBG.y + (GRID_SIZE * Conductor.instance.getSectionBeats(chartData, curEditSection,
+						curDifficulty) * 4) * zoomList[curZoom])
+				{
+					dummyArrow.x = Math.floor((TempoInput.cursor.gameX + (GRID_SIZE / 2)) / GRID_SIZE) * GRID_SIZE;
+					if (FlxG.keys.pressed.SHIFT)
+						dummyArrow.y = TempoInput.cursor.y;
+					else
+						dummyArrow.y = Math.floor(TempoInput.cursor.y / GRID_SIZE) * GRID_SIZE;
+				}
 
-			if (TempoInput.keyJustPressed.SPACE)
-			{
-				if (FlxG.sound.music.playing)
+				if (TempoInput.keyJustPressed.SPACE)
+				{
+					if (FlxG.sound.music.playing)
+						FlxG.sound.music.pause();
+					else
+						FlxG.sound.music.play();
+				}
+
+				if (TempoInput.cursorWheelMoved)
+				{
 					FlxG.sound.music.pause();
-				else
-					FlxG.sound.music.play();
-			}
+					FlxG.sound.music.time -= (TempoInput.cursorWheel * Conductor.instance.stepCrochet * .4);
+				}
 
-			if (FlxG.mouse.wheel != 0)
+				if (TempoInput.keyJustPressed.HOME)
+					FlxTween.tween(FlxG.sound.music, {time: 0}, 1, {ease: FlxEase.cubeInOut});
+				else if (TempoInput.keyJustPressed.END)
+					FlxTween.tween(FlxG.sound.music, {time: FlxG.sound.music.length - 728}, 1, {ease: FlxEase.cubeInOut});
+			}
+			else
 			{
 				FlxG.sound.music.pause();
-				FlxG.sound.music.time -= (FlxG.mouse.wheel * Conductor.instance.stepCrochet * .4);
+				FlxG.sound.music.time -= (TempoInput.cursor.deltaY * .3);
 			}
-
-			if (TempoInput.keyJustPressed.HOME)
-				FlxTween.tween(FlxG.sound.music, {time: 0}, 1, {ease: FlxEase.cubeInOut});
-			else if (TempoInput.keyJustPressed.END)
-				FlxTween.tween(FlxG.sound.music, {time: FlxG.sound.music.endTime - 728}, 1, {ease: FlxEase.cubeInOut});
 		}
 
 		super.update(elapsed);
-	}
-
-	var mouseCount:Int = 0;
-
-	function overlapedToUpper(value:Bool->Void):Void
-	{
-		final mouseOverlapedToUpper:Bool = TempoInput.cursorOverlaps(upperBoxHitbox, camHUD);
-
-		if (mouseOverlapedToUpper && mouseCount < 1)
-		{
-			mouseCount++;
-
-			value(true);
-		}
-		else if (!mouseOverlapedToUpper && mouseCount == 1)
-		{
-			mouseCount = 0;
-
-			value(false);
-		}
 	}
 
 	var camGrid:Null<FlxCamera> = null;
@@ -286,15 +350,20 @@ class ChartEditorState extends EditorState implements ITempoUIState
 
 			updateGrid();
 		}
+		else
+		{
+			addSection();
+
+			changeSection(curEditSection - 1, true);
+		}
 	}
 
-	var upperBoxHitbox:TempoSprite;
 	var upperBoxList:TempoUIList;
 
 	function addUpperStuff():Void
 	{
 		var upper:TempoSprite = new TempoSprite(-1);
-		upper.makeGraphic(FlxG.width + 2, 40, TempoUIConstants.COLOR_BASE_BG);
+		upper.makeGraphic(FlxG.width + 2, 35, TempoUIConstants.COLOR_BASE_BG);
 		upper.scrollFactor.set();
 		upper.cameras = [camHUD];
 		upper.alpha = 0.915;
@@ -313,13 +382,24 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		upperBoxList.scrollFactor.set();
 		upperBoxList.zIndex = 4;
 		add(upperBoxList);
+	}
 
-		upperBoxHitbox = new TempoSprite(upper.x, upper.y);
-		upperBoxHitbox.makeGraphic(Std.int(upper.width), Std.int(upper.height), FlxColor.TRANSPARENT);
-		upperBoxHitbox.alpha = .001;
-		upperBoxHitbox.cameras = [camHUD];
-		upperBoxHitbox.zIndex = 8;
-		add(upperBoxHitbox);
+	function addBottomStuff():Void
+	{
+		var bottom:TempoSprite = new TempoSprite(-1, FlxG.height - 35);
+		bottom.makeGraphic(FlxG.width + 2, 36, TempoUIConstants.COLOR_BASE_BG);
+		bottom.scrollFactor.set();
+		bottom.cameras = [camHUD];
+		bottom.alpha = .915;
+		bottom.zIndex = 3;
+		add(bottom);
+
+		var bottom2:TempoSprite = new TempoSprite(-1, bottom.y - 1);
+		bottom2.makeGraphic(FlxG.width + 2, 1, TempoUIConstants.COLOR_BASE_LINE);
+		bottom2.scrollFactor.set();
+		bottom2.cameras = [camHUD];
+		bottom2.zIndex = 3;
+		add(bottom2);
 	}
 
 	function reloadBGColor():TempoSprite
@@ -328,26 +408,14 @@ class ChartEditorState extends EditorState implements ITempoUIState
 		return bg;
 	}
 
-	function getSectionBeats(?section:Int):Int
-	{
-		if (section == null)
-			section = curEditSection;
-		var val:Null<Float> = null;
-
-		if (chartData.sections.get(curDifficulty)[section] != null)
-			val = chartData.sections.get(curDifficulty)[section].beats;
-
-		return val != null ? Std.int(val) : 4;
-	}
-
-	public function getEvent(name:String, sender:ITempoUI)
+	override function getEvent(name:String, sender:ITempoUI)
 	{
 		trace(name + ' {${Std.string(sender)}}');
 	}
 
 	var tempoUIFocused:Bool = false;
 
-	public function getFocus(value:Bool, thing:ITempoUI)
+	override function getFocus(value:Bool, thing:ITempoUI)
 	{
 		if (thing != null)
 			tempoUIFocused = value;

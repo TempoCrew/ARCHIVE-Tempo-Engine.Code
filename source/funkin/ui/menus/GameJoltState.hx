@@ -5,7 +5,7 @@ import gamejolt.formats.Response;
 import flixel.FlxState;
 
 @:access(engine.backend.api.GameJoltClient)
-class GameJoltState extends FlxState
+class GameJoltState extends MusicBeatState
 {
 	var bg:TempoSprite;
 	var textDo2:FlxInputText;

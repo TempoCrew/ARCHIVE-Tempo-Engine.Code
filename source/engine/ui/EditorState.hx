@@ -1,6 +1,8 @@
 package engine.ui;
 
-@:keep class EditorState extends MusicBeatState
+import tempo.ui.interfaces.ITempoUIState;
+
+class EditorState extends MusicBeatState implements ITempoUIState
 {
 	public static var fromPlayState:Bool = false;
 
@@ -133,6 +135,10 @@ package engine.ui;
 				return "Unknown Editor";
 		}
 	}
+
+	public function getEvent(name:String, sender:tempo.ui.interfaces.ITempoUI) {}
+
+	public function getFocus(value:Bool, thing:tempo.ui.interfaces.ITempoUI) {}
 }
 
 enum EditorType

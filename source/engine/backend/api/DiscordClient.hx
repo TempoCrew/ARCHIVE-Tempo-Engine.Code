@@ -76,19 +76,31 @@ class DiscordClient
 		if (params == null)
 			params = {details: "Random!"};
 
-		Print('Discord Rich Presence Changed: ${params.details + (params.state == null ? "" : " / " + params.state) + (params.largeImageKey == null ? "" : " / " + params.largeImageKey) + (params.largeImageText == null ? "" : " / " + params.largeImageText) + (params.smallImageKey == null ? "" : " / " + params.smallImageKey) + (params.smallImageText == null ? "" : " / " + params.smallImageText)}');
+		Print('Discord Rich Presence Changed: ${params.details + (params.state == null ? "" : " / " + params.state) + (params.type == null ? "" : " / " + params.type) + (params.largeImageKey == null ? "" : " / " + params.largeImageKey) + (params.largeImageText == null ? "" : " / " + params.largeImageText) + (params.smallImageKey == null ? "" : " / " + params.smallImageKey) + (params.smallImageText == null ? "" : " / " + params.smallImageText)}');
 		Discord.UpdatePresence(RawConstPointer.addressOf(buildPresence(params)));
+	}
+
+	function get_stringToActivity(presence:DiscordRichPresence, str:String):Void
+	{
+		if (str == COMPETING)
+			presence.type = DiscordActivityType_Competing;
+		else if (str == LISTENING)
+			presence.type = DiscordActivityType_Listening;
+		else if (str == WATCHING)
+			presence.type = DiscordActivityType_Listening;
+		else
+			presence.type = DiscordActivityType_Playing;
 	}
 
 	private function buildPresence(params:DiscordPresenceParams):DiscordRichPresence
 	{
 		var presence:DiscordRichPresence = new DiscordRichPresence();
-		presence.type = DiscordActivityType_Playing;
+		get_stringToActivity(presence, params.type);
 
 		// Parameters
 		presence.details = cast(params.details, Null<String>);
 		presence.state = cast(params.state, Null<String>);
-		presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? "icon";
+		presence.largeImageKey = cast(params.largeImageKey, Null<String>) ?? Constants.DISCORD_CLIENT_ICON;
 		presence.largeImageText = cast(params.largeImageText, Null<String>) ?? "Project Version: " + Constants.VERSION;
 		presence.smallImageKey = cast(params.smallImageKey, Null<String>);
 		presence.smallImageText = cast(params.smallImageText, Null<String>);
@@ -170,10 +182,19 @@ class DiscordClient
 typedef DiscordPresenceParams =
 {
 	details:Null<String>,
+	?type:DC_Activity_Type,
 	?state:String,
 	?largeImageKey:String,
 	?largeImageText:String,
 	?smallImageKey:String,
 	?smallImageText:String
+}
+
+enum abstract DC_Activity_Type(String) from String to String
+{
+	var COMPETING = "Competing";
+	var WATCHING = "Watching";
+	var LISTENING = "Listening";
+	var PLAYING = "Playing";
 }
 #end
