@@ -1,5 +1,8 @@
 package funkin.ui.menus;
 
+import openfl.filters.ShaderFilter;
+import engine.backend.shaders.Light;
+import flixel.addons.display.FlxRuntimeShader;
 import gamejolt.formats.User;
 import gamejolt.formats.Response;
 import flixel.FlxState;
@@ -9,6 +12,7 @@ class GameJoltState extends MusicBeatState
 {
 	var bg:TempoSprite;
 	var textDo2:FlxInputText;
+	var shader:Light;
 
 	override function create():Void
 	{
@@ -127,6 +131,7 @@ class GameJoltState extends MusicBeatState
 		{
 			var avatar:TempoSprite = new TempoSprite(blank.x + 25, (blankT.y + blankT.height) + 25, GRAPHIC).makeImage({
 				path: "Resource/gj_user",
+				pathIsFromFile: true,
 				cache: true
 			});
 			avatar.setGraphicSize(125, 125);
@@ -139,11 +144,38 @@ class GameJoltState extends MusicBeatState
 			add(text);
 		}
 
+		shader = new Light([255, 255, 255, 255], [0., 0.]);
+		FlxG.camera.filters = [new ShaderFilter(shader)];
+
 		super.create();
+	}
+
+	override function draw():Void
+	{
+		if (shader != null)
+		{
+			final r:Float = FlxMath.lerp(1, FlxG.camera.zoom, 1);
+			shader.LightPos.value[0] = (-FlxG.camera.scroll.x * 1000) / FlxG.width * r;
+			shader.LightPos.value[1] = (-FlxG.camera.scroll.y * -16) / FlxG.height * r;
+		}
+
+		super.draw();
+	}
+
+	override function destroy():Void
+	{
+		FlxG.camera.filters = [];
+
+		super.destroy();
 	}
 
 	override function update(elapsed:Float):Void
 	{
+		if (TempoInput.keyPressed.A)
+			shader.LightPos.value[0] += 1;
+		else if (TempoInput.keyPressed.B)
+			shader.LightPos.value[1] += 1;
+
 		super.update(elapsed);
 	}
 }

@@ -1,1 +1,1 @@
-lime test windows -debug
+lime test windows -debug -DFORCE_DEBUG_VERSION -DFEATURE_DEBUG_FUNCTIONS -DFEATURE_DEBUG_TRACY

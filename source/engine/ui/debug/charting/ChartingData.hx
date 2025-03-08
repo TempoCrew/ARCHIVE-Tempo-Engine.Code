@@ -208,7 +208,7 @@ class ChartingData
 								type: "radio",
 								name: "theme_radio",
 								radioValues: ["Default", "Dark", "Light", "V-Slice", "Psych", "Codename", "Sub-Zero", "Legacy"],
-								radioDefaultValue: "Default"
+								radioDefaultValue: Save.editorData.curTheme
 							}
 						]
 					},

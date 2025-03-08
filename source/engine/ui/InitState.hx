@@ -1,5 +1,6 @@
 package engine.ui;
 
+import engine.input.Cursor;
 import engine.backend.util.plugins.ScreenshotPlugin;
 import engine.backend.util.plugins.EvacuatePlugin;
 import engine.backend.api.GameJoltClient;
@@ -30,17 +31,20 @@ class InitState extends flixel.FlxState
 
 		// Plugins
 		EvacuatePlugin.init();
-		ScreenshotPlugin.init();
+		ScreenshotPlugin.initialize();
 
 		#if FEATURE_DISCORD_RPC
 		DiscordClient.prepare();
 		#end
 
+		Cursor.cursorMode = Default;
+		Cursor.hide();
+
 		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT 3 #else 1 #end, (t:FlxTimer) ->
 		{
 			t = null;
 
-			FlxG.switchState(new funkin.ui.menus.TitleState());
+			FlxG.switchState(new WarningState());
 		});
 	}
 

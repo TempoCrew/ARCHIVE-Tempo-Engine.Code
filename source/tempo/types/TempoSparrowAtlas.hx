@@ -4,7 +4,7 @@ typedef TempoSparrowAtlas =
 {
 	path:String,
 	animations:Array<TempoAnimData>,
-	mainAnim:String,
+	?mainAnim:String,
 	?antialiasing:Bool,
 	?cache:Bool,
 }

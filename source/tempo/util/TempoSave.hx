@@ -315,7 +315,7 @@ private class TempoSharedObject extends SharedObject
 		{
 			all = new Map();
 
-			var app = openfl.Lib.application;
+			var app = openfl.Lib.current.stage.application;
 			if (app != null)
 				app.onExit.add(onExit);
 		}

@@ -4,7 +4,7 @@ import flixel.group.FlxSpriteGroup;
 
 class TempoUIButton extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_button";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 
 	/**
@@ -100,7 +100,8 @@ class TempoUIButton extends FlxSpriteGroup implements ITempoUI
 					if (onOverlap != null)
 						onOverlap(this);
 
-					// CoolStuff.cursor(BUTTON);
+					TempoUI.cursor(Pointer);
+
 					if (broadcastToUI)
 						TempoUI.focus(true, this);
 
@@ -116,7 +117,8 @@ class TempoUIButton extends FlxSpriteGroup implements ITempoUI
 
 				if (mouseSelectCount == 1)
 				{
-					// CoolStuff.cursor(ARROW);
+					TempoUI.cursor();
+
 					if (broadcastToUI)
 						TempoUI.focus(false, this);
 

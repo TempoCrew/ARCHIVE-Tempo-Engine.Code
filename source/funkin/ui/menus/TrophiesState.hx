@@ -32,7 +32,7 @@ class TrophiesState extends MusicBeatState
 		add(blankBG);
 
 		var blankImage:TempoSprite = new TempoSprite(0, 0, GRAPHIC).makeImage({
-			path: Paths.trophies("images/thx-for-using")
+			path: Paths.image("thx-for-using", "trophies")
 		});
 		blankImage.x -= 0;
 		blankImage.y = blankBG.y + 10;

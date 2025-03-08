@@ -42,6 +42,11 @@ import tempo.util.TempoSave;
 	public var discordRPC:Bool = true;
 	#end
 
+	/**
+	 * Warning menu will show in starting or no?
+	 */
+	public var warningVisible:Bool = true;
+
 	#if web
 	/**
 	 * Game FPS (Frames per Second)
@@ -83,6 +88,11 @@ import tempo.util.TempoSave;
 	 */
 	public var shaking:Bool = false;
 
+	/**
+	 * If it's a game with explicit contents, use for people who are 13-18 or something like that.
+	 */
+	public var explicit:Bool = false;
+
 	#if FEATURE_CHECKING_UPDATE
 	/**
 	 * This value for checking a git-updates!
@@ -116,6 +126,11 @@ import tempo.util.TempoSave;
 	public var screenshotEncoder:String = "png";
 
 	/**
+	 * Caching option (RECOMMENDED FOR SUPER-DUPER-MEGA-ULTRA PC's lol :D)
+	 */
+	public var cacheVRAM:Bool = false;
+
+	/**
 	 * Safe frames for Note system
 	 */
 	public var safeFrames:Float = 10;
@@ -141,7 +156,15 @@ import tempo.util.TempoSave;
 
 @:structInit class EditorVariables
 {
+	/**
+	 * Custom BackGround Color
+	 */
 	public var bgColor:{r:Int, g:Int, b:Int} = {r: 75, g: 0, b: 130};
+
+	/**
+	 * Selected Theme
+	 */
+	public var curTheme:String = "Default";
 }
 
 #if FEATURE_GAMEJOLT_CLIENT

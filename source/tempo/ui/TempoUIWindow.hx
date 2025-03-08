@@ -5,7 +5,7 @@ import flixel.group.FlxSpriteGroup;
 
 class TempoUIWindow extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_window";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 	public var overlaped:Bool = false;
 
@@ -96,13 +96,15 @@ class TempoUIWindow extends FlxSpriteGroup implements ITempoUI
 	 */
 	public var focused:Bool = false;
 
+	var mouseSelectCount:Int = 0;
+
 	override function update(elapsed:Float):Void
 	{
 		final overlapedUpperSpr:Bool = TempoInput.cursorOverlaps(upperSpr, this.cameras[this.cameras.length - 1]);
 		final overlapedWindowGrp:Bool = TempoInput.cursorOverlaps(windowGrp, this.cameras[this.cameras.length - 1]);
 		final curMouse:FlxMouse = FlxG.mouse;
 
-		if (working)
+		if (working && visible)
 		{
 			if (overlapedWindowGrp)
 			{
@@ -129,7 +131,16 @@ class TempoUIWindow extends FlxSpriteGroup implements ITempoUI
 			if (overlapedUpperSpr && focused)
 			{
 				if (TempoInput.cursorJustPressed)
+				{
+					if (mouseSelectCount < 1)
+					{
+						TempoUI.cursor(Grabbing);
+
+						mouseSelectCount++;
+					}
+
 					moving = true;
+				}
 			}
 
 			if (focused && moving)
@@ -139,7 +150,16 @@ class TempoUIWindow extends FlxSpriteGroup implements ITempoUI
 					TempoUI.event(TempoUIEvents.UI_WINDOW_POSITION_CHANGING, this);
 
 				if (TempoInput.cursorJustReleased)
+				{
+					if (mouseSelectCount == 1)
+					{
+						TempoUI.cursor();
+
+						mouseSelectCount = 0;
+					}
+
 					moving = false;
+				}
 			}
 		}
 
@@ -151,7 +171,7 @@ class TempoUIWindow extends FlxSpriteGroup implements ITempoUI
 		final color:FlxColor = (focused ? TempoUIConstants.COLOR_WINDOW_UPPER_SPR : TempoUIConstants.COLOR_WINDOW_UPPER_SPR_UNFOCUS);
 
 		upperSpr.color = color;
-		windowSpr.color = color;
+		windowBGSpr.color = color;
 	}
 
 	function reloadUpperSpr(wh:Float, ht:Float):Void

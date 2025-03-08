@@ -6,7 +6,7 @@ import flixel.group.FlxSpriteGroup;
 
 class TempoUICheckbox extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_checkbox";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 
 	/**
@@ -135,7 +135,8 @@ class TempoUICheckbox extends FlxSpriteGroup implements ITempoUI
 						onOverlap(this);
 					if (broadcastToUI)
 						TempoUI.focus(true, this);
-					// CoolStuff.cursor(BUTTON);
+
+					TempoUI.cursor(Pointer);
 
 					mouseSelectCount++;
 				}
@@ -152,7 +153,8 @@ class TempoUICheckbox extends FlxSpriteGroup implements ITempoUI
 				{
 					if (broadcastToUI)
 						TempoUI.focus(false, this);
-					// CoolStuff.cursor(ARROW);
+
+					TempoUI.cursor();
 
 					mouseSelectCount = 0;
 				}

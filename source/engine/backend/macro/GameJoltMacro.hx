@@ -8,8 +8,6 @@ class GameJoltMacro
 		#if !display
 		return macro $v{formatData()};
 		#else
-		// `#if display` is used for code completion. In this case returning an
-		// empty string is good enough; We don't want to call functions on every hint.
 		return macro $v{{ID: 0, Key: ""}};
 		#end
 	}

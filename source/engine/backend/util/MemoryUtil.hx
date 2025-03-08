@@ -21,11 +21,11 @@ class MemoryUtil
 	 * Global caching assets
 	 */
 	public static var globalCachingAssets:Array<String> = [
-		// 'funkin/materials/audio/music/freakyMenu.${Constants.EXT_SOUND}',
-		// 'funkin/materials/audio/music/breakfast.${Constants.EXT_SOUND}',
-		// 'funkin/materials/audio/sfx/cancelMenu.${Constants.EXT_SOUND}',
-		// 'funkin/materials/audio/sfx/scrollMenu.${Constants.EXT_SOUND}',
-		// 'funkin/materials/audio/sfx/confirmMenu.${Constants.EXT_SOUND}'
+		'assets/music/freakyMenu.${Constants.EXT_SOUND}',
+		'assets/music/breakfast.${Constants.EXT_SOUND}',
+		'assets/sounds/cancelMenu.${Constants.EXT_SOUND}',
+		'assets/sounds/scrollMenu.${Constants.EXT_SOUND}',
+		'assets/sounds/confirmMenu.${Constants.EXT_SOUND}'
 	];
 
 	/**
@@ -129,6 +129,7 @@ class MemoryUtil
 		result += '\n- HXCPP Stack Trace Line Numbers: ${#if HXCPP_STACK_LINE 'Enabled' #else 'Disabled' #end}';
 		result += '\n- HXCPP Pointer Validation: ${#if HXCPP_CHECK_POINTER 'Enabled' #else 'Disabled' #end}';
 		result += '\n- HXCPP Profiler: ${#if HXCPP_PROFILER 'Enabled' #else 'Disabled' #end}';
+		result += '\n- HXCPP Tracy Bool: ${#if HXCPP_TRACY 'Enabled' #else 'Disabled' #end}';
 		result += '\n- HXCPP Local Telemetry: ${#if HXCPP_TELEMETRY 'Enabled' #else 'Disabled' #end}';
 		result += '\n- HXCPP C++11: ${#if HXCPP_CPP11 'Enabled' #else 'Disabled' #end}';
 		result += '\n- Source Annotation: ${#if annotate_source 'Enabled' #else 'Disabled' #end}';
@@ -189,7 +190,7 @@ class MemoryUtil
 	{
 		#if cpp
 		cpp.vm.Gc.run(major);
-		#if openfl
+		#if !flash
 		openfl.system.System.gc();
 		#end
 		#else

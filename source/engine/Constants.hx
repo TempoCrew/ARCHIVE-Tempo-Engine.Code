@@ -163,7 +163,7 @@ class Constants
 	public static final TEMPO_LUA_VERSION:String = "0.1.0";
 
 	/**
-	 * Tempo `Inputter` version
+	 * Tempo `Controls` version
 	 */
 	public static final INPUT_DATA_VERSION:String = "1_0";
 
@@ -304,7 +304,7 @@ class Constants
 	public static final STRUM_GENERATING_TIMER:Float = 0.5;
 
 	/**
-	 * Default from `Inputter` keys for Strum press
+	 * Default from `Controls` keys for Strum press
 	 */
 	public static final DEFAULT_ALL_KEYS:Array<String> = ['_strumleft', '_strumdown', '_strumup', '_strumright'];
 
@@ -473,7 +473,7 @@ class Constants
 	/**
 	 * Screenshot images generate path.
 	 */
-	public static final SCREENSHOT_FOLDER:String = "engine/screenshots";
+	public static final SCREENSHOT_FOLDER:String = "screenshots";
 
 	#if FEATURE_GAMEJOLT_CLIENT
 	/**

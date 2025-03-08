@@ -9,6 +9,7 @@ import gamejolt.formats.User;
 class TempoState extends flixel.FlxState
 {
 	public static var fadeIn:Bool = false;
+	public static var camFade:FlxCamera;
 
 	public var player1(get, never):PlayerSettings;
 	public var player2(get, never):PlayerSettings;
@@ -26,15 +27,24 @@ class TempoState extends flixel.FlxState
 
 	public static function switchState(nextState:flixel.FlxState, ?onCallback:Void->Void):Void
 	{
-		fadeIn = true;
-		FlxG.state.persistentUpdate = false;
-		FlxG.state.openSubState(new TransitionSubState(true, Constants.TRANSITION_DURATION, () ->
+		if (camFade == null)
 		{
+			camFade = new FlxCamera();
+			camFade.bgColor.alpha = 0;
+			FlxG.cameras.add(camFade, false);
+		}
+
+		fadeIn = true;
+		var transitionSubState:TempoSubState = new TransitionSubState(true, Constants.TRANSITION_DURATION, () ->
+		{
+			FlxG.state.persistentUpdate = false;
 			if (onCallback != null)
 				onCallback();
 
 			FlxG.switchState(() -> nextState);
-		}));
+		});
+		transitionSubState.camera = camFade;
+		FlxG.state.openSubState(transitionSubState);
 	}
 
 	function get_player1():PlayerSettings

@@ -345,7 +345,20 @@ class TempoInput
 		return cursor.justMoved;
 
 	/**
-	 * Mouse overlaps something function
+	 * Cursor texture load.
+	 * @param graphic Texture Path
+	 * @param scale Scale for display
+	 * @param offsetX Offset Axis X (for display)
+	 * @param offsetY Offset Axis Y (for display)
+	 * @return FlxMouse
+	 */
+	public static function cursorLoad(graphic:String, scale:Float = 1.00, offsetX:Int = 0, offsetY:Int = 0):Void
+	{
+		FlxG.mouse.load(Paths.loader.image(graphic, true), scale, offsetX, offsetY);
+	}
+
+	/**
+	 * Mouse hover something function
 	 * @param BasicObject Current object, where cursor want overlap
 	 * @param Camera If this object with different camera, recommended here paste current camera
 	 * @return `this` object overlaped or no?

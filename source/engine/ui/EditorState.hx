@@ -1,5 +1,6 @@
 package engine.ui;
 
+import engine.input.Cursor;
 import tempo.ui.interfaces.ITempoUIState;
 
 class EditorState extends MusicBeatState implements ITempoUIState
@@ -28,7 +29,7 @@ class EditorState extends MusicBeatState implements ITempoUIState
 			FlxG.fullscreen = false;
 		}
 
-		// CoolStuff.cursor(ARROW, true);
+		TempoUI.cursor();
 	}
 
 	override function update(e:Float):Void
@@ -47,11 +48,9 @@ class EditorState extends MusicBeatState implements ITempoUIState
 			{
 				case(CHART | STAGE | ANIMATE | MENU):
 					if (TempoInput.cursorJustPressed)
-						trace('yey');
-					// TempoFast.soundPlay('editors/ClickUp', .7);
+						FlxG.sound.play(Paths.loader.sound(Paths.engine('audio/SFX/ClickUp.ogg')));
 					else if (TempoInput.cursorJustReleased)
-						trace('yey2');
-				// TempoFast.soundPlay('editors/ClickDown', .7);
+						FlxG.sound.play(Paths.loader.sound(Paths.engine('audio/SFX/ClickDown.ogg')));
 				default: // not lol
 			}
 		}
@@ -62,9 +61,9 @@ class EditorState extends MusicBeatState implements ITempoUIState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		// TempoFast.soundPlay('cancelMenu');
+		FlxG.sound.play(Paths.loader.sound(Paths.sound('cancelMenu')));
 
-		// CoolStuff.cursor(null, false);
+		Cursor.hide();
 		updateWindow(Constants.TITLE);
 		TempoState.switchState(new funkin.ui.menus.TitleState(), () ->
 		{

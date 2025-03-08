@@ -1,6 +1,6 @@
-package engine.backend;
+package engine.input;
 
-class Inputter
+class Controls
 {
 	// NOTE KEYS
 
@@ -352,9 +352,9 @@ class Inputter
 	/**
 	 * Use these for more call's of functions
 	 */
-	public static var instance(get, never):Inputter;
+	public static var instance(get, never):Controls;
 
-	static var _instance:Null<Inputter> = null;
+	static var _instance:Null<Controls> = null;
 
 	/**
 	 * For `instance`
@@ -365,12 +365,12 @@ class Inputter
 		binds_joy = Save.binds_joy;
 	}
 
-	static function get_instance():Inputter
+	static function get_instance():Controls
 	{
-		if (Inputter._instance == null)
-			_instance = new Inputter();
-		if (Inputter._instance == null)
-			throw "Could not initialize singleton Inputter";
-		return Inputter._instance;
+		if (Controls._instance == null)
+			_instance = new Controls();
+		if (Controls._instance == null)
+			throw "Could not initialize singleton Controls";
+		return Controls._instance;
 	}
 }

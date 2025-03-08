@@ -2,9 +2,10 @@ package tempo.ui;
 
 import flixel.group.FlxSpriteGroup;
 
+@:access(tempo.ui.TempoUI)
 class TempoUIArrow extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_arrow";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 
 	/**
@@ -105,7 +106,7 @@ class TempoUIArrow extends FlxSpriteGroup implements ITempoUI
 						if (addTimer != null)
 							addTimer.cancel();
 
-					showTimer = new FlxTimer().start(0.7, (tmr:FlxTimer) ->
+					showTimer = new FlxTimer().start(0.25, (tmr:FlxTimer) ->
 					{
 						tmr = null;
 
@@ -115,7 +116,9 @@ class TempoUIArrow extends FlxSpriteGroup implements ITempoUI
 							TempoUI.event(TempoUIEvents.UI_ARROW_OVERLAP, this);
 						trace('showed!');
 					});
-					// CoolStuff.cursor(BUTTON);
+
+					TempoUI.cursor(Pointer);
+
 					if (broadcastToUI)
 						TempoUI.focus(true, this);
 
@@ -133,7 +136,8 @@ class TempoUIArrow extends FlxSpriteGroup implements ITempoUI
 					if (showTimer != null)
 						showTimer.cancel();
 
-					// CoolStuff.cursor(ARROW);
+					TempoUI.cursor();
+
 					if (broadcastToUI)
 						TempoUI.focus(false, this);
 

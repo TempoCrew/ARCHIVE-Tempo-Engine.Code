@@ -1,16 +1,14 @@
 package engine.backend.api;
 
 #if FEATURE_GAMEJOLT_CLIENT
-import flixel.FlxSubState;
-import engine.ui.GameJoltNotification;
-import engine.ui.RestartGameSubState;
 import engine.backend.util.FileUtil;
 import engine.backend.macro.GameJoltMacro;
-import gamejolt.formats.User;
-import gamejolt.types.DataUpdateType;
-import gamejolt.formats.Response;
-import gamejolt.GameJolt as Api;
-import gamejolt.GameJolt.GJRequest as Request;
+import engine.ui.GameJoltNotification;
+import engine.ui.RestartGameSubState;
+import gamejolt.types.*;
+import gamejolt.formats.*;
+import gamejolt.GJApi;
+import gamejolt.GJRequest;
 import openfl.utils.ByteArray;
 import openfl.events.ErrorEvent;
 #if FEATURE_GAMEJOLT_DATA_STORAGE
@@ -22,6 +20,7 @@ import haxe.Serializer;
 #if (FEATURE_SYSTOOLS_NDLL && cpp)
 import systools.win.Tools;
 #end
+import engine.backend.util.WindowsUtil;
 
 @:access(gamejolt.GameJolt)
 @:access(engine.backend.macro.GameJoltMacro)
@@ -38,8 +37,8 @@ class GameJoltClient
 	{
 		print("Initializing client...");
 
-		Api.gameID = GameJoltMacro.getData().ID;
-		Api.gameKey = GameJoltMacro.getData().Key;
+		GJApi.gameID = GameJoltMacro.getData().ID;
+		GJApi.gameKey = GameJoltMacro.getData().Key;
 
 		if ((Save.gjData.userName == null || Save.gjData.userName == "") && (Save.gjData.userToken == null || Save.gjData.userToken == ""))
 		{
@@ -47,8 +46,8 @@ class GameJoltClient
 			return;
 		}
 
-		Api.userName = Save.gjData.userName;
-		Api.userToken = Save.gjData.userToken;
+		GJApi.userName = Save.gjData.userName;
+		GJApi.userToken = Save.gjData.userToken;
 	}
 
 	static var pingTimer:FlxTimer;
@@ -57,11 +56,11 @@ class GameJoltClient
 
 	public function initialize(?onComplete:Response->Void):Void
 	{
-		if (Api.gameID != 0 && Api.gameKey != "")
+		if (GJApi.gameID != 0 && GJApi.gameKey != "")
 		{
 			print("Game ID and KEY exists!");
 
-			if (Api.userName != "" && Api.userToken != "")
+			if (GJApi.userName != "" && GJApi.userToken != "")
 			{
 				print("User data exists!");
 
@@ -77,8 +76,8 @@ class GameJoltClient
 		print('User - $name ($token)');
 		#end
 
-		Api.userName = name;
-		Api.userToken = token;
+		GJApi.userName = name;
+		GJApi.userToken = token;
 
 		Save.gjData.userName = name;
 		Save.gjData.userToken = token;
@@ -89,16 +88,16 @@ class GameJoltClient
 
 	public function logout():Void
 	{
-		if (Api.userName == "" && Api.userToken == "")
+		if (GJApi.userName == "" && GJApi.userToken == "")
 			return;
 
 		#if FEATURE_GAMEJOLT_DATA_STORAGE
 		removeCloudFiles();
 		#end
-		stopSession();
+		closeSession();
 
-		Api.userName = "";
-		Api.userToken = "";
+		GJApi.userName = "";
+		GJApi.userToken = "";
 
 		Save.gjData.userName = null;
 		Save.gjData.userToken = null;
@@ -257,7 +256,7 @@ class GameJoltClient
 	{
 		sessionPinged = true;
 
-		var request = new Request(SESSION_PING(true));
+		var request = new GJRequest(SessionPing(true));
 		request.onProgress = onProgress;
 		request.onError = onError;
 		request.send();
@@ -267,7 +266,7 @@ class GameJoltClient
 
 	public function openSession(?onComplete:Response->Void):Void
 	{
-		var request = new Request(SESSION_OPEN);
+		var request = new GJRequest(SessionOpen);
 		request.onProgress = onProgress;
 		request.onError = onError;
 		request.onComplete = (r:Response) ->
@@ -285,12 +284,12 @@ class GameJoltClient
 
 			checkUserData();
 
-			Lib.application.onExit.add((_) -> stopSession());
+			WindowsUtil.windowExit.add((_) -> closeSession());
 		};
 		request.send();
 	}
 
-	public function stopSession():Void
+	public function closeSession():Void
 	{
 		if (sessionOpened && !sessionPinged)
 		{
@@ -302,7 +301,7 @@ class GameJoltClient
 			#end
 			print("Session Closed!");
 
-			var request = new Request(SESSION_CLOSE);
+			var request = new GJRequest(SessionClose);
 			request.onError = onError;
 			request.onProgress = onProgress;
 			request.send();
@@ -311,7 +310,7 @@ class GameJoltClient
 
 	public function setTrophy(ID:Int, ?onComplete:Response->Void):Void
 	{
-		var trophyRequest = new Request(TROPHIES_ADD(ID));
+		var trophyRequest = new GJRequest(TrophiesAdd(ID));
 		trophyRequest.onError = onError;
 		trophyRequest.onProgress = onProgress;
 		trophyRequest.onComplete = (r:Response) ->
@@ -326,7 +325,7 @@ class GameJoltClient
 
 	public function fetchTrophy(Achieved:Bool = false, ID:Int, ?onComplete:Response->Void):Void
 	{
-		var trophyRequest = new Request(TROPHIES_FETCH(Achieved, ID));
+		var trophyRequest = new GJRequest(TrophiesFetch(Achieved, ID));
 		trophyRequest.onError = onError;
 		trophyRequest.onProgress = onProgress;
 		trophyRequest.onComplete = (r:Response) ->
@@ -341,7 +340,7 @@ class GameJoltClient
 
 	public function removeTrophy(ID:Int, ?onComplete:Response->Void):Void
 	{
-		var trophyRequest = new Request(TROPHIES_REMOVE(ID));
+		var trophyRequest = new GJRequest(TrophiesRemove(ID));
 		trophyRequest.onError = onError;
 		trophyRequest.onProgress = onProgress;
 		trophyRequest.onComplete = (r:Response) ->
@@ -356,7 +355,7 @@ class GameJoltClient
 
 	public function setScore(score:String, ID:Int, ?onComplete:Response->Void):Void
 	{
-		var scoreRequest = new Request(SCORES_ADD(score, 1, null, ID));
+		var scoreRequest = new GJRequest(ScoresAdd(score, 1, null, ID));
 		scoreRequest.onError = onError;
 		scoreRequest.onProgress = onProgress;
 		scoreRequest.onComplete = (r:Response) ->
@@ -371,7 +370,7 @@ class GameJoltClient
 
 	public function fetchScore(limit:Int, ID:Int, betterThan:Int, ?onComplete:Response->Void):Void
 	{
-		var scoreRequest = new Request(SCORES_FETCH(true, ID, limit, betterThan));
+		var scoreRequest = new GJRequest(ScoresFetch(true, ID, limit, betterThan));
 		scoreRequest.onError = onError;
 		scoreRequest.onProgress = onProgress;
 		scoreRequest.onComplete = (r:Response) ->
@@ -386,7 +385,7 @@ class GameJoltClient
 
 	public function getScore(ID:Int, ?onComplete:Response->Void):Void
 	{
-		var scoreRequest = new Request(SCORES_GETRANK(1, ID));
+		var scoreRequest = new GJRequest(ScoresGetRank(1, ID));
 		scoreRequest.onError = onError;
 		scoreRequest.onProgress = onProgress;
 		scoreRequest.onComplete = (r:Response) ->
@@ -401,7 +400,7 @@ class GameJoltClient
 
 	public function getScoreTable(?onComplete:Response->Void)
 	{
-		var scoreRequest = new Request(SCORES_TABLES);
+		var scoreRequest = new GJRequest(ScoresTables);
 		scoreRequest.onError = onError;
 		scoreRequest.onProgress = onProgress;
 		scoreRequest.onComplete = (r:Response) ->
@@ -417,7 +416,7 @@ class GameJoltClient
 	#if FEATURE_GAMEJOLT_DATA_STORAGE
 	public function setData(key:String, data:String, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
-		var dataRequest = new Request(DATA_SET(key, data, isPrivate));
+		var dataRequest = new GJRequest(DataSet(key, data, isPrivate));
 		dataRequest.onError = onError;
 		dataRequest.onProgress = onProgress;
 		dataRequest.onComplete = (r:Response) ->
@@ -432,7 +431,7 @@ class GameJoltClient
 
 	public function fetchData(key:String, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
-		var dataRequest = new Request(DATA_FETCH(key, isPrivate));
+		var dataRequest = new GJRequest(DataFetch(key, isPrivate));
 		dataRequest.onError = onError;
 		dataRequest.onProgress = onProgress;
 		dataRequest.onComplete = (r:Response) ->
@@ -447,7 +446,7 @@ class GameJoltClient
 
 	public function removeData(key:String, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
-		var dataRequest = new Request(DATA_REMOVE(key, isPrivate));
+		var dataRequest = new GJRequest(DataRemove(key, isPrivate));
 		dataRequest.onError = onError;
 		dataRequest.onProgress = onProgress;
 		dataRequest.onComplete = (r:Response) ->
@@ -462,7 +461,7 @@ class GameJoltClient
 
 	public function updateData(key:String, operation:DataUpdateType, isPrivate:Bool = true, ?onComplete:Response->Void):Void
 	{
-		var dataRequest = new Request(DATA_UPDATE(key, operation, isPrivate));
+		var dataRequest = new GJRequest(DataUpdate(key, operation, isPrivate));
 		dataRequest.onError = onError;
 		dataRequest.onProgress = onProgress;
 		dataRequest.onComplete = (r:Response) ->
@@ -479,7 +478,7 @@ class GameJoltClient
 	{
 		FileUtil.createFolderIfNotExist(Constants.GAMEJOLT_CLOUD_PATH);
 
-		var keyRequest = new Request(DATA_GETKEYS(isPrivate, pattern));
+		var keyRequest = new GJRequest(DataGetKeys(isPrivate, pattern));
 		keyRequest.onError = onError;
 		keyRequest.onProgress = onProgress;
 		keyRequest.onComplete = (r:Response) ->
@@ -498,11 +497,11 @@ class GameJoltClient
 
 	function checkUserData():Void
 	{
-		if (Api.userName == "" && Api.userToken == "")
+		if (GJApi.userName == "" && GJApi.userToken == "")
 			return;
 
 		#if sys
-		var userRequest = new Request(USER_FETCH(['${Api.userName}']));
+		var userRequest = new GJRequest(UserFetch(['${GJApi.userName}']));
 		userRequest.onComplete = (r:Response) ->
 		{
 			FileUtil.createTJSON(Constants.GAMEJOLT_DATA_FILE_PATH, r);
@@ -619,7 +618,7 @@ class GameJoltClient
 	#end
 }
 
-class WaitingSubState extends FlxSubState
+class WaitingSubState extends MusicBeatSubState
 {
 	public function new(name:String, desc:String):Void
 	{

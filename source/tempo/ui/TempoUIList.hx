@@ -50,7 +50,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 	{
 		curCamera = this.cameras[this.cameras.length - 1];
 
-		if (working)
+		if (working && visible)
 		{
 			for (i in 0...buttonsGrps.length)
 			{
@@ -91,11 +91,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 						if (TempoInput.cursorJustPressed)
 						{
-							listObjsGrps[selectedListButtonNum].visible = false;
-							for (dat => grp in arrowListObjsGrps)
-								grp.visible = false;
-							listClicked = false;
-							listOverlapCount = 0;
+							hide();
 						}
 					}
 
@@ -162,6 +158,15 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 		}
 
 		super.update(elapsed);
+	}
+
+	public function hide():Void
+	{
+		listObjsGrps[selectedListButtonNum].visible = false;
+		for (dat => grp in arrowListObjsGrps)
+			grp.visible = false;
+		listClicked = false;
+		listOverlapCount = 0;
 	}
 
 	public var buttonsGrps:Array<FlxTypedSpriteGroup<TempoSprite>> = [];
@@ -275,6 +280,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 				{
 					case CHECKBOX:
 						var obj:TempoUICheckbox = new TempoUICheckbox(listBG.x - 2.5, listBG.y - 2.5, data.text, data.checkboxDefaultValue, true);
+						obj.name = data.name;
 						obj.scrollFactor.set();
 						obj.y += (sprYMult * (curSprHeight));
 						obj.working = (data.isNotWorking != null ? !data.isNotWorking : true);
@@ -292,6 +298,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 					case ARROW:
 						var obj:TempoUIArrow = new TempoUIArrow(listBG.x - 2.5, listBG.y - 2.5, data.text, 0, 0);
+						obj.name = data.name;
 						obj.listData = data.arrowData;
 						obj.scrollFactor.set();
 						obj.y += (sprYMult * (curSprHeight));
@@ -310,6 +317,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 					case RADIO:
 						var obj:TempoUIRadio = new TempoUIRadio(listBG.x - 2.5, listBG.y - 2.5, data.radioValues, data.radioDefaultValue);
+						obj.name = data.name;
 						obj.scrollFactor.set();
 						obj.y += (sprYMult * curSprHeight);
 						obj.visible = false;
@@ -327,6 +335,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 					default:
 						var obj:TempoUIButton = new TempoUIButton(listBG.x - 2.5, listBG.y - 2.5, data.text, 0, 0, null, data.buttonBind);
+						obj.name = name;
 						obj.scrollFactor.set();
 						obj.y += (sprYMult * (curSprHeight));
 						obj.working = (data.isNotWorking != null ? !data.isNotWorking : true);
@@ -420,6 +429,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 					{
 						case CHECKBOX:
 							var obj:TempoUICheckbox = new TempoUICheckbox(0, 0, 'test', false, true);
+							obj.name = uiArrow.listData[0].name;
 							obj.visible = false;
 							ar_curSprHeight = obj.bg.height;
 							obj.kill();
@@ -428,6 +438,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 						case RADIO:
 							var obj:TempoUIRadio = new TempoUIRadio(0, 0, uiArrow.listData[0].radioValues, uiArrow.listData[0].radioDefaultValue);
+							obj.name = uiArrow.listData[0].name;
 							obj.visible = false;
 							ar_curSprHeight = obj.bgHeight;
 							obj.kill();
@@ -436,6 +447,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 						default:
 							var obj:TempoUIButton = new TempoUIButton(0, 0, 'test', 0, 0);
+							obj.name = uiArrow.listData[0].name;
 							obj.visible = false;
 							ar_curSprHeight = obj.bg.height;
 							obj.kill();
@@ -459,6 +471,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 							case CHECKBOX:
 								var obj:TempoUICheckbox = new TempoUICheckbox(arrowListBG.x - 2.5, arrowListBG.y - 2.5, data.text, data.checkboxDefaultValue,
 									true);
+								obj.name = data.name;
 								obj.scrollFactor.set();
 								obj.y += (ar_sprYMult * (ar_curSprHeight));
 								obj.visible = false;
@@ -476,6 +489,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 							case ARROW:
 								var obj:TempoUIArrow = new TempoUIArrow(2.5, 2.5, data.text, 0, 0);
+								obj.name = data.name;
 								obj.listData = data.arrowData;
 								obj.scrollFactor.set();
 								obj.y += (ar_sprYMult * (ar_curSprHeight));
@@ -494,6 +508,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 							case RADIO:
 								var obj:TempoUIRadio = new TempoUIRadio(2.5, 2.5, data.radioValues, data.radioDefaultValue);
+								obj.name = data.name;
 								obj.scrollFactor.set();
 								obj.y += (ar_sprYMult * ar_curSprHeight);
 								obj.visible = false;
@@ -511,6 +526,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 
 							default:
 								var obj:TempoUIButton = new TempoUIButton(2.5, 2.5, data.text, 0, 0, null, data.buttonBind);
+								obj.name = data.name;
 								obj.scrollFactor.set();
 								obj.y += (ar_sprYMult * (ar_curSprHeight));
 								obj.visible = false;
@@ -582,7 +598,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 				if (arrowTimer != null)
 					arrowTimer.cancel();
 
-				arrowTimer = new FlxTimer().start(0.2, (t:FlxTimer) ->
+				arrowTimer = new FlxTimer().start(0.1, (t:FlxTimer) ->
 				{
 					t = null;
 
@@ -619,13 +635,13 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 		{
 			buttonOverlapCount = 0;
 
-			// CoolStuff.cursor(BUTTON);
+			TempoUI.cursor(Pointer);
 
 			buttonOverlapCount++;
 		}
 		else if (!TempoInput.cursorOverlaps(buttonsGrps[overlapSelectNum], curCamera) && buttonOverlapCount == 1)
 		{
-			// CoolStuff.cursor(ARROW);
+			TempoUI.cursor();
 
 			buttonOverlapCount = 0;
 		}

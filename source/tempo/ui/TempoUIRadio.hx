@@ -7,7 +7,7 @@ import flixel.group.FlxSpriteGroup;
 // TODO: Finishing
 class TempoUIRadio extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_radio";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 	public var overlaped:Bool = false;
 
@@ -111,6 +111,8 @@ class TempoUIRadio extends FlxSpriteGroup implements ITempoUI
 			});
 	}
 
+	var mouseSelectCount:Int = 0;
+
 	override function update(e:Float):Void
 	{
 		if (this.visible && working)
@@ -127,10 +129,32 @@ class TempoUIRadio extends FlxSpriteGroup implements ITempoUI
 					{
 						value = text.text;
 					}
+
+					if (mouseSelectCount < 1)
+					{
+						mouseSelectCount = 0;
+
+						if (broadcastToUI)
+							TempoUI.focus(true, this);
+
+						TempoUI.cursor(Pointer);
+
+						mouseSelectCount++;
+					}
 				}
 				else
 				{
 					bgs[image.zIndex].alpha = .2;
+
+					if (mouseSelectCount == 1)
+					{
+						if (broadcastToUI)
+							TempoUI.focus(false, this);
+
+						TempoUI.cursor();
+
+						mouseSelectCount = 0;
+					}
 				}
 			}
 		}

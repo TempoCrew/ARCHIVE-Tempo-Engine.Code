@@ -3,6 +3,7 @@ package tempo.types;
 typedef TempoImage =
 {
 	path:String,
+	?pathIsFromFile:Bool,
 	?antialiasing:Bool,
 	?color:FlxColor,
 	?cache:Bool,

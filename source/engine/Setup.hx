@@ -1,9 +1,17 @@
 package engine;
 
+import engine.backend.util.WindowsUtil;
+
 class Setup
 {
 	static function create():Void
 	{
+		#if FEATURE_DEBUG_TRACY
+		WindowsUtil.initDebugTracy();
+		#end
+
+		WindowsUtil.initWindowExitDispatch();
+
 		flixel.FlxSprite.defaultAntialiasing = true;
 
 		#if FEATURE_VIDEO_PLAYBACK

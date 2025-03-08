@@ -2,10 +2,12 @@ package engine.backend;
 
 import funkin.backend.song.MetaFile;
 import funkin.backend.song.ChartFile;
-import engine.backend.util.ConductorUtil;
 
 class Conductor
 {
+	inline public static function bpmToCrochet(bpm:Float):Float
+		return (60 / bpm) * 1000;
+
 	public static var instance(get, never):Conductor;
 	static var _instance:Null<Conductor> = null;
 
@@ -52,14 +54,14 @@ class Conductor
 					"stepTime" => totalSteps,
 					"songTime" => totalPosition,
 					"bpm" => currentBPM,
-					"stepCrochet" => ConductorUtil.bpmToCrochet(currentBPM) / Constants.STEPS_PER_BEAT
+					"stepCrochet" => bpmToCrochet(currentBPM) / Constants.STEPS_PER_BEAT
 				];
 				this.bpmChangeMap.push(event);
 			}
 
 			final deltaSteps = this.getSectionBeats(chart, i, diff) * Constants.STEPS_PER_BEAT;
 			totalSteps += Math.floor(deltaSteps.round());
-			totalPosition += (ConductorUtil.bpmToCrochet(currentBPM) / Constants.STEPS_PER_BEAT) * deltaSteps.round();
+			totalPosition += (bpmToCrochet(currentBPM) / Constants.STEPS_PER_BEAT) * deltaSteps.round();
 		}
 
 		trace("Change BPM Map (" + bpmChangeMap + ")");
@@ -77,7 +79,7 @@ class Conductor
 	function set_bpm(v:Float):Float
 	{
 		this.bpm = v;
-		this.crochet = ConductorUtil.bpmToCrochet(this.bpm);
+		this.crochet = bpmToCrochet(this.bpm);
 		this.stepCrochet = this.crochet / Constants.STEPS_PER_BEAT;
 
 		return this.bpm = v;

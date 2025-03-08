@@ -1,5 +1,6 @@
 package engine.backend.api;
 
+import engine.backend.util.WindowsUtil;
 #if FEATURE_DISCORD_RPC
 import cpp.Function;
 import cpp.ConstCharStar;
@@ -113,7 +114,7 @@ class DiscordClient
 		if (!initialized)
 			DiscordClient.instance.initialize();
 
-		Application.current.onExit.add((_) ->
+		WindowsUtil.windowExit.add((_) ->
 		{
 			if (initialized)
 				DiscordClient.instance.shutdown();

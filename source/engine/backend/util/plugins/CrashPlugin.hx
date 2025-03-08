@@ -44,7 +44,7 @@ class CrashPlugin
 		#end
 
 		#if FEATURE_GAMEJOLT_CLIENT
-		GameJoltClient.instance.stopSession();
+		GameJoltClient.instance.closeSession();
 		#end
 
 		try
@@ -81,7 +81,7 @@ class CrashPlugin
 		#end
 
 		#if FEATURE_GAMEJOLT_CLIENT
-		GameJoltClient.instance.stopSession();
+		GameJoltClient.instance.closeSession();
 		#end
 
 		try
@@ -160,8 +160,10 @@ private class CrashReference
 		#if windows
 		final appName:String = (openfl.Lib.application.meta.get('file') != null ? openfl.Lib.application.meta.get('file') : 'Tempo Engine') + ".exe";
 
+		#if debug
 		trace(appName);
 		trace(Sys.getCwd());
+		#end
 
 		Sys.command("cd " + Sys.getCwd());
 

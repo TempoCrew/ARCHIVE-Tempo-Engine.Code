@@ -1,5 +1,8 @@
 package tempo.ui;
 
+import engine.input.Cursor;
+import engine.backend.util.SpriteUtil;
+import engine.backend.util.MemoryUtil;
 import tempo.ui.interfaces.ITempoUI;
 
 /**
@@ -8,6 +11,8 @@ import tempo.ui.interfaces.ITempoUI;
  */
 class TempoUI
 {
+	public static var customCursorAllowed:Bool = false;
+
 	/**
 	 * Add a new event
 	 * @param tag event name
@@ -36,6 +41,16 @@ class TempoUI
 			curState.getFocus(value, thing);
 		else
 			trace('Focus not called! Current state is NULL!');
+	}
+
+	public static function cursor(?id:CursorMode = Default, ?visible:Bool = true):Void
+	{
+		Cursor.cursorMode = id;
+
+		if (visible)
+			Cursor.show();
+		else
+			Cursor.hide();
 	}
 
 	public static function getUIState():ITempoUIState

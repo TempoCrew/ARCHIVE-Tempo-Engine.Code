@@ -67,8 +67,9 @@ class TempoSprite extends FlxSprite
 
 		trace(data.path);
 
-		loadGraphic(FlxAssets.getBitmapData('${data.path}.png'), (data.animated != null ? data.animated : false),
-			(data.frameWidth != null ? data.frameWidth : 0), (data.frameHeight != null ? data.frameHeight : 0));
+		loadGraphic(Paths.loader.image(data.path, #if FEATURE_MODS_ALLOWED data.library #else data.pathIsFromFile #end),
+			(data.animated != null ? data.animated : false), (data.frameWidth != null ? data.frameWidth : 0),
+			(data.frameHeight != null ? data.frameHeight : 0));
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);
@@ -102,7 +103,7 @@ class TempoSprite extends FlxSprite
 		this.type = ANIMATE;
 		this.animOffsets = [];
 
-		frames = Paths.loader.atlas.sparrow(data.path);
+		frames = Paths.atlas.sparrow(data.path);
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);

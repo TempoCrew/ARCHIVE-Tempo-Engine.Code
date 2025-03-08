@@ -1,5 +1,6 @@
 package engine.ui.debug;
 
+import tempo.types.TempoOffset;
 import engine.backend.Conductor;
 import engine.ui.debug.charting.*;
 import funkin.backend.song.ChartFile;
@@ -121,11 +122,92 @@ class ChartEditorState extends EditorState
 		Conductor.instance.bpm = metaData.bpm;
 		Conductor.instance.changeMapBPM(chartData, metaData, curDifficulty);
 
+		createWindow('meta', "Chart Metadata");
+		createWindow('difficulty', "Difficulties");
+		createWindow('offsets', "Song Offsets");
+		createWindow('note', "Note Data");
+		createWindow('event', "Event Data");
+		createWindow('fp', "Freeplay Properties");
+		createWindow('pp', "PlayTest Properties");
+
 		super.create();
 
 		camGrid.follow(strumLine);
 
 		updateWindow('--C Chart Editor', 'icon-1', ["Chart Editor", null, null, null, 'chart-editor', "Charting"]);
+	}
+
+	var winDisplay:Map<String,
+		{
+			x:Float,
+			y:Float,
+			w:Int,
+			h:Int
+		}> = [
+			'meta' => {
+				x: 10,
+				y: 40,
+				w: 250,
+				h: 230
+			},
+			'difficulty' => {
+				x: 275,
+				y: 45,
+				w: 210,
+				h: 400
+			},
+			'offsets' => {
+				x: 25,
+				y: 275,
+				w: 400,
+				h: 325
+			},
+			'note' => {
+				x: 600,
+				y: 62,
+				w: 200,
+				h: 300
+			},
+			'event' => {
+				x: 800,
+				y: 200,
+				w: 200,
+				h: 300
+			},
+			'fp' => {
+				x: 10,
+				y: 200,
+				w: 400,
+				h: 400
+			},
+			'pp' => {
+				x: 425,
+				y: 120,
+				w: 350,
+				h: 285
+			}
+		];
+	var windows:Map<String, TempoUIWindow> = [];
+
+	function createWindow(name:String, display:String):Void
+	{
+		if (windows.exists(name))
+			return;
+
+		final dat:
+			{
+				x:Float,
+				y:Float,
+				w:Int,
+				h:Int
+			} = winDisplay.get(name);
+		var win:TempoUIWindow = new TempoUIWindow(dat.x, dat.y, display, dat.w, dat.h);
+		win.cameras = [camOther];
+		win.name = name;
+		win.scrollFactor.set();
+		win.visible = false;
+		add(win);
+		windows.set(name, win);
 	}
 
 	var maxSections:Int = 0;
@@ -135,7 +217,7 @@ class ChartEditorState extends EditorState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		FlxG.sound.playMusic(FlxAssets.getSound('songs:assets/songs/${daSong}/Inst.ogg'), 0.6);
+		FlxG.sound.playMusic(Paths.loader.sound(Paths.song(daSong, 'Inst')), .6);
 		FlxG.sound.music.pause();
 
 		if (FlxG.sound.music != null)
@@ -408,9 +490,40 @@ class ChartEditorState extends EditorState
 		return bg;
 	}
 
+	var metaWindow:TempoUIWindow;
+
+	function showWindow(id:String):Void
+	{
+		for (n => w in windows)
+			if (n == id)
+				w.visible = true;
+	}
+
+	function hideWindow(id:String):Void
+	{
+		for (n => w in windows)
+			if (n == id)
+				w.visible = false;
+	}
+
 	override function getEvent(name:String, sender:ITempoUI)
 	{
-		trace(name + ' {${Std.string(sender)}}');
+		if (name == TempoUIEvents.UI_CHECKBOX_CLICKING)
+		{
+			var obj:TempoUICheckbox = cast sender;
+
+			switch (obj.name)
+			{
+				case 'win_metadata':
+					if (obj.value)
+						showWindow('meta');
+					else
+						hideWindow('meta');
+				default: // nothing
+			}
+		}
+
+		trace(name + ' {${Std.string(sender.name)}}');
 	}
 
 	var tempoUIFocused:Bool = false;

@@ -74,6 +74,30 @@ class SpriteUtil
 		return spr;
 	}
 
+	@:access(openfl.display.BitmapData)
+	public static function disposeBitmap(bitmap:BitmapData):BitmapData
+	{
+		if (bitmap == null || bitmap.image == null)
+		{
+			trace('Could not dispose this bitmap, because data is null!');
+			return null;
+		}
+
+		bitmap.lock();
+		if (bitmap.__texture == null)
+		{
+			bitmap.image.premultiplied = true;
+			bitmap.getTexture(Lib.current.stage.context3D);
+		}
+		bitmap.getSurface();
+		bitmap.disposeImage();
+		bitmap.image.data = null;
+		bitmap.image = null;
+		bitmap.readable = true;
+
+		return bitmap;
+	}
+
 	/**
 	 * I'mma lazy
 	 * @param graphic

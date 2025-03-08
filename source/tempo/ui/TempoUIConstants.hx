@@ -27,7 +27,7 @@ class TempoUIConstants
 	/**
 	 * Window Upper Sprite color
 	 */
-	public static final COLOR_WINDOW_UPPER_SPR:FlxColor = FlxColor.fromString("0x245E4A");
+	public static final COLOR_WINDOW_UPPER_SPR:FlxColor = FlxColor.fromString("0x37886C");
 
 	/**
 	 * Window Upper sprite unfocus color

@@ -5,7 +5,7 @@ import flixel.group.FlxSpriteGroup;
 
 class TempoUISlider extends FlxSpriteGroup implements ITempoUI
 {
-	public var name:String = "ui_slider";
+	public var name:String = "";
 	public var broadcastToUI:Bool = true;
 	public var overlaped:Bool = false;
 
@@ -121,16 +121,42 @@ class TempoUISlider extends FlxSpriteGroup implements ITempoUI
 	public var opacityChanging:Bool = false;
 	public var forceNextUpdate:Bool = false;
 
+	var mouseSelectCount:Int = 0;
+
 	override function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
 
-		if (opacityChanging)
+		if (opacityChanging && visible)
 		{
 			if (TempoInput.cursorOverlaps(this, this.cameras[this.cameras.length - 1]))
+			{
 				alpha = 1.0;
+
+				if (mouseSelectCount < 1)
+				{
+					if (broadcastToUI)
+						TempoUI.focus(true, this);
+
+					TempoUI.cursor(Pointer);
+
+					mouseSelectCount++;
+				}
+			}
 			else
+			{
 				alpha = 0.6;
+
+				if (mouseSelectCount == 1)
+				{
+					if (broadcastToUI)
+						TempoUI.focus(false, this);
+
+					TempoUI.cursor();
+
+					mouseSelectCount = 0;
+				}
+			}
 		}
 
 		if (TempoInput.cursorMoved || TempoInput.cursorJustPressed || forceNextUpdate)
@@ -148,6 +174,8 @@ class TempoUISlider extends FlxSpriteGroup implements ITempoUI
 
 				this.value = Math.max(min, Math.min(max, getCursorMouseValue(this.cameras[this.cameras.length - 1])));
 
+				TempoUI.cursor(Grabbing);
+
 				if (this.onChange != null && parentValue != this.value)
 				{
 					this.onChange(FlxMath.roundDecimal(this.value, decimals));
@@ -158,7 +186,14 @@ class TempoUISlider extends FlxSpriteGroup implements ITempoUI
 		}
 
 		if (TempoInput.cursorReleased)
+		{
+			if (mouseSelectCount == 1)
+				TempoUI.cursor(Pointer);
+			else if (mouseSelectCount == 0)
+				TempoUI.cursor();
+
 			selectorMoved = false;
+		}
 	}
 
 	function reloadTexts(width:Float):Void
