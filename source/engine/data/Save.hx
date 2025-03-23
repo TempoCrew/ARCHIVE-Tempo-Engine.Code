@@ -51,13 +51,13 @@ import tempo.util.TempoSave;
 	/**
 	 * Game FPS (Frames per Second)
 	 */
-	public var framerate:Float = 60;
+	public var framerate:Int = 60;
 	#else
 
 	/**
 	 * Game FPS (Frames per Second)
 	 */
-	public var framerate:Float = 144;
+	public var framerate:Int = 144;
 	#end
 
 	/**
@@ -535,6 +535,17 @@ class Save
 			for (key in Reflect.fields(optionsData))
 				if (Reflect.hasField(optionsSave.data, key))
 					Reflect.setField(optionsData, key, Reflect.field(optionsSave.data, key));
+
+			if (optionsData.framerate > FlxG.drawFramerate)
+			{
+				FlxG.updateFramerate = optionsData.framerate;
+				FlxG.drawFramerate = optionsData.framerate;
+			}
+			else
+			{
+				FlxG.drawFramerate = optionsData.framerate;
+				FlxG.updateFramerate = optionsData.framerate;
+			}
 		}
 	}
 

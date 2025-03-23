@@ -6,6 +6,7 @@ import tempo.ui.interfaces.ITempoUIState;
 class EditorState extends MusicBeatState implements ITempoUIState
 {
 	public static var fromPlayState:Bool = false;
+	public static var instance:EditorState = null;
 
 	public var type:EditorType = UNKNOWN;
 
@@ -17,19 +18,11 @@ class EditorState extends MusicBeatState implements ITempoUIState
 			this.type = type;
 	}
 
-	static var itsWillFullscreen:Bool = false;
-
 	override function create():Void
 	{
+		instance = this;
+
 		super.create();
-
-		if (FlxG.fullscreen)
-		{
-			itsWillFullscreen = true;
-			FlxG.fullscreen = false;
-		}
-
-		TempoUI.cursor();
 	}
 
 	override function update(e:Float):Void
@@ -42,43 +35,26 @@ class EditorState extends MusicBeatState implements ITempoUIState
 				exit();
 		}
 
-		if (type != null)
-		{
-			switch (type)
-			{
-				case(CHART | STAGE | ANIMATE | MENU):
-					if (TempoInput.cursorJustPressed)
-						FlxG.sound.play(Paths.loader.sound(Paths.engine('audio/SFX/ClickUp.ogg')));
-					else if (TempoInput.cursorJustReleased)
-						FlxG.sound.play(Paths.loader.sound(Paths.engine('audio/SFX/ClickDown.ogg')));
-				default: // not lol
-			}
-		}
+		if (TempoInput.cursorJustPressed)
+			playSound('ClickUp');
+		else if (TempoInput.cursorJustReleased)
+			playSound('ClickDown');
 	}
 
 	public function exit()
 	{
-		if (FlxG.sound.music != null)
-			FlxG.sound.music.stop();
-
-		FlxG.sound.play(Paths.loader.sound(Paths.sound('cancelMenu')));
+		Tempo.stopMusic();
+		Tempo.playSound(Paths.loader.sound(Paths.sound('cancelMenu.${Constants.EXT_SOUND}')));
 
 		Cursor.hide();
 		updateWindow(Constants.TITLE);
-		TempoState.switchState(new funkin.ui.menus.TitleState(), () ->
-		{
-			if (itsWillFullscreen)
-			{
-				itsWillFullscreen = false;
-				FlxG.fullscreen = true;
-			}
-		});
+		TempoState.switchState(new funkin.ui.menus.MainMenuState());
 	}
 
 	/**
 	 * Updating a application window
 	 * @param title a text
-	 * @param icon icon image (from 'engine/materials/')
+	 * @param icon icon image (from 'engine/ui/')
 	 * @param discordRPC ---
 	 * -- 1st-details, 2nd-state, 3rd-largeImageKey, 4th-largeImageText, 5th-smallImageKey, 6th-smallImageText
 	 */
@@ -94,10 +70,10 @@ class EditorState extends MusicBeatState implements ITempoUIState
 			if (FileSystem.exists('./assets/engine/ui/$icon.tsg'))
 				Application.current.window.setIcon(lime.graphics.Image.fromFile('./assets/engine/ui/$icon.tsg'));
 			else
-				Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/logo/x16.png'));
+				Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
 		}
 		else
-			Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/logo/x16.png'));
+			Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
 
 		#if FEATURE_DISCORD_RPC
 		if (discordRPC != null)
@@ -112,20 +88,28 @@ class EditorState extends MusicBeatState implements ITempoUIState
 		#end
 	}
 
+	public function playSound(id:String):Void
+	{
+		if (id == null || id == "")
+			return;
+
+		Tempo.playSound(Paths.loader.sound(Paths.engine('audio/SFX/${id}.${Constants.EXT_SOUND}')));
+	}
+
 	public static function typeToString(type:EditorType):String
 	{
 		switch (type)
 		{
 			case CHART:
 				return "Chart Editor";
+			case NOTE:
+				return "Note Editor";
 			case ANIMATE:
 				return "Animation Editor";
-			case FREEPLAY:
-				return "Freeplay Editor";
-			case CHAR_SELECTOR:
-				return "Character Select Editor";
-			case MENU:
-				return "Custom Menu Editor";
+			case CHARACTER:
+				return "Character Editor";
+			case AUDIO:
+				return "Audio Editor";
 			case LEVEL:
 				return "Level Editor";
 			case STAGE:
@@ -133,6 +117,8 @@ class EditorState extends MusicBeatState implements ITempoUIState
 			case UNKNOWN:
 				return "Unknown Editor";
 		}
+
+		return "N\\A";
 	}
 
 	public function getEvent(name:String, sender:tempo.ui.interfaces.ITempoUI) {}
@@ -143,11 +129,11 @@ class EditorState extends MusicBeatState implements ITempoUIState
 enum EditorType
 {
 	UNKNOWN;
+	NOTE;
+	CHARACTER;
+	AUDIO;
 	CHART;
 	ANIMATE;
-	FREEPLAY;
 	LEVEL;
-	CHAR_SELECTOR;
 	STAGE;
-	MENU;
 }

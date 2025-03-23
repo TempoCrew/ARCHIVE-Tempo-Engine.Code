@@ -1,17 +1,17 @@
 package engine.ui.debug;
 
-class LevelEditorState extends EditorState
+class AudioEditorState extends EditorState
 {
 	public function new():Void
 	{
-		super(LEVEL);
+		super(AUDIO);
 	}
 
 	override function create():Void
 	{
 		super.create();
 
-		updateWindow("--C Level Editor", "icon-4", ["Level Editor", "test", "level-editor", "Level Editor v0.1.0"]);
+		updateWindow("--C Audio Editor", "icon-6", ["Audio Editor", "test", "audio-editor", "Audio Editor v0.1.0"]);
 	}
 
 	override function update(elapsed:Float):Void

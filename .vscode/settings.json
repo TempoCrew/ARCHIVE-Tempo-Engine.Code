@@ -97,6 +97,17 @@
       ]
     },
     {
+      "label": "Windows / Debug (Display DPI Max)",
+      "target": "windows",
+      "args": [
+        "-debug",
+        "-DFORCE_DEBUG_VERSION",
+        "-DFEATURE_DEBUG_FUNCTIONS",
+        "-DFEATURE_DEBUG_TRACY",
+        "-DFEATURE_MAX_DPI_DISPLAY"
+      ]
+    },
+    {
       "label": "Windows / Debug (Tracy Profiler)",
       "target": "windows",
       "args": [

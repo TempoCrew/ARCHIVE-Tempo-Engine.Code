@@ -1,12 +1,36 @@
 package tempo.ui;
 
-class TempoUIEvents
+enum abstract TempoUIEvents(String) from String to String
 {
-	public static inline final UI_CHECKBOX_CLICKING:String = "ui_checkbox_clicking";
-	public static inline final UI_LIST_BUTTON_CLICKING:String = "ui_list_button_clicking";
-	public static inline final UI_ARROW_OVERLAP:String = "ui_arrow_overlap";
-	public static inline final UI_BUTTON_CLICKING:String = "ui_button_clicking";
-	public static inline final UI_RADIO_CLICKING:String = "ui_radio_clicking";
-	public static inline final UI_SLIDER_CHANGING:String = "ui_slider_changing";
-	public static inline final UI_WINDOW_POSITION_CHANGING:String = "ui_window_pos_change";
+	// Click events
+	var CHECKBOX_CLICKING = "checkbox_click";
+	var HOVERBUTTON_CLICKING = "hoverbutton_click";
+	var BUTTON_CLICKING = "button_click";
+	var RADIO_CLICKING = "radio_click";
+	var DROPDOWN_CLICKING = "dropdown_click";
+	var NUMERIC_CLICKING = "numeric_click";
+	var SLIDER_CLICKING = "slider_click";
+	var INPUTTEXT_CLICKING = "inputtext_click";
+	var WINDOW_CLICKING = "window_click";
+
+	// Hover events
+	var CHECKBOX_HOVER = "checkbox_hover";
+	var HOVERBUTTON_HOVER = "hoverbutton_hover";
+	var BUTTON_HOVER = "button_hover";
+	var RADIO_HOVER = "button_hover";
+	var DROPDOWN_HOVER = "button_hover";
+	var NUMERIC_HOVER = "numeric_hover";
+	var SLIDER_HOVER = "slider_hover";
+	var INPUTTEXT_HOVER = "inputtext_hover";
+	var WINDOW_HOVER = "window_hover";
+
+	// Stuff events
+	var CHECKBOX_CHANGE = "checkbox_change";
+	var RADIO_CHANGE = "radio_change";
+	var DROPDOWN_SCROLLING = "dropdown_scroll";
+	var SLIDER_CHANGE = "slider_change";
+	var INPUTTEXT_CHANGE = "inputtext_change";
+	var WINDOW_POS_CHANGE = "window_pos_change";
+	var WINDOW_EXIT = "window_exit";
+	var WINDOW_MINIMIZE = "window_minimize";
 }

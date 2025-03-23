@@ -2,9 +2,47 @@ package engine.backend.util;
 
 import haxe.io.Bytes;
 import haxe.io.Path;
+import systools.Dialogs;
 
 class FileUtil
 {
+	/**
+	 * Create `FILEFILTERS` for variables.
+	 * @param count how many file types you need?
+	 * @param descriptions Extensions descriptions (ex: if in `extensions` will a `"*.txt"`, you write here a `"Text Files"` or else)
+	 * @param extensions File extensions type (`*.txt`, `*.jpg`, `*.png`, `*.tsg`, `*.json`). Or you can combo a extensions with symbol `;` (`*.txt;*.json;*.dat` and etc.)
+	 * @return FILEFILTERS
+	 */
+	public static function dialog_createFilters(count:Int, descriptions:Array<String>, extensions:Array<String>):FILEFILTERS
+	{
+		final result:FILEFILTERS = {
+			count: count,
+			descriptions: descriptions,
+			extensions: extensions
+		};
+
+		return result;
+	}
+
+	public static function dialog_folder(title:String = "Select a Folder", ?msg:String = "Select a folder direction"):String
+	{
+		final result = Dialogs.folder(title, msg);
+		return result;
+	}
+
+	public static function dialog_openFile(title:String = "Select File", ?msg:String = "Select one or more files.", filters:FILEFILTERS,
+			?multi:Bool = true):Array<String>
+	{
+		final result = Dialogs.openFile(title, msg, filters, multi);
+		return result;
+	}
+
+	public static function dialog_saveFile(title:String = "Select a Direction for Saving", ?msg:String = "Select direction.", filters:FILEFILTERS):String
+	{
+		final result = Dialogs.saveFile(title, msg, Sys.getCwd(), filters);
+		return result;
+	}
+
 	/**
 	 * Write byte file contents directly to a given path.
 	 * Only works on desktop.

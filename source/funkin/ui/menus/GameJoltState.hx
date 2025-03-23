@@ -1,8 +1,5 @@
 package funkin.ui.menus;
 
-import openfl.filters.ShaderFilter;
-import engine.backend.shaders.Light;
-import flixel.addons.display.FlxRuntimeShader;
 import gamejolt.formats.User;
 import gamejolt.formats.Response;
 import flixel.FlxState;
@@ -12,7 +9,6 @@ class GameJoltState extends MusicBeatState
 {
 	var bg:TempoSprite;
 	var textDo2:FlxInputText;
-	var shader:Light;
 
 	override function create():Void
 	{
@@ -34,9 +30,11 @@ class GameJoltState extends MusicBeatState
 			width: 525,
 			height: 495,
 			color: FlxColor.fromString('0x70103629'),
-			roundRect: {
-				elWidth: 10,
-				elHeight: 10
+			gfxData: {
+				roundRect: {
+					elWidth: 10,
+					elHeight: 10
+				}
 			}
 		});
 		blank.screenCenter();
@@ -55,9 +53,11 @@ class GameJoltState extends MusicBeatState
 				width: 500,
 				height: 32,
 				color: FlxColor.fromString('0x7F2C0526'),
-				roundRect: {
-					elWidth: 10,
-					elHeight: 10
+				gfxData: {
+					roundRect: {
+						elWidth: 10,
+						elHeight: 10
+					}
 				}
 			});
 			bgT1.screenCenter();
@@ -80,9 +80,11 @@ class GameJoltState extends MusicBeatState
 				width: 500,
 				height: 32,
 				color: FlxColor.fromString('0x7F2C0526'),
-				roundRect: {
-					elWidth: 10,
-					elHeight: 10
+				gfxData: {
+					roundRect: {
+						elWidth: 10,
+						elHeight: 10
+					}
 				}
 			});
 			bgT2.screenCenter();
@@ -144,21 +146,11 @@ class GameJoltState extends MusicBeatState
 			add(text);
 		}
 
-		shader = new Light([255, 255, 255, 255], [0., 0.]);
-		FlxG.camera.filters = [new ShaderFilter(shader)];
-
 		super.create();
 	}
 
 	override function draw():Void
 	{
-		if (shader != null)
-		{
-			final r:Float = FlxMath.lerp(1, FlxG.camera.zoom, 1);
-			shader.LightPos.value[0] = (-FlxG.camera.scroll.x * 1000) / FlxG.width * r;
-			shader.LightPos.value[1] = (-FlxG.camera.scroll.y * -16) / FlxG.height * r;
-		}
-
 		super.draw();
 	}
 
@@ -171,11 +163,6 @@ class GameJoltState extends MusicBeatState
 
 	override function update(elapsed:Float):Void
 	{
-		if (TempoInput.keyPressed.A)
-			shader.LightPos.value[0] += 1;
-		else if (TempoInput.keyPressed.B)
-			shader.LightPos.value[1] += 1;
-
 		super.update(elapsed);
 	}
 }
@@ -192,9 +179,11 @@ private class GJButton extends TempoSprite
 			width: width,
 			height: height,
 			color: FlxColor.WHITE,
-			roundRect: {
-				elWidth: 10,
-				elHeight: 10
+			gfxData: {
+				roundRect: {
+					elWidth: 10,
+					elHeight: 10
+				}
 			}
 		});
 

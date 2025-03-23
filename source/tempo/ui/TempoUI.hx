@@ -20,7 +20,7 @@ class TempoUI
 	 */
 	public static function event(tag:String, sender:ITempoUI):Void
 	{
-		var curState:IEventGetter = getUIState();
+		var curState:ITempoUIState = getUIState();
 
 		if (curState != null)
 			curState.getEvent(tag, sender);
@@ -41,16 +41,6 @@ class TempoUI
 			curState.getFocus(value, thing);
 		else
 			trace('Focus not called! Current state is NULL!');
-	}
-
-	public static function cursor(?id:CursorMode = Default, ?visible:Bool = true):Void
-	{
-		Cursor.cursorMode = id;
-
-		if (visible)
-			Cursor.show();
-		else
-			Cursor.hide();
 	}
 
 	public static function getUIState():ITempoUIState

@@ -357,6 +357,13 @@ class Constants
 	 */
 	public static final PIXELS_COLOR:Int = 13520687;
 
+	#if (windows)
+	/**
+	 * Crash Handler Application
+	 */
+	public static final CRASH_APP:String = "TempoCrashHandler.exe";
+	#end
+
 	/**
 	 * Each step of the preloader has to be on screen at least this long.
 	 *
@@ -518,6 +525,11 @@ class Constants
 
 	public static final DEFAULT_TIME_SIGNATURE_DEN:Int = 4;
 
+	public static final COUNTER_POS:FlxPoint = new FlxPoint(3, 5);
+	public static final COUNTER_Y_PL:Float = (COUNTER_POS.y * 2);
+	public static final COUNTER_COLOR:UInt = 0xFFFFFF;
+	public static final COUNTER_BACK_COLOR:UInt = 0x000000;
+
 	/**
 	 * Default transition time.
 	 */
@@ -527,6 +539,50 @@ class Constants
 	 * Save extractor tag
 	 */
 	public static final SAVE_TAG:String = "tempo";
+
+	// UI CONSTANTS
+
+	/**
+	 * UI Object Base Color
+	 */
+	public static final UI_COLOR_BASE_BG:FlxColor = FlxColor.fromString("0x0A201D");
+
+	/**
+	 * UI Object Base Line Color
+	 */
+	public static final UI_COLOR_BASE_LINE:FlxColor = FlxColor.WHITE;
+
+	/**
+	 * UI Text Color
+	 */
+	public static final UI_COLOR_BASE_TEXT:FlxColor = FlxColor.WHITE;
+
+	/**
+	 * List Back Ground Color
+	 */
+	public static final UI_COLOR_LIST_BG:FlxColor = FlxColor.fromString("0xE5186666");
+
+	/**
+	 * Window Upper Sprite color
+	 */
+	public static final UI_COLOR_WINDOW_UPPER_SPR:FlxColor = FlxColor.fromString("0x37886C");
+
+	/**
+	 * Window Upper sprite unfocus color
+	 */
+	public static final UI_COLOR_WINDOW_UPPER_SPR_UNFOCUS:FlxColor = FlxColor.fromString("0x0D271E");
+
+	public static final UI_COLOR_SLIDER_SELECTOR:FlxColor = FlxColor.fromString("0xFFFFFF");
+
+	/**
+	 * UI Button Color
+	 */
+	public static final UI_COLOR_BUTTON:FlxColor = FlxColor.fromString("0x214643");
+
+	/**
+	 * UI Text's font format's
+	 */
+	public static final UI_FONT:String = Paths.font('Inconsolata-SemiBold.ttf');
 
 	// EXTENSIONS CONSTANTS
 

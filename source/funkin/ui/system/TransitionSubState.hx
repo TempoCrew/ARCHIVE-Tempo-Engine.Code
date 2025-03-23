@@ -8,11 +8,11 @@ class TransitionSubState extends TempoSubState
 	var _onComplete:Null<Void->Void> = null;
 	var _timer:Null<Float> = null;
 
-	public function new(?fadeIn:Bool = true, timer:Float, ?onComplete:Void->Void):Void
+	public function new(?fadeIn:Bool = true, timer:Float, ?onComplete:Void->Void, ?newCamera:FlxCamera):Void
 	{
 		super();
 
-		this.camera = cameras[cameras.length - 1];
+		this.camera = (newCamera == null ? cameras[cameras.length - 1] : newCamera);
 
 		_fadeIn = fadeIn;
 		_onComplete = onComplete;
@@ -31,8 +31,6 @@ class TransitionSubState extends TempoSubState
 
 				return;
 			}
-
-			DiscordClient.instance.changePresence({details: "Loading..."});
 
 			var blackfuck:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 			blackfuck.antialiasing = Save.optionsData.antialiasing;

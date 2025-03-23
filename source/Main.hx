@@ -6,20 +6,6 @@
 @:cppInclude('./engine/external/gamemode_client.h')
 @:cppFileCode('#define GAMEMODE_AUTO')
 #end
-#if windows
-@:buildXml('
-<target id="haxe">
-  <lib name="wininet.lib" if="windows" />
-	<lib name="dwmapi.lib" if="windows" />
-</target>
-')
-@:cppFileCode('
-#include <windows.h>
-#include <winuser.h>
-#pragma comment(lib, "Shell32.lib")
-extern "C" HRESULT WINAPI SetCurrentProcessExplicitAppUserModelID(PCWSTR AppID);
-')
-#end
 class Main extends Sprite
 {
 	public static var instance:Main;
@@ -31,39 +17,29 @@ class Main extends Sprite
 	{
 		super();
 
-		#if windows
-		untyped __cpp__("SetProcessDPIAware();");
-		final display:lime.system.Display = LimeSystem.getDisplay(0);
-		if (display != null)
-		{
-			final dpiScale:Float = display.dpi / Constants.DPI_DIVIDE;
-			Application.current.window.setMaxSize(Std.int(Constants.SETUP_GAME.width * dpiScale), Std.int(Constants.SETUP_GAME.height * dpiScale));
-			Application.current.window.resizable = false;
-			trace(Application.current.window.context.attributes.vsync);
-		}
-		#end
-
-		#if desktop
-		@:privateAccess
-		engine.backend.util.SysUtil.__alsoft__init__();
-		#end
-
+		engine.backend.util.SysUtil.setFeatures();
 		engine.backend.util.SysUtil.findPath();
 
 		instance = this;
 
+		_i();
+	}
+
+	@:default([])
+	@:noUsing private function _i():Void
+	{
 		var _init:(?e:Event) -> Void;
 		_init = (?e:Event) ->
 		{
-			if (hasEventListener(Event.ADDED_TO_STAGE))
-				removeEventListener(Event.ADDED_TO_STAGE, _init);
+			if (hasEventListener("addedToStage"))
+				removeEventListener("addedToStage", _init);
 
 			@:privateAccess
 			engine.Setup.create();
 		}
 
 		if (stage == null)
-			addEventListener(Event.ADDED_TO_STAGE, _init);
+			addEventListener("addedToStage", _init);
 		else
 			_init();
 	}

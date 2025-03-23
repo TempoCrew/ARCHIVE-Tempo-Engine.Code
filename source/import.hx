@@ -42,6 +42,7 @@ import funkin.MusicBeatSubState;
 import haxe.Json;
 import haxe.Exception;
 // Tempo
+import tempo.Tempo;
 import tempo.TempoSprite;
 import tempo.TempoInput;
 import tempo.TempoState;

@@ -1,17 +1,17 @@
 package engine.ui.debug;
 
-class LevelEditorState extends EditorState
+class NoteEditorState extends EditorState
 {
 	public function new():Void
 	{
-		super(LEVEL);
+		super(NOTE);
 	}
 
 	override function create():Void
 	{
 		super.create();
 
-		updateWindow("--C Level Editor", "icon-4", ["Level Editor", "test", "level-editor", "Level Editor v0.1.0"]);
+		updateWindow("--C Note Editor", "icon-7", ["Note Editor", "test", "note-editor", "Note Editor v0.1.0"]);
 	}
 
 	override function update(elapsed:Float):Void

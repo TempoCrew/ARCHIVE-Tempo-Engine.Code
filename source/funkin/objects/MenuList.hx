@@ -81,6 +81,17 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 	{
 		var controls = engine.input.Controls.instance;
 
+		if ((FlxG.state is TempoState))
+		{
+			try
+			{
+				var state:TempoState = cast(FlxG?.state);
+				controls = state.player1.controls;
+			}
+			catch (e)
+				trace(e);
+		}
+
 		var wrapX = wrapMode.match(Horizontal | Both);
 		var wrapY = wrapMode.match(Vertical | Both);
 		var newIndex = switch (navControls)
@@ -95,7 +106,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 
 		if (newIndex != selectedIndex)
 		{
-			FlxG.sound.play(Paths.loader.sound(Paths.sound('scrollMenu')));
+			Tempo.playSound(Paths.loader.sound(Paths.sound('scrollMenu.${Constants.EXT_SOUND}')));
 			selectItem(newIndex);
 		}
 
@@ -172,7 +183,7 @@ class MenuTypedList<T:MenuListItem> extends FlxTypedGroup<T>
 		else
 		{
 			busy = true;
-			FlxG.sound.play(Paths.loader.sound(Paths.sound('confirmMenu')));
+			Tempo.playSound(Paths.loader.sound(Paths.sound('confirmMenu.${Constants.EXT_SOUND}')));
 			flixel.effects.FlxFlicker.flicker(selected, 1, 0.06, true, false, (_) ->
 			{
 				busy = false;

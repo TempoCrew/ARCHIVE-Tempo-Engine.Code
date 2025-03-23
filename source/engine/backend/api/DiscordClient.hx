@@ -17,6 +17,7 @@ class DiscordClient
 	public static var instance(get, never):DiscordClient;
 	static var _instance:Null<DiscordClient> = null;
 	static var initialized:Bool = false;
+	static var lastParams:DiscordPresenceParams = null;
 
 	#if sys
 	@:unreflective static var _thread:Thread;
@@ -79,6 +80,8 @@ class DiscordClient
 
 		Print('Discord Rich Presence Changed: ${params.details + (params.state == null ? "" : " / " + params.state) + (params.type == null ? "" : " / " + params.type) + (params.largeImageKey == null ? "" : " / " + params.largeImageKey) + (params.largeImageText == null ? "" : " / " + params.largeImageText) + (params.smallImageKey == null ? "" : " / " + params.smallImageKey) + (params.smallImageText == null ? "" : " / " + params.smallImageText)}');
 		Discord.UpdatePresence(RawConstPointer.addressOf(buildPresence(params)));
+
+		lastParams = params;
 	}
 
 	function get_stringToActivity(presence:DiscordRichPresence, str:String):Void
@@ -132,7 +135,7 @@ class DiscordClient
 
 		Print('Discord Client Handler: User - ${(discriminator != 0 ? '$globalName#$discriminator' : '@$globalName')} ($userName / $nitroType)');
 
-		DiscordClient.instance.changePresence();
+		DiscordClient.instance.changePresence((lastParams != null ? lastParams : null));
 	}
 
 	static function handlers_disconnected(code:Int, msg:ConstCharStar):Void

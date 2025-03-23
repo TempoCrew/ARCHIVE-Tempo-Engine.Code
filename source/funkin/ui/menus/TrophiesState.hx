@@ -5,7 +5,7 @@ class TrophiesState extends MusicBeatState
 	override function create():Void
 	{
 		var bg = new TempoSprite(-5, -5, GRAPHIC).makeImage({
-			path: Paths.image('menuDesat'),
+			path: Paths.image('menuDesat', null, false),
 			width: 1290,
 			height: 730,
 			color: FlxColor.PURPLE
@@ -22,9 +22,11 @@ class TrophiesState extends MusicBeatState
 			width: 525,
 			height: 175,
 			color: FlxColor.BLACK,
-			roundRect: {
-				elWidth: 10,
-				elHeight: 10
+			gfxData: {
+				roundRect: {
+					elWidth: 10,
+					elHeight: 10
+				}
 			}
 		});
 		blankBG.alpha = .6;
@@ -32,7 +34,7 @@ class TrophiesState extends MusicBeatState
 		add(blankBG);
 
 		var blankImage:TempoSprite = new TempoSprite(0, 0, GRAPHIC).makeImage({
-			path: Paths.image("thx-for-using", "trophies")
+			path: Paths.image("thx-for-using", "trophies", false)
 		});
 		blankImage.x -= 0;
 		blankImage.y = blankBG.y + 10;

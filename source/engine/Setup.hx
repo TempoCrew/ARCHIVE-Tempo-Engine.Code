@@ -1,18 +1,30 @@
 package engine;
 
-import engine.backend.util.WindowsUtil;
+import engine.objects.Counters;
 
 class Setup
 {
+	#if desktop
+	public static var counters:Array<Counters> = [];
+	#end
+
 	static function create():Void
 	{
-		#if FEATURE_DEBUG_TRACY
-		WindowsUtil.initDebugTracy();
+		FlxSprite.defaultAntialiasing = true;
+
+		Save.loadBinds();
+
+		#if desktop
+		createCounters();
 		#end
 
-		WindowsUtil.initWindowExitDispatch();
+		#if FEATURE_DEBUG_TRACY
+		engine.backend.util.WindowsUtil.initDebugTracy();
+		#end
 
-		flixel.FlxSprite.defaultAntialiasing = true;
+		engine.backend.util.WindowsUtil.initWindowExitDispatch();
+
+		tempo.util.TempoSystem.get_OS_info();
 
 		#if FEATURE_VIDEO_PLAYBACK
 		hxvlc.util.Handle.init(['--no-lua']);
@@ -24,11 +36,31 @@ class Setup
 
 		engine.backend.util.plugins.CrashPlugin.init();
 
-		engine.data.Save.loadBinds();
-
 		Main.instance.addChild(tempo.TempoGame.setup(Constants.SETUP_GAME.width, Constants.SETUP_GAME.height, Constants.SETUP_GAME.initialState,
 			Constants.SETUP_GAME.zoom, Constants.SETUP_GAME.framerate, Constants.SETUP_GAME.skipSplash, Constants.SETUP_GAME.startFullScreen));
+
+		#if desktop
+		for (c in counters)
+			Main.instance.addChild(c);
+		#end
 	}
+
+	#if desktop
+	@:noUsing static function createCounters():Void
+	{
+		for (i in 0...5)
+		{
+			final constParams = {
+				x: (i == 0 || i == 2) ? Constants.COUNTER_POS.x + 1 : (i == 1 || i == 3) ? Constants.COUNTER_POS.x - 1 : Constants.COUNTER_POS.x,
+				y: (i == 0 || i == 1) ? Constants.COUNTER_POS.y - 1 : (i == 2 || i == 3) ? Constants.COUNTER_POS.y + 1 : Constants.COUNTER_POS.y,
+				c: (i == 4) ? Constants.COUNTER_COLOR : Constants.COUNTER_BACK_COLOR
+			};
+
+			final newCounter:Counters = new Counters(constParams.x, constParams.y, constParams.c);
+			counters.push(newCounter);
+		}
+	}
+	#end
 
 	// IGNORE THIS
 	static inline function _lua_call(l:LuaState, fname:String):Int

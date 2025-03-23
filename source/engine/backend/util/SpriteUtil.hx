@@ -14,7 +14,7 @@ class SpriteUtil
 		if (path == null || graphic == null)
 			return;
 
-		MemoryUtil.pushCurTrackedAsset(path, graphic);
+		MemoryUtil.pushCurTrackedGraphic(path, graphic);
 
 		if (MemoryUtil.curTrackedGraphic.exists(path))
 			graphic = MemoryUtil.curTrackedGraphic.get(path);

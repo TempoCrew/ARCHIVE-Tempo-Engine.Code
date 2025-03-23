@@ -4,8 +4,6 @@ import flixel.FlxGame;
 
 class TempoGame extends FlxGame
 {
-	public static var totalGameTime:Int = 0;
-
 	/**
 	 * Creating a full-ass game for this engine
 	 * @param data Data for this game
@@ -55,8 +53,6 @@ class TempoGame extends FlxGame
 	{
 		if (_skipNextTickUpdate != (_skipNextTickUpdate = false))
 			_total = ticks = getTicks();
-
-		TempoGame.totalGameTime += Std.int(FlxG.elapsed);
 
 		super.onEnterFrame(_);
 	}

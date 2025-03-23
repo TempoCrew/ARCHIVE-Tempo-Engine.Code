@@ -145,7 +145,7 @@ class ScreenshotPlugin extends FlxBasic
 			}
 		});
 
-		FlxG.sound.play(flixel.system.FlxAssets.getSound(Paths.embed('screenshot.${Constants.EXT_SOUND}')));
+		Tempo.playSound(Paths.loader.sound(Paths.embed('screenshot.${Constants.EXT_SOUND}')));
 	}
 
 	function openScreenshotsFolder(e:MouseEvent):Void

@@ -1,10 +1,9 @@
 package engine.ui;
 
 import engine.input.Cursor;
-import engine.backend.util.plugins.ScreenshotPlugin;
-import engine.backend.util.plugins.EvacuatePlugin;
 import engine.backend.api.GameJoltClient;
 import engine.backend.api.DiscordClient;
+import engine.backend.util.plugins.*;
 
 class InitState extends flixel.FlxState
 {
@@ -13,13 +12,13 @@ class InitState extends flixel.FlxState
 		#if FEATURE_GAMEJOLT_CLIENT
 		Save.load([GAMEJOLT]);
 
-		new FlxTimer().start(1, (_) ->
+		new FlxTimer().start(0.4, (_) ->
 		{
 			GameJoltClient.instance.initialize();
 		});
 		#end
 
-		new FlxTimer().start(2, (_) ->
+		new FlxTimer().start(.8, (_) ->
 		{
 			Thread.create(() ->
 			{
@@ -30,7 +29,8 @@ class InitState extends flixel.FlxState
 		super.create();
 
 		// Plugins
-		EvacuatePlugin.init();
+		EvacuatePlugin.initialize();
+		ShaderFixPlugin.initialize();
 		ScreenshotPlugin.initialize();
 
 		#if FEATURE_DISCORD_RPC
@@ -40,7 +40,7 @@ class InitState extends flixel.FlxState
 		Cursor.cursorMode = Default;
 		Cursor.hide();
 
-		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT 3 #else 1 #end, (t:FlxTimer) ->
+		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT 1.65 #else 1 #end, (t:FlxTimer) ->
 		{
 			t = null;
 

@@ -1,5 +1,6 @@
 package engine.backend;
 
+import lime.media.AudioSource;
 import lime.utils.ArrayBuffer;
 import openfl.utils.ByteArray;
 import engine.backend.util.SpriteUtil;
@@ -11,17 +12,49 @@ class Paths
 	public static var loader(get, never):LoaderPaths;
 	public static var atlas(get, never):AtlasPaths;
 
-	public static function image(id:String, ?library:String):String
+	public static function image(id:String, ?library:String, ?withoutExtension:Bool = true):String
+	{
+		if (!id.contains('.') && !withoutExtension)
+		{
+			final l:String = id;
+			id = l + '.${Constants.EXT_IMAGE}';
+		}
+
 		return (library != null ? '$library:' : '') + "assets/" + (library != null ? '$library/' : '') + "images/" + id;
+	}
 
-	public static function sound(id:String, ?library:String):String
+	public static function sound(id:String, ?library:String, ?withoutExtension:Bool = true):String
+	{
+		if (!id.contains('.') && !withoutExtension)
+		{
+			final l = id;
+			id = l + '.${Constants.EXT_SOUND}';
+		}
+
 		return (library != null ? '$library:' : '') + "assets/" + (library != null ? '$library/' : '') + "sounds/" + id;
+	}
 
-	public static function music(id:String, ?library:String):String
+	public static function music(id:String, ?library:String, ?withoutExtension:Bool = true):String
+	{
+		if (!id.contains('.') && !withoutExtension)
+		{
+			final l = id;
+			id = l + '.${Constants.EXT_SOUND}';
+		}
+
 		return (library != null ? '$library:' : '') + 'assets/${library != null ? '$library/' : ''}music/$id';
+	}
 
-	public static function song(name:String, fileName:String):String
+	public static function song(name:String, fileName:String, ?withoutExtension:Bool = true):String
+	{
+		if (!fileName.contains('.') && !withoutExtension)
+		{
+			final l = fileName;
+			fileName = l + '.${Constants.EXT_SOUND}';
+		}
+
 		return 'songs:assets/songs/${name.toFolderCase()}/$fileName';
+	}
 
 	public static function font(file:String):String
 		return 'fonts/$file';
@@ -80,15 +113,7 @@ class LoaderPaths
 		}
 		#end
 
-		final e:String = '.${Constants.EXT_IMAGE}';
-
-		if (path.endsWith(e))
-		{
-			final lePath:String = path;
-			path = lePath.substr(0, lePath.length - e.length);
-		}
-
-		final key:String = #if FEATURE_MODS_ALLOWED (library == null ? '$path$e' : '$library:$path$e') #else '$path$e' #end;
+		final key:String = #if FEATURE_MODS_ALLOWED (library == null ? '$path' : '$library:$path') #else '$path' #end;
 		if (MemoryUtil.curTrackedGraphic.exists(key))
 		{
 			MemoryUtil.localTrackedAssets.push(key);
@@ -96,11 +121,11 @@ class LoaderPaths
 		}
 
 		var bitmap:BitmapData = null;
-		var isExists:Bool = #if FEATURE_MODS_ALLOWED (library == null ? FileSystem.exists('$path$e') : OpenFLAssets.exists('$library:$path$e',
-			IMAGE)) #else (!isFromFile ? OpenFLAssets.exists('$path$e', IMAGE) : FileSystem.exists('$path$e')) #end;
+		var isExists:Bool = #if FEATURE_MODS_ALLOWED (library == null ? FileSystem.exists('$path') : OpenFLAssets.exists('$library:$path',
+			IMAGE)) #else (!isFromFile ? OpenFLAssets.exists('$path', IMAGE) : FileSystem.exists('$path')) #end;
 
 		if (isExists)
-			bitmap = (#if (FEATURE_MODS_ALLOWED) library == null #else isFromFile #end ?BitmapData.fromFile('$path$e') : FlxAssets.getBitmapData(#if FEATURE_MODS_ALLOWED '$library:$path$e' #else '$path$e' #end));
+			bitmap = (#if (FEATURE_MODS_ALLOWED) library == null #else isFromFile #end ?BitmapData.fromFile('$path') : FlxAssets.getBitmapData(#if FEATURE_MODS_ALLOWED '$library:$path' #else '$path' #end));
 
 		if (bitmap == null)
 		{
@@ -118,50 +143,80 @@ class LoaderPaths
 		MemoryUtil.curTrackedGraphic.set(key, graphic);
 		MemoryUtil.localTrackedAssets.push(key);
 
-		trace(path);
 		return graphic;
 	}
 
-	public function sound(path:String):Sound
+	public function sound(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFromFile:Bool = false #end):Sound
 	{
-		var snd:Sound = null;
+		if (isFromFile == null)
+			isFromFile = false;
 
-		final e:String = '.${Constants.EXT_SOUND}';
-		if (path.endsWith(e))
+		#if !FEATURE_MODS_ALLOWED
+		if (!path.contains(':') && isFromFile == false)
 		{
 			final lePath:String = path;
-			path = lePath.substr(0, lePath.length - e.length);
+			path = "preload:" + lePath;
 		}
+		#end
 
-		try
+		final key:String = #if FEATURE_MODS_ALLOWED (library == null ? '$path' : '$library:$path') #else '$path' #end;
+		if (MemoryUtil.curTrackedSound.exists(key))
 		{
-			if (path.contains(':'))
-				snd = FlxAssets.getSound(path + e);
-			else
-				snd = Sound.fromFile(path + e);
+			MemoryUtil.localTrackedAssets.push(key);
+			return MemoryUtil.curTrackedSound.get(key);
 		}
-		catch (e:Exception)
-			trace("Could not loaded a sound '" + path + "' [" + e.message + "]");
 
-		trace(path);
+		var snd:Sound = null;
+		var isExists:Bool = #if FEATURE_MODS_ALLOWED (library == null ? FileSystem.exists('$path') : OpenFLAssets.exists('$library:$path',
+			SOUND)) #else (!isFromFile ? OpenFLAssets.exists('$path', SOUND) : FileSystem.exists('$path')) #end;
+
+		if (isExists)
+			snd = (#if (FEATURE_MODS_ALLOWED) library == null #else isFromFile #end ?Sound.fromFile('$path') : OpenFLAssets.getSound(#if FEATURE_MODS_ALLOWED '$library:$path' #else '$path' #end,
+				true));
+
+		if (snd == null)
+		{
+			trace('Could not load a sound! ${key}');
+			return null;
+		}
+
+		if (Save.optionsData.cacheVRAM)
+			engine.backend.util.SoundUtil.disposeSound(snd);
+
+		MemoryUtil.curTrackedSound.set(key, snd);
+		MemoryUtil.localTrackedAssets.push(key);
+
 		return snd;
 	}
 
-	public function text(path:String):String
+	public function text(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFromFile:Bool = false #end):String
 	{
-		var txt:String = null;
+		if (isFromFile == null)
+			isFromFile = false;
 
-		try
+		#if !FEATURE_MODS_ALLOWED
+		if (!path.contains(':') && isFromFile == false)
 		{
-			if (path.contains(':'))
-				txt = OpenFLAssets.getText(path);
-			else
-				txt = File.getContent(path);
+			final lePath:String = path;
+			path = "preload:" + lePath;
 		}
-		catch (e:Exception)
-			trace('Could not loaded a text file "$path" [${e.message}]');
+		#end
 
-		trace(path);
+		final key:String = #if FEATURE_MODS_ALLOWED (library == null ? '$path' : '$library:$path') #else '$path' #end;
+
+		var txt:String = null;
+		var isExists:Bool = #if FEATURE_MODS_ALLOWED (library == null ? FileSystem.exists('$path') : OpenFLAssets.exists('$library:$path',
+			TEXT)) #else (!isFromFile ? OpenFLAssets.exists('$path', TEXT) : FileSystem.exists('$path')) #end;
+
+		if (isExists)
+			txt = #if FEATURE_MODS_ALLOWED (library != null ? OpenFLAssets.getText(key) : File.getContent(key)) #else (isFromFile ? File.getContent(key) : OpenFLAssets.getText(key)) #end;
+
+		if (txt == null)
+		{
+			trace('Could not loaded a text file "$key" [NULL]');
+			return "";
+		}
+
 		return txt;
 	}
 }
@@ -171,8 +226,33 @@ class AtlasPaths
 	// Constructor
 	public function new() {}
 
-	public function sparrow(path:String):FlxAtlasFrames
+	public function sparrow(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFilePath:Bool = false #end):FlxAtlasFrames
 	{
-		return FlxAtlasFrames.fromSparrow(Paths.loader.image(path), Paths.loader.text(path + '.xml'));
+		return FlxAtlasFrames.fromSparrow(Paths.loader.image(path + '.png', #if FEATURE_MODS_ALLOWED library #else isFilePath #end),
+			Paths.loader.text(path + '.xml', #if FEATURE_MODS_ALLOWED library #else isFilePath #end));
+	}
+
+	public function aseprite(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFilePath:Bool = false #end):FlxAtlasFrames
+	{
+		return FlxAtlasFrames.fromAseprite(Paths.loader.image(path + '.png', #if FEATURE_MODS_ALLOWED library #else isFilePath #end),
+			Paths.loader.text(path + '.json', #if FEATURE_MODS_ALLOWED library #else isFilePath #end));
+	}
+
+	public function packerXml(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFilePath:Bool = false #end):FlxAtlasFrames
+	{
+		return FlxAtlasFrames.fromTexturePackerXml(Paths.loader.image(path + '.png', #if FEATURE_MODS_ALLOWED library #else isFilePath #end),
+			Paths.loader.text(path + '.xml', #if FEATURE_MODS_ALLOWED library #else isFilePath #end));
+	}
+
+	public function sheetPacker(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFilePath:Bool = false #end):FlxAtlasFrames
+	{
+		return FlxAtlasFrames.fromSpriteSheetPacker(Paths.loader.image(path + '.png', #if FEATURE_MODS_ALLOWED library #else isFilePath #end),
+			Paths.loader.text(path + '.txt', #if FEATURE_MODS_ALLOWED library #else isFilePath #end));
+	}
+
+	public function packerJson(path:String, #if FEATURE_MODS_ALLOWED ?library:String #else ?isFilePath:Bool = false #end):FlxAtlasFrames
+	{
+		return FlxAtlasFrames.fromTexturePackerJson(Paths.loader.image(path + '.png', #if FEATURE_MODS_ALLOWED library #else isFilePath #end),
+			Paths.loader.text(path + '.json', #if FEATURE_MODS_ALLOWED library #else isFilePath #end));
 	}
 }

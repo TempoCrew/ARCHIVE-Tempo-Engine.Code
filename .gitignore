@@ -4,6 +4,7 @@
 .gjApi
 dump/
 export/
+project/include/
 RECOVER_*.fla
 gamejolt.json
 .time

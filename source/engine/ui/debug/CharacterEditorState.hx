@@ -1,23 +1,23 @@
 package engine.ui.debug;
 
-class ChartEditorState extends EditorState
+class CharacterEditorState extends EditorState
 {
 	public function new():Void
 	{
-		super(CHART);
+		super(CHARACTER);
 	}
 
 	override function create():Void
 	{
 		super.create();
 
-		updateWindow("--C Chart Editor", "icon-1", [
-			"Chart Editor",
+		updateWindow("--C Character Editor", "icon-5", [
+			"Character Editor",
 			"test",
-			"chart-editor",
-			"Chart Editor v0.1.0",
-			"bf-pixel",
-			"BF [PIXEL]"
+			"character-editor",
+			"Character Editor v0.1.0",
+			"bf",
+			"BF"
 		]);
 	}
 

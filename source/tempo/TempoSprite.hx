@@ -4,40 +4,54 @@ import engine.backend.util.SpriteUtil;
 import tempo.animation.TempoAnimationController;
 import tempo.types.*;
 
+/**
+ * Group with `TempoSprite`.
+ */
 typedef TempoSpriteGroup = FlxTypedGroup<TempoSprite>;
 
+/**
+ * Re-optimized and more functional `FlxSprite`.
+ *
+ * There many functions and etc.
+ */
 class TempoSprite extends FlxSprite
 {
+	/**
+	 * Graphic for drawing stuff (roundrect and etc.).
+	 */
 	public var flashGfx:Graphics;
 
 	var _flashGfxSprite:Sprite;
-	var type:TempoSpriteType;
+	var _type:TempoSpriteType;
 
-	var roundRect:Null<TempoRoundRect> = null;
-	var animOffsets:Null<Array<TempoSpriteAnimOffsets>> = null;
+	var _gfxData:Null<TempoSpriteGFX> = null;
+	var _animOffsets:Null<Array<TempoSpriteAnimOffsets>> = null;
 
 	public function new(?x:Float = 0, ?y:Float = 0, ?type:TempoSpriteType = SOLID_COLOR):Void
 	{
 		super(x, y);
 
-		this.type = type;
 		this._flashGfxSprite = new Sprite();
-		this.flashGfx = _flashGfxSprite.graphics;
+		this._type = type;
+
 		this.animation = new TempoAnimationController(this);
+		this.flashGfx = _flashGfxSprite.graphics;
 	}
 
 	public function makeRoundRect(data:TempoSolidColor):TempoSprite
 	{
-		this.type = ROUND_RECT;
-		this.roundRect = data.roundRect;
+		this._type = ROUND_RECT;
+		this._gfxData = data.gfxData;
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
+		final t = data.gfxData.roundRect;
+
 		startDraw(data.color);
-		flashGfx.drawRoundRect(0, 0, data.width, data.height, data.roundRect.elWidth, data.roundRect.elHeight);
+		flashGfx.drawRoundRect(0, 0, data.width, data.height, t.elWidth, t.elHeight);
 		endDraw();
 
 		return this;
@@ -45,17 +59,56 @@ class TempoSprite extends FlxSprite
 
 	public function makeRoundRectComplex(data:TempoSolidColor):TempoSprite
 	{
-		this.type = ROUND_RECT_COMPLEX;
-		this.roundRect = data.roundRect;
+		this._type = ROUND_RECT_COMPLEX;
+		this._gfxData = data.gfxData;
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
+		final t = data.gfxData.roundRect;
+
 		startDraw(data.color);
-		flashGfx.drawRoundRectComplex(0, 0, data.width, data.height, data.roundRect.elTopLeft, data.roundRect.elTopRight, data.roundRect.elBottomLeft,
-			data.roundRect.elBottomRight);
+		flashGfx.drawRoundRectComplex(0, 0, data.width, data.height, t.elTopLeft, t.elTopRight, t.elBottomLeft, t.elBottomRight);
+		endDraw();
+
+		return this;
+	}
+
+	public function makeTriangle(data:TempoSolidColor):TempoSprite
+	{
+		this._type = TRIANGLE;
+		this._gfxData = data.gfxData;
+
+		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
+
+		if (flashGfx != null)
+			flashGfx.clear();
+
+		final t = data.gfxData.triangle;
+
+		startDraw(data.color);
+		flashGfx.drawTriangles(t.verices, t.indices, t.uvtData, (t.culling == null ? NONE : t.culling));
+		endDraw();
+
+		return this;
+	}
+
+	public function makeQuadRect(data:TempoSolidColor):TempoSprite
+	{
+		this._type = QUAD;
+		this._gfxData = data.gfxData;
+
+		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
+
+		if (flashGfx != null)
+			flashGfx.clear();
+
+		final t = data.gfxData.quad;
+
+		startDraw(data.color);
+		flashGfx.drawQuads(t.rects, t.indices, t.transforms);
 		endDraw();
 
 		return this;
@@ -63,31 +116,30 @@ class TempoSprite extends FlxSprite
 
 	public function makeImage(data:TempoImage):TempoSprite
 	{
-		this.type = GRAPHIC;
+		this._type = GRAPHIC;
 
-		trace(data.path);
+		final g = Paths.loader.image(data.path, #if FEATURE_MODS_ALLOWED data.library #else data.pathIsFromFile #end);
+		final a = (data.animated != null ? data.animated : false);
+		final fw = (data.frameWidth != null ? data.frameWidth : 0);
+		final fh = (data.frameHeight != null ? data.frameHeight : 0);
+		final s = (data.animations != null ? data.animations : []);
 
-		loadGraphic(Paths.loader.image(data.path, #if FEATURE_MODS_ALLOWED data.library #else data.pathIsFromFile #end),
-			(data.animated != null ? data.animated : false), (data.frameWidth != null ? data.frameWidth : 0),
-			(data.frameHeight != null ? data.frameHeight : 0));
+		loadGraphic(g, a, fw, fh);
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);
 
-		if (data.animated != null && data.animated == true)
+		if (a == true)
 		{
-			this.frameWidth = (data.frameWidth != null ? data.frameWidth : Math.floor(this.width));
-			this.frameHeight = (data.frameHeight != null ? data.frameHeight : Math.floor(this.height));
+			this.frameWidth = (fw == 0 ? Math.floor(this.width) : fw);
+			this.frameHeight = (fh == 0 ? Math.floor(this.height) : fh);
 
-			for (i in 0...data.animations.length)
-				this.animation.add(data.animations[i][0], data.animations[i][1], (data.animations[i][2] != null ? data.animations[i][2] : 24),
-					(data.animations[i][3] != null ? data.animations[i][3] : false));
+			if (s.length > 0)
+				for (i in 0...s.length)
+					this.animation.add(s[i][0], s[i][1], (s[i][2] != null ? s[i][2] : 24), (s[i][3] != null ? s[i][3] : false));
 		}
 
-		if (data.antialiasing != null)
-			this.antialiasing = data.antialiasing;
-		else
-			this.antialiasing = Save.optionsData.antialiasing;
+		checkAntialiasing(data.antialiasing);
 
 		if (data.color != null)
 			this.color = data.color;
@@ -100,29 +152,26 @@ class TempoSprite extends FlxSprite
 
 	public function makeSparrowAtlas(data:TempoSparrowAtlas):TempoSprite
 	{
-		this.type = ANIMATE;
-		this.animOffsets = [];
+		this._type = ANIMATE;
+		this._animOffsets = [];
 
 		frames = Paths.atlas.sparrow(data.path);
 
 		if (data.cache != null && data.cache == true)
 			SpriteUtil.cacheGraphic(data.path, this.graphic);
 
-		if (data.antialiasing != null)
-			this.antialiasing = data.antialiasing;
-		else
-			this.antialiasing = Save.optionsData.antialiasing;
+		checkAntialiasing(data.antialiasing);
 
 		if (data.animations != null)
 		{
 			for (animData in data.animations)
 			{
-				animOffsets.push({
+				_animOffsets.push({
 					anim: animData.name,
 					offsets: (animData.offsets == null ? {x: 0, y: 0} : {x: animData.offsets.x, y: animData.offsets.y})
 				});
 
-				if (animData.indices == null)
+				if (animData.indices == null || animData.indices.length < 0)
 				{
 					this.animation.addByPrefix(animData.name, animData.prefix, (animData.framerate != null ? animData.framerate : 24),
 						(animData.looped != null ? animData.looped : false));
@@ -145,56 +194,26 @@ class TempoSprite extends FlxSprite
 		else
 			trace("playAnim: '" + name + "' animation not exists!");
 
-		if (this.animOffsets != null)
-			for (i in 0...this.animOffsets.length)
-				if (this.animOffsets[i].anim == name)
-					setOffset(this.animOffsets[i].offsets.x, this.animOffsets[i].offsets.y);
+		if (_animOffsets != null)
+			for (i in 0..._animOffsets.length)
+				if (_animOffsets[i].anim == name)
+					setOffset(_animOffsets[i].offsets.x, _animOffsets[i].offsets.y);
 	}
 
 	override function set_width(v:Float):Float
 	{
-		width = v;
+		this.width = v;
 
-		if (this.roundRect != null)
-		{
-			if (this.type == ROUND_RECT)
-			{
-				this.startDraw(this.color);
-				this.flashGfx.drawRoundRect(0, 0, v, this.height, this.roundRect.elWidth, this.roundRect.elHeight);
-				this.endDraw();
-			}
-			else if (this.type == ROUND_RECT_COMPLEX)
-			{
-				this.startDraw(this.color);
-				this.flashGfx.drawRoundRectComplex(0, 0, v, this.height, this.roundRect.elTopLeft, this.roundRect.elTopRight, this.roundRect.elBottomLeft,
-					this.roundRect.elBottomRight);
-				this.endDraw();
-			}
-		}
+		checkFlashGFX();
 
 		return width;
 	}
 
 	override function set_height(v:Float):Float
 	{
-		height = v;
+		this.height = v;
 
-		if (this.roundRect != null)
-		{
-			if (this.type == ROUND_RECT)
-			{
-				this.startDraw(this.color);
-				this.flashGfx.drawRoundRect(0, 0, this.width, v, this.roundRect.elWidth, this.roundRect.elHeight);
-				this.endDraw();
-			}
-			else if (this.type == ROUND_RECT_COMPLEX)
-			{
-				this.startDraw(this.color);
-				this.flashGfx.drawRoundRectComplex(0, 0, this.width, v, this.roundRect.elTopLeft, this.roundRect.elTopRight, this.roundRect.elBottomLeft,
-					this.roundRect.elBottomRight);
-				this.endDraw();
-			}
-		}
+		checkFlashGFX();
 
 		return height;
 	}
@@ -205,7 +224,68 @@ class TempoSprite extends FlxSprite
 	public function setOffset(?x:Float = 0, ?y:Float = 0):FlxPoint
 		return this.offset.set(x, y);
 
-	@:noUsing public inline function startDraw(fillColor:FlxColor):Void
+	@:default([])
+	@:noUsing inline function checkFlashGFX():TempoSprite
+	{
+		if (this.graphic == null)
+			return null;
+
+		if (_gfxData != null)
+		{
+			if (flashGfx != null)
+				flashGfx.clear();
+
+			switch (_type)
+			{
+				case ROUND_RECT:
+					startDraw(this.color);
+					flashGfx.drawRoundRect(0, 0, this.width, this.height, _gfxData.roundRect.elWidth, _gfxData.roundRect.elHeight);
+					endDraw();
+				case ROUND_RECT_COMPLEX:
+					startDraw(this.color);
+					flashGfx.drawRoundRectComplex(0, 0, this.width, this.height, _gfxData.roundRect.elTopLeft, _gfxData.roundRect.elTopRight,
+						_gfxData.roundRect.elBottomLeft, _gfxData.roundRect.elBottomRight);
+					endDraw();
+				case CIRCLE:
+					startDraw(this.color);
+					flashGfx.drawCircle(0, 0, _gfxData.circle.radius);
+					endDraw();
+				case ELLIPSE:
+					startDraw(this.color);
+					flashGfx.drawEllipse(0, 0, _gfxData.ellipse.width, _gfxData.ellipse.height);
+					endDraw();
+				case QUAD:
+					startDraw(this.color);
+					flashGfx.drawQuads(_gfxData.quad.rects, _gfxData.quad.indices, _gfxData.quad.transforms);
+					endDraw();
+				case TRIANGLE:
+					startDraw(this.color);
+					flashGfx.drawTriangles(_gfxData.triangle.verices, _gfxData.triangle.indices, _gfxData.triangle.uvtData,
+						(_gfxData.triangle.culling == null ? openfl.display.TriangleCulling.NONE : _gfxData.triangle.culling));
+					endDraw();
+				default: // nothing
+			}
+		}
+
+		return this;
+	}
+
+	@:default([])
+	@:noUsing inline function checkAntialiasing(?v:Bool = null):Bool
+	{
+		if (this.graphic == null)
+			return false;
+
+		if (v == null)
+			this.antialiasing = Save.optionsData.antialiasing;
+		else
+			this.antialiasing = v;
+
+		return this.antialiasing;
+	}
+
+	@:default([])
+	@:noUsing inline function startDraw(fillColor:FlxColor):Void
 	{
 		this.flashGfx.clear();
 		if (fillColor != FlxColor.TRANSPARENT)
@@ -213,14 +293,14 @@ class TempoSprite extends FlxSprite
 	}
 
 	@:default([])
-	@:noUsing public inline function endDraw():TempoSprite
+	@:noUsing inline function endDraw():TempoSprite
 	{
 		this.flashGfx.endFill();
 		updateSpriteGraphic();
 		return this;
 	}
 
-	private function updateSpriteGraphic():TempoSprite
+	inline function updateSpriteGraphic():TempoSprite
 	{
 		this.pixels.draw(_flashGfxSprite);
 		this.dirty = true;

@@ -18,8 +18,19 @@ class TempoState extends flixel.FlxState
 	{
 		if (fadeIn)
 		{
+			if (camFade == null)
+			{
+				camFade = new FlxCamera();
+				camFade.bgColor.alpha = 0;
+				FlxG.cameras.add(camFade, false);
+			}
+
 			FlxG.state.persistentUpdate = FlxG.state.persistentDraw = true;
-			FlxG.state.openSubState(new TransitionSubState(false, Constants.TRANSITION_DURATION, () -> fadeIn = false));
+			FlxG.state.openSubState(new TransitionSubState(false, Constants.TRANSITION_DURATION, () ->
+			{
+				fadeIn = false;
+				camFade = null;
+			}, camFade));
 		}
 
 		super.create();
@@ -41,9 +52,9 @@ class TempoState extends flixel.FlxState
 			if (onCallback != null)
 				onCallback();
 
+			camFade = null;
 			FlxG.switchState(() -> nextState);
-		});
-		transitionSubState.camera = camFade;
+		}, camFade);
 		FlxG.state.openSubState(transitionSubState);
 	}
 

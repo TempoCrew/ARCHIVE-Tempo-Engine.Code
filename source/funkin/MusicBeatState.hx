@@ -97,8 +97,7 @@ class MusicBeatState extends TempoState
 
 	public function stepHit():Void
 	{
-		if (curStep % 4 == 0)
-			beatHit();
+		// override function
 	}
 
 	public function beatHit():Void

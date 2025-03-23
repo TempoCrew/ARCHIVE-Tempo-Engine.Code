@@ -5,5 +5,5 @@ typedef TempoSolidColor =
 	width:Float,
 	height:Float,
 	color:FlxColor,
-	?roundRect:TempoRoundRect
+	?gfxData:TempoSpriteGFX
 }

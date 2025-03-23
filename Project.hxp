@@ -131,6 +131,28 @@ class Project extends HXProject
   static final GITHUB_BUILD:FeatureFlag = "GITHUB_BUILD";
 
   /**
+   * `-DFEATURE_RESIZE_WINDOW`
+   * If this flag is enabled, game window will resize from user.
+   */
+  static final FEATURE_RESIZE_WINDOW:FeatureFlag = "FEATURE_RESIZE_WINDOW";
+
+  /**
+   * `-DFEATURE_DARK_WINDOW`
+   * If this flag is enabled, window theme will default a `DARK`.
+   *
+   * `IT'S WORK ONLY FOR WINDOWS PLATFORM!!`
+   */
+  static final FEATURE_DARK_WINDOW:FeatureFlag = "FEATURE_DARK_WINDOW";
+
+  /**
+   * `-DFEATURE_MAX_DPI_DISPLAY`
+   * If this flag is enabled, game window will not be free, but will be in limited width and height (default `1280x720`)
+   *
+   * `IT'S WORK ONLY FOR WINDOWS PLATFORM!!`
+   */
+  static final FEATURE_MAX_DPI_DISPLAY:FeatureFlag = "FEATURE_MAX_DPI_DISPLAY";
+
+  /**
    * `-DFEATURE_REDIRECT_ASSETS`
    * If this flag is enabled, 'assets' folder will redirect from the 'export' folder
    */
@@ -409,6 +431,7 @@ class Project extends HXProject
     FEATURE_HSCRIPT_SCRIPTING.apply(this, true);
 
     // DESKTOP FEATURE FLAGS
+    FEATURE_RESIZE_WINDOW.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_MODS_ENABLING.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_CRASH_DIALOG.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_GAMEJOLT_CLIENT.apply(this, getPlatform(PlatformType.DESKTOP));
@@ -538,7 +561,13 @@ class Project extends HXProject
     if (FEATURE_GAMEJOLT_CLIENT.isEnabled(this)) this.haxelibs.push(new Haxelib('HaxeGJClient', 'git'));
     if (FEATURE_DISCORD_RPC.isEnabled(this)) this.haxelibs.push(new Haxelib('hxdiscord_rpc', 'git'));
     if (FEATURE_LUA_SCRIPTING.isEnabled(this)) this.haxelibs.push(new Haxelib('linc_luajit', 'git'));
-    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) this.haxelibs.push(new Haxelib('systools', 'git'));
+    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) {
+      this.haxelibs.push(new Haxelib('systools', 'git'));
+
+      if (FEATURE_32_BITS.isEnabled(this)) {
+        this.haxelibs.push(new Haxelib('swhx', 'git'));
+      }
+    }
     if (FEATURE_PARTIAL_SOUNDS.isEnabled(this)) this.haxelibs.push(new Haxelib('FlxPartialSound', 'git'));
 
     if (FEATURE_HSCRIPT_SCRIPTING.isEnabled(this)) {
@@ -558,7 +587,13 @@ class Project extends HXProject
    */
   function configureNDLL()
   {
-    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) this.ndlls.push(new NDLL('systools', new Haxelib('systools', 'git')));
+    if (FEATURE_SYSTOOLS_NDLL.isEnabled(this)) {
+      this.ndlls.push(new NDLL('systools', new Haxelib('systools', 'git')));
+
+      if (FEATURE_32_BITS.isEnabled(this)) {
+        this.ndlls.push(new NDLL('swhx', new Haxelib('swhx', 'git')));
+      }
+    }
   }
 
   /**
@@ -613,10 +648,10 @@ class Project extends HXProject
     addAsset("LICENSE", 'license.md', "default", false);
 
     //Icons
-    addAsset('project/icon16.png', 'Resource/logo/x16.png', "default", false);
-    addAsset('project/icon32.png', 'Resource/logo/x32.png', "default", false);
-    addAsset('project/icon64.png', "Resource/logo/x64.png", "default", false);
-    addAsset("project/iconFULL.png", "Resource/logo/OG.png", "default", false);
+    addAsset('project/icon16.png', 'Resource/ico/x16.png', "default", false);
+    addAsset('project/icon32.png', 'Resource/ico/x32.png', "default", false);
+    addAsset('project/icon64.png', "Resource/ico/x64.png", "default", false);
+    addAsset("project/iconFULL.png", "Resource/ico/OG.png", "default", false);
   }
 
   /**

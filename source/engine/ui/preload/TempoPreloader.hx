@@ -74,6 +74,9 @@ class TempoPreloader extends flixel.system.FlxBasePreloader
 		super(Constants.PRELOADER_MIN_STAGE_TIME);
 
 		engine.backend.util.CLIUtil.resetWorkingDir();
+		#if windows
+		engine.backend.util.WindowsUtil.goAheadIco();
+		#end
 
 		Sys.println('Preloader:');
 	}

@@ -90,7 +90,7 @@ class TitleState extends MusicBeatState
 				{name: "danceRight", prefix: 'gfDance', indices: [15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27, 28, 29]}
 			]
 		});
-		trace(gfDance.animation.getAnimationList());
+		gfDance.animation.play('danceLeft');
 
 		logo = new TempoSprite(-150, -100, ANIMATE);
 		logo.makeSparrowAtlas({
@@ -131,11 +131,11 @@ class TitleState extends MusicBeatState
 		ngSpr = new TempoSprite(0, FlxG.height * 0.52, GRAPHIC);
 
 		if (FlxG.random.bool(1))
-			ngSpr.makeImage({path: Paths.image("newgrounds_logo_classic")});
+			ngSpr.makeImage({path: Paths.image("newgrounds_logo_classic", null, false)});
 		else if (FlxG.random.bool(30))
 		{
 			ngSpr.makeImage({
-				path: Paths.image("newgrounds_logo_animated"),
+				path: Paths.image("newgrounds_logo_animated", null, false),
 				animated: true,
 				frameWidth: 600,
 				animations: [['idle', [0, 1], [4]]]
@@ -146,7 +146,7 @@ class TitleState extends MusicBeatState
 		}
 		else
 		{
-			ngSpr.makeImage({path: Paths.image('newgrounds_logo')});
+			ngSpr.makeImage({path: Paths.image('newgrounds_logo', null, false)});
 			ngSpr.setGraphicSize(ngSpr.width * 0.8);
 		}
 
@@ -160,7 +160,7 @@ class TitleState extends MusicBeatState
 		titleText.shader = swagShader.shader;
 
 		try
-			confirmSound.loadEmbedded(Paths.loader.sound(Paths.sound('confirmMenu')))
+			confirmSound.loadEmbedded(Paths.loader.sound(Paths.sound('confirmMenu.${Constants.EXT_SOUND}')))
 		catch (e)
 			trace(e.message);
 
@@ -184,7 +184,7 @@ class TitleState extends MusicBeatState
 	{
 		if (!inited)
 			if (FlxG.sound.music == null)
-				FlxG.sound.playMusic(Paths.loader.sound(Paths.music('freakyMenu')), 0);
+				FlxG.sound.playMusic(Paths.loader.sound(Paths.music('freakyMenu.${Constants.EXT_SOUND}')), 0);
 	}
 
 	function createCoolText(value:Array<String>):Void
@@ -279,14 +279,14 @@ class TitleState extends MusicBeatState
 			if (logo != null)
 				logo.playAnim('bump', true);
 
+			danceLeft = !danceLeft;
+
 			if (gfDance != null && gfDance.animation != null)
 			{
-				danceLeft = !danceLeft;
-
 				if (danceLeft)
-					gfDance.playAnim('danceLeft');
+					gfDance.animation.play('danceLeft');
 				else
-					gfDance.playAnim('danceRight');
+					gfDance.animation.play('danceRight');
 			}
 		}
 	}

@@ -1,6 +1,57 @@
 package engine.backend.shaders;
 
-class Light extends FlxShader
+import tempo.types.TempoOffset;
+
+class Bloom implements flixel.util.FlxDestroyUtil.IFlxDestroyable
+{
+	public var shader(default, null):BloomShader = new BloomShader();
+	public var pos(default, set):TempoOffset = {x: 0, y: 0};
+	public var rgba(default, set):TypeRGBA = {
+		r: 100,
+		g: 100,
+		b: 100,
+		a: 255
+	};
+
+	private function set_pos(value:TempoOffset):TempoOffset
+	{
+		pos = value;
+
+		shader.LightPos.value[0] = pos.x;
+		shader.LightPos.value[1] = pos.y;
+
+		return pos;
+	}
+
+	private function set_rgba(value:TypeRGBA):TypeRGBA
+	{
+		rgba = value;
+
+		shader.RGBA.value[0] = rgba.r;
+		shader.RGBA.value[1] = rgba.g;
+		shader.RGBA.value[2] = rgba.b;
+		shader.RGBA.value[3] = rgba.a;
+
+		return rgba;
+	}
+
+	public function new() {} // Constructor
+
+	public function destroy()
+	{
+		pos = {x: 0, y: 0};
+		rgba = {
+			r: 100,
+			g: 100,
+			b: 100,
+			a: 255
+		};
+
+		shader = null;
+	}
+}
+
+class BloomShader extends FlxShader
 {
 	@:glFragmentSource('
     #pragma header
@@ -60,11 +111,19 @@ class Light extends FlxShader
 			gl_FragColor = coloredRays + vec4(texture2D(bitmap, uv).xyz * (iColor*0.8+0.3 + rays.xyz*rays.xyz/2.), 1.);
 		}
   ')
-	public function new(rgba:Array<Float>, pos:Array<Float>):Void
+	public function new():Void
 	{
 		super();
 
-		LightPos.value = [pos[0], pos[1]];
-		RGBA.value = [rgba[0], rgba[1], rgba[2], rgba[3]];
+		LightPos.value = [0, 0];
+		RGBA.value = [100, 100, 100, 255];
 	}
+}
+
+private typedef TypeRGBA =
+{
+	r:Float,
+	g:Float,
+	b:Float,
+	a:Float
 }

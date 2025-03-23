@@ -22,7 +22,10 @@ class MusicBeatSubState extends TempoSubState
 			if (curStep > 0)
 				stepHit();
 
-			if (PlayState.song.chart != null && PlayState.song.meta != null)
+			if (curStep % 4 == 0)
+				beatHit();
+
+			if (Type.getClass(FlxG.state.subState) == PlayState && PlayState.song.chart != null && PlayState.song.meta != null)
 			{
 				if (oldStep < curStep)
 					updateCurSection();
@@ -110,11 +113,7 @@ class MusicBeatSubState extends TempoSubState
 		// override function
 	}
 
-	public function stepHit():Void
-	{
-		if (curStep % 4 == 0)
-			beatHit();
-	}
+	public function stepHit():Void {}
 
 	public function beatHit():Void
 	{

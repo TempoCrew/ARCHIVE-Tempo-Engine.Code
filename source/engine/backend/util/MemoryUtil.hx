@@ -21,11 +21,23 @@ class MemoryUtil
 	 * Global caching assets
 	 */
 	public static var globalCachingAssets:Array<String> = [
+		// Vanilla
 		'assets/music/freakyMenu.${Constants.EXT_SOUND}',
 		'assets/music/breakfast.${Constants.EXT_SOUND}',
 		'assets/sounds/cancelMenu.${Constants.EXT_SOUND}',
 		'assets/sounds/scrollMenu.${Constants.EXT_SOUND}',
-		'assets/sounds/confirmMenu.${Constants.EXT_SOUND}'
+		'assets/sounds/confirmMenu.${Constants.EXT_SOUND}',
+		'assets/images/fonts/default.${Constants.EXT_IMAGE}',
+		'assets/images/fonts/bold.${Constants.EXT_IMAGE}',
+		'assets/images/fonts/freeplay-clear.${Constants.EXT_IMAGE}', // For libraries
+		'preload:assets/music/freakyMenu.${Constants.EXT_SOUND}',
+		'preload:assets/music/breakfast.${Constants.EXT_SOUND}',
+		'preload:assets/sounds/cancelMenu.${Constants.EXT_SOUND}',
+		'preload:assets/sounds/scrollMenu.${Constants.EXT_SOUND}',
+		'preload:assets/sounds/confirmMenu.${Constants.EXT_SOUND}',
+		'preload:assets/images/fonts/default.${Constants.EXT_IMAGE}',
+		'preload:assets/images/fonts/bold.${Constants.EXT_IMAGE}',
+		'preload:assets/images/fonts/freeplay-clear.${Constants.EXT_IMAGE}'
 	];
 
 	/**
@@ -47,6 +59,11 @@ class MemoryUtil
 	public static var localTrackedAssets:Array<String> = [];
 
 	/**
+	 * Current tracked texts.
+	 */
+	public static var curTrackedText:Map<String, String> = new Map<String, String>();
+
+	/**
 	 * Current tracked graphics
 	 */
 	public static var curTrackedGraphic:Map<String, FlxGraphic> = new Map<String, FlxGraphic>();
@@ -61,7 +78,7 @@ class MemoryUtil
 	 * @param path file/folder path
 	 * @param graphic bitmap/pixels
 	 */
-	public static function pushCurTrackedAsset(path:String, graphic:FlxGraphic):Void
+	public static function pushCurTrackedGraphic(path:String, graphic:FlxGraphic):Void
 	{
 		if (curTrackedGraphic.exists(path))
 			localTrackedAssets.push(path);
@@ -84,6 +101,16 @@ class MemoryUtil
 			}
 		}
 
+		for (key in curTrackedSound.keys())
+		{
+			final isContains:Bool = !localTrackedAssets.contains(key) && !globalCachingAssets.contains(key);
+			if (isContains)
+			{
+				SoundUtil.destroySound(curTrackedSound.get(key));
+				curTrackedSound.remove(key);
+			}
+		}
+
 		collect(#if cpp true #end);
 	}
 
@@ -102,6 +129,7 @@ class MemoryUtil
 			final isContains:Bool = !localTrackedAssets.contains(key) && !globalCachingAssets.contains(key) && asset != null;
 			if (isContains)
 			{
+				SoundUtil.destroySound(asset);
 				LimeAssets.cache.clear(key);
 				curTrackedSound.remove(key);
 			}

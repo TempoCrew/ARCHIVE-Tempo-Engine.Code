@@ -1,9 +1,21 @@
 package engine.backend.util;
 
+#if windows
+import systools.Dialogs;
+#end
+
 class SysUtil
 {
 	public static inline function getFileName():String
 		return (Lib.application.meta.get('file') != null ? Lib.application.meta.get('file') : "Tempo Engine");
+
+	#if windows
+	public static function message(title:String, description:String, isError:Bool = false):Void
+		return Dialogs.message(title, description, isError);
+
+	public static function confirm(title:String, description:String, isError:Bool = false):Bool
+		return Dialogs.confirm(title, description, isError);
+	#end
 
 	#if desktop
 	@:keep static function __alsoft__init__():Void
@@ -35,6 +47,29 @@ class SysUtil
 		Sys.putEnv("ALSOFT_CONF", c);
 	}
 	#end
+
+	public static function setFeatures():Void
+	{
+		#if desktop
+		@:privateAccess
+		engine.backend.util.SysUtil.__alsoft__init__();
+
+		#if !FEATURE_RESIZE_WINDOW
+		Application.current.window.resizable = false;
+		#end
+
+		#if windows
+		#if FEATURE_DARK_WINDOW
+		WindowsUtil.setWindowColorMode(DARK);
+		#else
+		WindowsUtil.setWindowColorMode(LIGHT);
+		#end
+		#if FEATURE_MAX_DPI_DISPLAY
+		WindowsUtil.setProcessDPIAware();
+		#end
+		#end
+		#end
+	}
 
 	public static function findPath():Void
 	{
