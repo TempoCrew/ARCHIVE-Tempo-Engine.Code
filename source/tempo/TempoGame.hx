@@ -49,11 +49,11 @@ class TempoGame extends FlxGame
 	/**
 	 * Handles the `onEnterFrame` call and figures out how many updates and draw calls to do.
 	 */
-	override function onEnterFrame(_):Void
+	override function onEnterFrame(e:Event):Void
 	{
 		if (_skipNextTickUpdate != (_skipNextTickUpdate = false))
 			_total = ticks = getTicks();
 
-		super.onEnterFrame(_);
+		super.onEnterFrame(e);
 	}
 }

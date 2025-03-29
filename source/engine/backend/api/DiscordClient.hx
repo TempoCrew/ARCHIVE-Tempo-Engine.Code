@@ -84,22 +84,9 @@ class DiscordClient
 		lastParams = params;
 	}
 
-	function get_stringToActivity(presence:DiscordRichPresence, str:String):Void
-	{
-		if (str == COMPETING)
-			presence.type = DiscordActivityType_Competing;
-		else if (str == LISTENING)
-			presence.type = DiscordActivityType_Listening;
-		else if (str == WATCHING)
-			presence.type = DiscordActivityType_Listening;
-		else
-			presence.type = DiscordActivityType_Playing;
-	}
-
 	private function buildPresence(params:DiscordPresenceParams):DiscordRichPresence
 	{
 		var presence:DiscordRichPresence = new DiscordRichPresence();
-		get_stringToActivity(presence, params.type);
 
 		// Parameters
 		presence.details = cast(params.details, Null<String>);
@@ -108,6 +95,15 @@ class DiscordClient
 		presence.largeImageText = cast(params.largeImageText, Null<String>) ?? "Project Version: " + Constants.VERSION;
 		presence.smallImageKey = cast(params.smallImageKey, Null<String>);
 		presence.smallImageText = cast(params.smallImageText, Null<String>);
+
+		if (params.type == COMPETING)
+			presence.type = DiscordActivityType_Competing;
+		else if (params.type == LISTENING)
+			presence.type = DiscordActivityType_Listening;
+		else if (params.type == WATCHING)
+			presence.type = DiscordActivityType_Listening;
+		else
+			presence.type = DiscordActivityType_Playing;
 
 		return presence;
 	}

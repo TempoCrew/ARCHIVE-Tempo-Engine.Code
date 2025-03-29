@@ -126,7 +126,7 @@ class ScreenshotPlugin extends FlxBasic
 	}
 
 	static function getPath():String
-		return '${Constants.SCREENSHOT_FOLDER}/tempo-${DateUtil.generateTimestamp()}.${Constants.EXT_IMAGE}';
+		return '${Constants.SCREENSHOT_FOLDER}/tempo-${DateUtil.generateTimestamp()}.${Save.optionsData.screenshotEncoder == "png" ? 'png' : "jpg"}';
 
 	final FLASH_DURATION:Float = .15;
 

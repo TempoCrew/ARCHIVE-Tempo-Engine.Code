@@ -14,6 +14,9 @@ class WarningState extends MusicBeatState
 	var textMap:Array<AtlasText> = [];
 	var hitboxMap:Array<FlxSprite> = [];
 
+	var showAgain:TempoSprite;
+	var showText:FlxText;
+
 	var buttonBG:TempoSprite;
 	var buttonText:FlxText;
 	var blueout:FlxSprite;
@@ -76,7 +79,8 @@ class WarningState extends MusicBeatState
 			width: 250,
 			height: 50,
 			color: Constants.UI_COLOR_BUTTON,
-			gfxData: {roundRect: {elWidth: 10, elHeight: 10}}
+			elWidth: 10,
+			elHeight: 10
 		});
 		buttonBG.screenCenter(X);
 		buttonBG.scrollFactor.set();
@@ -90,6 +94,25 @@ class WarningState extends MusicBeatState
 		buttonText.scrollFactor.set();
 		buttonText.updateHitbox();
 		add(buttonText);
+
+		showAgain = new TempoSprite(FlxG.width - 240, FlxG.height - 65);
+		showAgain.makeRoundRect({
+			width: 30,
+			height: 30,
+			elWidth: 30,
+			elHeight: 30,
+			color: FlxColor.WHITE
+		});
+		showAgain.color = (Save.optionsData.warningVisible ? FlxColor.RED : FlxColor.LIME);
+		showAgain.alpha = .6;
+		showAgain.scrollFactor.set();
+		add(showAgain);
+
+		showText = new FlxText(showAgain.x + 35, showAgain.y, 0, "Do not show again", 18);
+		showText.setFormat(Paths.font('vcr.ttf'), 18, FlxColor.WHITE, LEFT, OUTLINE, FlxColor.BLACK);
+		showText.alpha = .6;
+		showText.scrollFactor.set();
+		add(showText);
 
 		blueout = new FlxSprite(-1, -1).makeGraphic(FlxG.width + 2, FlxG.height + 2, FlxColor.fromString('0xFF131564'));
 		blueout.scrollFactor.set();
@@ -132,6 +155,24 @@ class WarningState extends MusicBeatState
 				changeSelection(curSelect + 1);
 
 				Cursor.hide();
+			}
+
+			if (TempoInput.cursorOverlaps(showAgain))
+			{
+				showAgain.alpha = 1.0;
+				showText.alpha = 1.0;
+
+				if (TempoInput.cursorJustPressed)
+				{
+					Save.optionsData.warningVisible = !Save.optionsData.warningVisible;
+
+					showAgain.color = (Save.optionsData.warningVisible ? FlxColor.RED : FlxColor.LIME);
+				}
+			}
+			else
+			{
+				showAgain.alpha = .6;
+				showText.alpha = .6;
 			}
 
 			for (i in 0...hitboxMap.length)

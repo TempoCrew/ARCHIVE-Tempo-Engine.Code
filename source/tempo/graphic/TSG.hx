@@ -8,16 +8,16 @@ import flixel.graphics.FlxGraphic;
  *
  * It's used for debug stuff and editor images.
  */
-class TSG extends FlxSprite
+class TSG extends TempoSprite
 {
 	public function new(x:Float = 0, y:Float = 0, ?image:String):Void
 	{
-		super(x, y);
+		super(x, y, GRAPHIC);
 
 		if (image != null)
 			graphicLoad(image);
 
-		antialiasing = Save.optionsData.antialiasing;
+		checkAntialiasing();
 	}
 
 	public function graphicLoad(image:String, ?isAnim:Bool = false, ?animW:Int = 0, ?animH:Int = 0):TSG

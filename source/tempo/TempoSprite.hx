@@ -1,5 +1,6 @@
 package tempo;
 
+import tempo.types.TempoSpriteRoundRect.TempoSpriteRoundRectComplex;
 import engine.backend.util.SpriteUtil;
 import tempo.animation.TempoAnimationController;
 import tempo.types.*;
@@ -7,7 +8,7 @@ import tempo.types.*;
 /**
  * Group with `TempoSprite`.
  */
-typedef TempoSpriteGroup = FlxTypedGroup<TempoSprite>;
+typedef TempoSpriteGroup = FlxTypedSpriteGroup<TempoSprite>;
 
 /**
  * Re-optimized and more functional `FlxSprite`.
@@ -38,77 +39,115 @@ class TempoSprite extends FlxSprite
 		this.flashGfx = _flashGfxSprite.graphics;
 	}
 
-	public function makeRoundRect(data:TempoSolidColor):TempoSprite
+	public function makeRoundRect(data:TempoSpriteRoundRect):TempoSprite
 	{
 		this._type = ROUND_RECT;
-		this._gfxData = data.gfxData;
+		this._gfxData = {
+			roundRect: data
+		};
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
-		final t = data.gfxData.roundRect;
-
 		startDraw(data.color);
-		flashGfx.drawRoundRect(0, 0, data.width, data.height, t.elWidth, t.elHeight);
+		flashGfx.drawRoundRect(0, 0, data.width, data.height, data.elWidth, data.elHeight);
 		endDraw();
 
 		return this;
 	}
 
-	public function makeRoundRectComplex(data:TempoSolidColor):TempoSprite
+	public function makeRoundRectComplex(data:TempoSpriteRoundRectComplex):TempoSprite
 	{
 		this._type = ROUND_RECT_COMPLEX;
-		this._gfxData = data.gfxData;
+		this._gfxData = {
+			roundRectComplex: data
+		};
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
-		final t = data.gfxData.roundRect;
-
 		startDraw(data.color);
-		flashGfx.drawRoundRectComplex(0, 0, data.width, data.height, t.elTopLeft, t.elTopRight, t.elBottomLeft, t.elBottomRight);
+		flashGfx.drawRoundRectComplex(0, 0, data.width, data.height, data.elTopLeft, data.elTopRight, data.elBottomLeft, data.elBottomRight);
 		endDraw();
 
 		return this;
 	}
 
-	public function makeTriangle(data:TempoSolidColor):TempoSprite
+	public function makeTriangle(data:TempoSpriteTriangle):TempoSprite
 	{
 		this._type = TRIANGLE;
-		this._gfxData = data.gfxData;
+		this._gfxData = {
+			triangle: data
+		};
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
-		final t = data.gfxData.triangle;
-
 		startDraw(data.color);
-		flashGfx.drawTriangles(t.verices, t.indices, t.uvtData, (t.culling == null ? NONE : t.culling));
+		flashGfx.drawTriangles(data.verices, data.indices, data.uvtData, (data.culling == null ? NONE : data.culling));
 		endDraw();
 
 		return this;
 	}
 
-	public function makeQuadRect(data:TempoSolidColor):TempoSprite
+	public function makeEllipse(data:TempoSpriteEllipse):TempoSprite
 	{
-		this._type = QUAD;
-		this._gfxData = data.gfxData;
+		this._type = ELLIPSE;
+		this._gfxData = {
+			ellipse: data
+		};
 
 		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
 
 		if (flashGfx != null)
 			flashGfx.clear();
 
-		final t = data.gfxData.quad;
+		startDraw(data.color);
+		flashGfx.drawEllipse(0, 0, data.ellipseWidth, data.ellipseHeight);
+		endDraw();
+
+		return this;
+	}
+
+	public function makeCircle(data:TempoSpriteCircle):TempoSprite
+	{
+		this._type = CIRCLE;
+		this._gfxData = {
+			circle: data
+		};
+
+		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
+
+		if (flashGfx != null)
+			flashGfx.clear();
 
 		startDraw(data.color);
-		flashGfx.drawQuads(t.rects, t.indices, t.transforms);
+		flashGfx.drawCircle(0, 0, data.radius);
+		endDraw();
+
+		return this;
+	}
+
+	public function makeQuadRect(data:TempoSpriteQuad):TempoSprite
+	{
+		this._type = QUAD;
+		this._gfxData = {
+			quad: data
+		};
+
+		makeGraphic(Math.floor(data.width), Math.floor(data.height), FlxColor.TRANSPARENT);
+
+		if (flashGfx != null)
+			flashGfx.clear();
+
+		startDraw(data.color);
+		flashGfx.drawQuads(data.rects, data.indices, data.transforms);
 		endDraw();
 
 		return this;
@@ -145,7 +184,10 @@ class TempoSprite extends FlxSprite
 			this.color = data.color;
 
 		if (data.width != null && data.height != null)
+		{
 			this.setGraphicSize(data.width, data.height);
+			this.updateHitbox();
+		}
 
 		return this;
 	}
@@ -183,6 +225,30 @@ class TempoSprite extends FlxSprite
 				}
 			}
 		}
+
+		return this;
+	}
+
+	public function loadFromTempoSprite(Sprite:TempoSprite):TempoSprite
+	{
+		frames = Sprite.frames;
+		bakedRotationAngle = Sprite.bakedRotationAngle;
+		if (bakedRotationAngle > 0)
+		{
+			width = Sprite.width;
+			height = Sprite.height;
+			centerOffsets();
+		}
+		antialiasing = Sprite.antialiasing;
+		animation.copyFrom(Sprite.animation);
+		graphicLoaded();
+		clipRect = Sprite.clipRect;
+		dirty = Sprite.dirty;
+		flashGfx = Sprite.flashGfx;
+		_flashGfxSprite = Sprite._flashGfxSprite;
+		_gfxData = Sprite._gfxData;
+		_type = Sprite._type;
+		checkFlashGFX();
 
 		return this;
 	}
@@ -243,8 +309,8 @@ class TempoSprite extends FlxSprite
 					endDraw();
 				case ROUND_RECT_COMPLEX:
 					startDraw(this.color);
-					flashGfx.drawRoundRectComplex(0, 0, this.width, this.height, _gfxData.roundRect.elTopLeft, _gfxData.roundRect.elTopRight,
-						_gfxData.roundRect.elBottomLeft, _gfxData.roundRect.elBottomRight);
+					flashGfx.drawRoundRectComplex(0, 0, this.width, this.height, _gfxData.roundRectComplex.elTopLeft, _gfxData.roundRectComplex.elTopRight,
+						_gfxData.roundRectComplex.elBottomLeft, _gfxData.roundRectComplex.elBottomRight);
 					endDraw();
 				case CIRCLE:
 					startDraw(this.color);
@@ -306,5 +372,10 @@ class TempoSprite extends FlxSprite
 		this.dirty = true;
 
 		return this;
+	}
+
+	public function cloning():TempoSprite
+	{
+		return (new TempoSprite()).loadFromTempoSprite(this);
 	}
 }

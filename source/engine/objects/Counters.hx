@@ -89,6 +89,7 @@ class Counters extends TextField
 
 		final _c:String = FlxStringUtil.formatBytes(curRAM);
 		final _p:String = FlxStringUtil.formatBytes(peakRAM);
+
 		text = '${(_f ? 'FPS: ${curFPS}' : (_r ? 'RAM: ${_c} / ${_p}' : ''))}${(_f ? '\nRAM: ${_c} / ${_p}' : "")}';
 	}
 }

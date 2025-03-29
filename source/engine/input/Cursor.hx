@@ -175,7 +175,7 @@ class Cursor
 			case Default:
 				if (assetCursorDefault == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
 					assetCursorDefault = bitmapData;
 					applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
 				}
@@ -187,7 +187,7 @@ class Cursor
 			case Cross:
 				if (assetCursorCross == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSS_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_CROSS_PARAMS.graphic);
 					assetCursorCross = bitmapData;
 					applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
 				}
@@ -199,7 +199,7 @@ class Cursor
 			case Eraser:
 				if (assetCursorEraser == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ERASER_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_ERASER_PARAMS.graphic);
 					assetCursorEraser = bitmapData;
 					applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
 				}
@@ -211,7 +211,7 @@ class Cursor
 			case Grabbing:
 				if (assetCursorGrabbing == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_GRABBING_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_GRABBING_PARAMS.graphic);
 					assetCursorGrabbing = bitmapData;
 					applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
 				}
@@ -223,7 +223,7 @@ class Cursor
 			case Hourglass:
 				if (assetCursorHourglass == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
 					assetCursorHourglass = bitmapData;
 					applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
 				}
@@ -235,7 +235,7 @@ class Cursor
 			case Pointer:
 				if (assetCursorPointer == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_POINTER_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_POINTER_PARAMS.graphic);
 					assetCursorPointer = bitmapData;
 					applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
 				}
@@ -247,7 +247,7 @@ class Cursor
 			case Text:
 				if (assetCursorText == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_TEXT_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_TEXT_PARAMS.graphic);
 					assetCursorText = bitmapData;
 					applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
 				}
@@ -259,7 +259,7 @@ class Cursor
 			case ZoomIn:
 				if (assetCursorZoomIn == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
 					assetCursorZoomIn = bitmapData;
 					applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
 				}
@@ -271,7 +271,7 @@ class Cursor
 			case ZoomOut:
 				if (assetCursorZoomOut == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
 					assetCursorZoomOut = bitmapData;
 					applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
 				}
@@ -283,7 +283,7 @@ class Cursor
 			case Crosshair:
 				if (assetCursorCrosshair == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
 					assetCursorCrosshair = bitmapData;
 					applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
 				}
@@ -295,7 +295,7 @@ class Cursor
 			case Cell:
 				if (assetCursorCell == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_CELL_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_CELL_PARAMS.graphic);
 					assetCursorCell = bitmapData;
 					applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
 				}
@@ -307,7 +307,7 @@ class Cursor
 			case Scroll:
 				if (assetCursorScroll == null)
 				{
-					var bitmapData:BitmapData = Assets.getBitmapData(CURSOR_SCROLL_PARAMS.graphic);
+					var bitmapData:BitmapData = OpenFLAssets.getBitmapData(CURSOR_SCROLL_PARAMS.graphic);
 					assetCursorScroll = bitmapData;
 					applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);
 				}
@@ -337,8 +337,8 @@ class Cursor
 			case Default:
 				if (assetCursorDefault == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_DEFAULT_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorDefault = bitmapData;
 						applyCursorParams(assetCursorDefault, CURSOR_DEFAULT_PARAMS);
@@ -353,8 +353,8 @@ class Cursor
 			case Cross:
 				if (assetCursorCross == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSS_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_CROSS_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorCross = bitmapData;
 						applyCursorParams(assetCursorCross, CURSOR_CROSS_PARAMS);
@@ -369,8 +369,8 @@ class Cursor
 			case Eraser:
 				if (assetCursorEraser == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ERASER_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_ERASER_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorEraser = bitmapData;
 						applyCursorParams(assetCursorEraser, CURSOR_ERASER_PARAMS);
@@ -385,8 +385,8 @@ class Cursor
 			case Grabbing:
 				if (assetCursorGrabbing == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_GRABBING_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_GRABBING_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorGrabbing = bitmapData;
 						applyCursorParams(assetCursorGrabbing, CURSOR_GRABBING_PARAMS);
@@ -401,8 +401,8 @@ class Cursor
 			case Hourglass:
 				if (assetCursorHourglass == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_HOURGLASS_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorHourglass = bitmapData;
 						applyCursorParams(assetCursorHourglass, CURSOR_HOURGLASS_PARAMS);
@@ -417,8 +417,8 @@ class Cursor
 			case Pointer:
 				if (assetCursorPointer == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_POINTER_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_POINTER_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorPointer = bitmapData;
 						applyCursorParams(assetCursorPointer, CURSOR_POINTER_PARAMS);
@@ -433,8 +433,8 @@ class Cursor
 			case Text:
 				if (assetCursorText == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_TEXT_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_TEXT_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorText = bitmapData;
 						applyCursorParams(assetCursorText, CURSOR_TEXT_PARAMS);
@@ -449,8 +449,8 @@ class Cursor
 			case ZoomIn:
 				if (assetCursorZoomIn == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_ZOOM_IN_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorZoomIn = bitmapData;
 						applyCursorParams(assetCursorZoomIn, CURSOR_ZOOM_IN_PARAMS);
@@ -465,8 +465,8 @@ class Cursor
 			case ZoomOut:
 				if (assetCursorZoomOut == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_ZOOM_OUT_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorZoomOut = bitmapData;
 						applyCursorParams(assetCursorZoomOut, CURSOR_ZOOM_OUT_PARAMS);
@@ -481,8 +481,8 @@ class Cursor
 			case Crosshair:
 				if (assetCursorCrosshair == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_CROSSHAIR_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorCrosshair = bitmapData;
 						applyCursorParams(assetCursorCrosshair, CURSOR_CROSSHAIR_PARAMS);
@@ -497,8 +497,8 @@ class Cursor
 			case Cell:
 				if (assetCursorCell == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_CELL_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_CELL_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorCell = bitmapData;
 						applyCursorParams(assetCursorCell, CURSOR_CELL_PARAMS);
@@ -513,8 +513,8 @@ class Cursor
 			case Scroll:
 				if (assetCursorScroll == null)
 				{
-					var future:Future<BitmapData> = Assets.loadBitmapData(CURSOR_SCROLL_PARAMS.graphic);
-					future.onComplete(function(bitmapData:BitmapData)
+					var future:Future<BitmapData> = OpenFLAssets.loadBitmapData(CURSOR_SCROLL_PARAMS.graphic);
+					future.onComplete((bitmapData:BitmapData) ->
 					{
 						assetCursorScroll = bitmapData;
 						applyCursorParams(assetCursorScroll, CURSOR_SCROLL_PARAMS);

@@ -55,7 +55,7 @@ class SysUtil
 		engine.backend.util.SysUtil.__alsoft__init__();
 
 		#if !FEATURE_RESIZE_WINDOW
-		Application.current.window.resizable = false;
+		Lib.current.stage.window.application.window.resizable = false;
 		#end
 
 		#if windows

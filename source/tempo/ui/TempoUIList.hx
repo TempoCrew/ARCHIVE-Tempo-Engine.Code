@@ -4,6 +4,7 @@ import flixel.group.FlxSpriteGroup;
 
 class TempoUIList extends FlxSpriteGroup implements ITempoUI
 {
+	public var ignoreErrors:Bool;
 	public var name:String;
 	public var broadcastToUI:Bool;
 	public var overlaped:Bool;
@@ -13,6 +14,7 @@ class TempoUIList extends FlxSpriteGroup implements ITempoUI
 {
 	var CHECKBOX = "checkbox";
 	var BUTTON = "button";
+	var SLIDER = "slider";
 	var ARROW = "arrow";
 	var RADIO = "radio";
 }

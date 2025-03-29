@@ -1,5 +1,7 @@
 package engine.ui;
 
+import engine.backend.util.WindowsUtil;
+import engine.ui.debug.ChartEditorState;
 import engine.input.Cursor;
 import engine.backend.api.GameJoltClient;
 import engine.backend.api.DiscordClient;
@@ -18,7 +20,7 @@ class InitState extends flixel.FlxState
 		});
 		#end
 
-		new FlxTimer().start(.8, (_) ->
+		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT .8 #else .1 #end, (_) ->
 		{
 			Thread.create(() ->
 			{
@@ -27,7 +29,6 @@ class InitState extends flixel.FlxState
 		});
 
 		super.create();
-
 		// Plugins
 		EvacuatePlugin.initialize();
 		ShaderFixPlugin.initialize();
@@ -40,11 +41,27 @@ class InitState extends flixel.FlxState
 		Cursor.cursorMode = Default;
 		Cursor.hide();
 
+		WindowsUtil.windowUnFocus.add(() ->
+		{
+			FlxG.drawFramerate = Constants.FRAMERATE_UNFOCUS;
+		});
+		WindowsUtil.windowFocus.add(() ->
+		{
+			FlxG.drawFramerate = Save.optionsData.framerate;
+		});
+
 		new FlxTimer().start(#if FEATURE_GAMEJOLT_CLIENT 1.65 #else 1 #end, (t:FlxTimer) ->
 		{
 			t = null;
 
-			FlxG.switchState(new WarningState());
+			// Checking for some reason..
+			FlxG.drawFramerate = Save.optionsData.framerate;
+			FlxG.updateFramerate = Save.optionsData.framerate;
+
+			if (Save.optionsData.warningVisible)
+				FlxG.switchState(new WarningState());
+			else
+				FlxG.switchState(new funkin.ui.menus.TitleState());
 		});
 	}
 

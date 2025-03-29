@@ -14,14 +14,8 @@ class Update
 		var http:Http = new Http("https://raw.githubusercontent.com/MrzkTeam/FNF-TempoEngine/refs/heads/main/.version?token=GHSAT0AAAAAACZT33IFXZGODETV7JWDW3MUZZLNIMQ");
 		http.onData = (d:String) ->
 		{
-			if (d.contains("404: Not Found"))
-			{
-				trace('Error 404!');
-				return;
-			}
-
 			newUpdate = d.split('\n')[0].trim();
-			var curVers = lime.app.Application.current.meta.get('version');
+			var curVers = Lib.current.stage.application.meta.get('version');
 			trace('New version: $newUpdate');
 			if (newUpdate != curVers)
 			{
@@ -29,9 +23,7 @@ class Update
 				userMustUpdate = true;
 			}
 		}
-
 		http.onError = (e) -> trace(e);
-
 		http.request();
 	}
 }

@@ -22,6 +22,9 @@ class Setup
 		engine.backend.util.WindowsUtil.initDebugTracy();
 		#end
 
+		engine.backend.util.WindowsUtil.initWindowFocusDispatch();
+		engine.backend.util.WindowsUtil.initWindowUnFocusDispatch();
+
 		engine.backend.util.WindowsUtil.initWindowExitDispatch();
 
 		tempo.util.TempoSystem.get_OS_info();
@@ -35,6 +38,10 @@ class Setup
 		#end
 
 		engine.backend.util.plugins.CrashPlugin.init();
+
+		#if FEATURE_SMOOTH_UNFOCUS_MUSIC
+		engine.backend.util.SoundUtil.initUnFocusVol();
+		#end
 
 		Main.instance.addChild(tempo.TempoGame.setup(Constants.SETUP_GAME.width, Constants.SETUP_GAME.height, Constants.SETUP_GAME.initialState,
 			Constants.SETUP_GAME.zoom, Constants.SETUP_GAME.framerate, Constants.SETUP_GAME.skipSplash, Constants.SETUP_GAME.startFullScreen));

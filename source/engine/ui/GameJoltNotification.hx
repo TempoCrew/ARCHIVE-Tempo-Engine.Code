@@ -17,10 +17,10 @@ class GameJoltNotification extends Sprite
 	{
 		super();
 
-		Application.current.window.onResize.add(onResize);
+		Lib.current.stage.application.window.onResize.add(onResize);
 
-		this.x = Application.current.window.width - 500;
-		this.y = Application.current.window.height - 250;
+		this.x = Lib.current.stage.application.window.width - 500;
+		this.y = Lib.current.stage.application.window.height - 250;
 
 		this.dominantColor = SpriteUtil.dominantBitmapColor(avatarBitmap);
 
@@ -60,7 +60,7 @@ class GameJoltNotification extends Sprite
 
 	function onResize(e1:Int, e2:Int):Void
 	{
-		this.x = Application.current.window.width - 500;
-		this.y = Application.current.window.height - 250;
+		this.x = Lib.current.stage.application.window.width - 500;
+		this.y = Lib.current.stage.application.window.height - 250;
 	}
 }

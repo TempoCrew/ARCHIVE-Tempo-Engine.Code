@@ -210,7 +210,7 @@ class EditorSelectorSubState extends MusicBeatSubState
 					switch (curSelected)
 					{
 						case 0:
-							nextState = new ChartEditorState();
+							nextState = new ChartEditorState(null, null);
 						case 1:
 							nextState = new AnimationEditorState();
 						case 2:

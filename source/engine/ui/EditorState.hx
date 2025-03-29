@@ -61,19 +61,19 @@ class EditorState extends MusicBeatState implements ITempoUIState
 	public function updateWindow(title:String, ?icon:String = null #if FEATURE_DISCORD_RPC, ?discordRPC:Array<String> = null #end)
 	{
 		if (title.startsWith('--C '))
-			Application.current.window.title = Constants.TITLE + ' - ' + title.substr(3, title.length);
+			Lib.current.stage.application.window.title = Constants.TITLE + ' - ' + title.substr(3, title.length);
 		else
-			Application.current.window.title = title;
+			Lib.current.stage.application.window.title = title;
 
 		if (icon != null)
 		{
 			if (FileSystem.exists('./assets/engine/ui/$icon.tsg'))
-				Application.current.window.setIcon(lime.graphics.Image.fromFile('./assets/engine/ui/$icon.tsg'));
+				Lib.current.stage.application.window.setIcon(lime.graphics.Image.fromFile('./assets/engine/ui/$icon.tsg'));
 			else
-				Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
+				Lib.current.stage.application.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
 		}
 		else
-			Application.current.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
+			Lib.current.stage.application.window.setIcon(lime.graphics.Image.fromFile('./Resource/ico/x16.png'));
 
 		#if FEATURE_DISCORD_RPC
 		if (discordRPC != null)

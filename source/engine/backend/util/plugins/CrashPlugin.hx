@@ -178,7 +178,11 @@ private class CrashReference
 			"FATAL UNCAUGHT ERROR");
 		#end
 
-		trace(#if windows '\n$msg\n\n' + #end e.replace('$', '\n'));
+		#if sys
+		Sys.println(#if windows '\n$msg\n\n' + #end e.replace('$', '\n'));
+		#else
+		trace(e.replace('$', '\n'));
+		#end
 	}
 
 	#if sys

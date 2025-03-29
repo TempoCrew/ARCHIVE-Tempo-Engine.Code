@@ -15,6 +15,8 @@ class AtlasText extends flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup<AtlasCha
 
 	var font:AtlasFontData;
 
+	var atlasFont:AtlasFont;
+
 	public var atlas(get, never):FlxAtlasFrames;
 
 	inline function get_atlas()
@@ -35,6 +37,8 @@ class AtlasText extends flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup<AtlasCha
 		if (!fonts.exists(fontName))
 			fonts[fontName] = new AtlasFontData(fontName);
 		font = fonts[fontName];
+
+		atlasFont = fontName;
 
 		super(x, y);
 
@@ -138,7 +142,7 @@ class AtlasText extends flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup<AtlasCha
 					{
 						var charSprite:AtlasChar;
 						if (group.members.length <= charCount)
-							charSprite = new AtlasChar(atlas, char);
+							charSprite = new AtlasChar(atlas, char, atlasFont);
 						else
 						{
 							charSprite = group.members[charCount];
@@ -171,10 +175,14 @@ class AtlasChar extends FlxSprite
 {
 	public var char(default, set):String;
 
-	public function new(x = 0.0, y = 0.0, atlas:FlxAtlasFrames, char:String)
+	var _atlasFont:AtlasFont;
+
+	public function new(x = 0.0, y = 0.0, atlas:FlxAtlasFrames, char:String, ?atlasFont:AtlasFont = AtlasFont.BOLD)
 	{
 		super(x, y);
 		frames = atlas;
+
+		_atlasFont = atlasFont;
 		this.char = char;
 		this.antialiasing = Save.optionsData.antialiasing;
 	}
@@ -203,7 +211,7 @@ class AtlasChar extends FlxSprite
 	{
 		return switch (char)
 		{
-			case '&': return '-andpersand-';
+			case '&': return (_atlasFont == BOLD ? '-andpersand-' : '&');
 			case "😠": '-angry faic-'; // TODO: Do multi-flag characters work?
 			case "'": '-apostraphie-';
 			case "\\": '-back slash-';
@@ -213,12 +221,12 @@ class AtlasChar extends FlxSprite
 			case "”": '-end quote-'; // U+0022
 			case "!": '-exclamation point-'; // U+0021
 			case "/": '-forward slash-'; // U+002F
-			case '>': '-greater than-'; // U+003E
+			case '>': (_atlasFont == BOLD ? '-greater than-' : '>'); // U+003E
 			case '♥': '-heart-'; // U+2665
 			case '♡': '-heart-';
 			case '←': '-left arrow-'; // U+2190
-			case '<': '-less than-'; // U+003C
-			case "*": '-multiply x-';
+			case '<': (_atlasFont == BOLD ? '-less than-' : '<'); // U+003C
+			case "*": (_atlasFont == BOLD ? '-multiply x-' : '*');
 			case '.': '-period-'; // U+002E
 			case "?": '-question mark-';
 			case '→': '-right arrow-'; // U+2192

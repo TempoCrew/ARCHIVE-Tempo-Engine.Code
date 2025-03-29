@@ -1,8 +1,5 @@
 package tempo.ui;
 
-import engine.input.Cursor;
-import engine.backend.util.SpriteUtil;
-import engine.backend.util.MemoryUtil;
 import tempo.ui.interfaces.ITempoUI;
 
 /**
@@ -24,7 +21,7 @@ class TempoUI
 
 		if (curState != null)
 			curState.getEvent(tag, sender);
-		else
+		else if (!sender.ignoreErrors)
 			trace('$tag not called! Current state is NULL!');
 	}
 
@@ -39,7 +36,7 @@ class TempoUI
 
 		if (curState != null)
 			curState.getFocus(value, thing);
-		else
+		else if (!thing.ignoreErrors)
 			trace('Focus not called! Current state is NULL!');
 	}
 

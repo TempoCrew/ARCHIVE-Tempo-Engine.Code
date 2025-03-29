@@ -1,5 +1,8 @@
 package engine;
 
+import funkin.backend.song.MetaFile;
+import funkin.backend.song.ChartFile;
+
 /**
  * All constant value's for game.
  */
@@ -435,7 +438,7 @@ class Constants
 
 	#if FEATURE_DEBUG_FUNCTIONS
 	static function get_VERSION():String
-		return 'v${Application.current.meta.get('version')} (git: ${#if !display GIT_HASH #else '' #end}${#if !display GIT_HAS_LOCAL_CHANGES #else false #end ?' MODIFIED':''})${VERSION_SUFFIX}';
+		return 'v${Lib.current.stage.application.meta.get('version')} (git: ${#if !display GIT_HASH #else '' #end}${#if !display GIT_HAS_LOCAL_CHANGES #else false #end ?' MODIFIED':''})${VERSION_SUFFIX}';
 
 	public static var GENERATED_BY(get, never):String;
 
@@ -443,7 +446,7 @@ class Constants
 		return '${TITLE} - ${VERSION}';
 	#else
 	static function get_VERSION():String
-		return 'v${Application.current.meta.get('version')}${VERSION_SUFFIX}';
+		return 'v${Lib.current.stage.application.meta.get('version')}${VERSION_SUFFIX}';
 	#end
 
 	/**
@@ -508,6 +511,65 @@ class Constants
 	#if windows
 	public static final DPI_DIVIDE:Int = 96;
 	#end
+
+	public static final FRAMERATE_UNFOCUS:Int = 20;
+
+	#if FEATURE_SMOOTH_UNFOCUS_MUSIC
+	/**
+	 * When game window unfocused, a music volume will be in...
+	 */
+	public static final UNFOCUS_MUSIC_VOL:Float = .2;
+
+	/**
+	 * When game window unfocused, a music smooth volume timer will be in...
+	 */
+	public static final UNFOCUS_MUSIC_TIME:Float = .4;
+
+	/**
+	 * When game window focused, music volume returned through...
+	 */
+	public static final FOCUS_MUSIC_TIME:Float = .4;
+	#end
+
+	public static final TEMPLATE_METADATA:MetaFile = {
+		artist: "Kawai Sprite",
+		songName: "Test",
+		bpm: 140,
+		album: "placeholder",
+		generatedBy: "Tempo Engine Constants (by MrzkX)",
+		charter: "Template",
+		playData: {
+			stage: "mainStage",
+			players: ["boyfriend" => "bf", "girlfriend" => "gf", "opponent" => "bf-pixel"],
+			ratings: ["easy" => 1, "normal" => 2, "hard" => 3, "erect" => 4, "nightmare" => 5],
+			difficulties: ["easy", "normal", "hard", "erect", "nightmare"],
+			uiStyle: "funkin",
+			previewStart: 0,
+			previewEnd: 15000
+		}
+	};
+
+	public static final TEMPLATE_CHART:ChartFile = {
+		scrollSpeeds: [
+			"easy" => 1.0,
+			"normal" => 1.2,
+			"hard" => 1.4,
+			"erect" => 1.5,
+			"nightmare" => 1.6
+		],
+		notes: ["easy" => [], "normal" => [], "hard" => [], "erect" => [], "nightmare" => []],
+		sections: [
+			"easy" => [
+				{
+					beats: 4
+				}
+			],
+			"normal" => [{beats: 4}],
+			"hard" => [{beats: 4}],
+			"erect" => [{beats: 4}],
+			"nightmare" => [{beats: 4}]
+		]
+	};
 
 	#if desktop
 	public static final ALSOFT_DATA:String = "[general]\nsample=type=float32\nfrequency=48000\nperiod_size=960\nperiods=3\nstereo-mode=speakers\nstereo-encoding=uhj\nhrtf=false\ncf_level=0\nresampler=fast_bsinc24\nfront-stablizer=false\nvolume-adjust=0\noutput-limiter=false\n[decoder]\nhq-mode=false\ndistance-comp=false\nnfc=false";

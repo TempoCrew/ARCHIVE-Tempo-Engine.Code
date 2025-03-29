@@ -8,13 +8,13 @@ class TransitionSubState extends TempoSubState
 	var _onComplete:Null<Void->Void> = null;
 	var _timer:Null<Float> = null;
 
-	public function new(?fadeIn:Bool = true, timer:Float, ?onComplete:Void->Void, ?newCamera:FlxCamera):Void
+	public function new(?fadeOut:Bool = true, timer:Float, ?onComplete:Void->Void, ?newCamera:FlxCamera):Void
 	{
 		super();
 
 		this.camera = (newCamera == null ? cameras[cameras.length - 1] : newCamera);
 
-		_fadeIn = fadeIn;
+		_fadeIn = !fadeOut;
 		_onComplete = onComplete;
 		_timer = timer;
 
@@ -23,7 +23,7 @@ class TransitionSubState extends TempoSubState
 
 	function trans():Void
 	{
-		if (_fadeIn)
+		if (!_fadeIn)
 		{
 			if (_onComplete == null)
 			{

@@ -17,9 +17,6 @@ import haxe.io.Path;
 import haxe.Unserializer;
 import haxe.Serializer;
 #end
-#if (FEATURE_SYSTOOLS_NDLL && cpp)
-import systools.win.Tools;
-#end
 import engine.backend.util.WindowsUtil;
 
 @:access(gamejolt.GameJolt)
@@ -108,12 +105,9 @@ class GameJoltClient
 		if (FlxG.state != null)
 		{
 			FlxG.state.persistentUpdate = false;
-			FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () -> {
-				#if (cpp && FEATURE_SYSTOOLS_NDLL)
-				__systools_exit();
-				#else
+			FlxG.state.openSubState(new RestartGameSubState("You want to restart game for ending Log Out?", () ->
+			{
 				System.exit(1337);
-				#end
 			}));
 		}
 	}
@@ -164,12 +158,9 @@ class GameJoltClient
 				if (FlxG.state != null)
 				{
 					FlxG.state.persistentUpdate = false;
-					FlxG.state.openSubState(new RestartGameSubState("For GameJolt Cloud Data Sync, a game will restarting.\nWant to restart for sync?", () -> {
-						#if (cpp && FEATURE_SYSTOOLS_NDLL)
-						__systools_exit();
-						#else
+					FlxG.state.openSubState(new RestartGameSubState("For GameJolt Cloud Data Sync, a game will restarting.\nWant to restart for sync?", () ->
+					{
 						System.exit(1337);
-						#end
 					}));
 				}
 			});
@@ -605,17 +596,6 @@ class GameJoltClient
 			throw "Could not initialize singleton GameJoltClient!";
 		return GameJoltClient._instance;
 	}
-
-	#if (cpp && FEATURE_SYSTOOLS_NDLL)
-	@:keep function __systools_exit():Void
-	{
-		final result:Int = Tools.createProcess(Sys.programPath(), "GameJoltClient.hx", Sys.getCwd(), false, false);
-		if (result == 0)
-			System.exit(1337);
-		else
-			throw "Fail for restarting the game!";
-	}
-	#end
 }
 
 class WaitingSubState extends MusicBeatSubState

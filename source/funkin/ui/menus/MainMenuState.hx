@@ -11,6 +11,8 @@ class MainMenuState extends MusicBeatState
 
 	final ITEMS:Array<String> = ["storymode", "freeplay", "credits", "options"];
 
+	var magenta:TempoSprite;
+
 	var menuGrp:TempoSpriteGroup;
 	var camObject:FlxObject;
 
@@ -19,7 +21,9 @@ class MainMenuState extends MusicBeatState
 		MemoryUtil.removeUnusedMemory();
 		MemoryUtil.removeStoredMemory();
 
+		#if FEATURE_DISCORD_RPC
 		DiscordClient.instance.changePresence({details: "Main Menu"});
+		#end
 
 		instance = this;
 
@@ -33,6 +37,16 @@ class MainMenuState extends MusicBeatState
 		bg.updateHitbox();
 		bg.screenCenter();
 		add(bg);
+
+		magenta = new TempoSprite(-1, -1, GRAPHIC);
+		magenta.makeImage({path: Paths.image('menuDesat', null, false)});
+		magenta.scrollFactor.set(0, (ITEMS.length > 4 ? .25 : .15));
+		magenta.setGraphicSize(magenta.width * 1.175);
+		magenta.updateHitbox();
+		magenta.screenCenter();
+		magenta.color = FlxColor.fromString('0xC21976');
+		magenta.visible = false;
+		add(magenta);
 
 		menuGrp = new TempoSpriteGroup();
 		add(menuGrp);
@@ -68,13 +82,13 @@ class MainMenuState extends MusicBeatState
 			menuGrp.add(item);
 		}
 
-		addBottomText(FlxG.height - 44, 'Tempo Engine ${Constants.VERSION}');
-		addBottomText(FlxG.height - 24, 'Friday Night Funkin\' v${Constants.BASE_VERSION}');
+		addBottomText(FlxG.height - 44, 'FNF\' v${Constants.BASE_VERSION}');
+		addBottomText(FlxG.height - 24, 'Tempo Engine ${Constants.VERSION}');
 
 		camObject = new FlxObject(0, 0, 1, 1);
 		add(camObject);
 
-		FlxG.camera.follow(camObject, null, .4);
+		FlxG.camera.follow(camObject, LOCKON, 0.1);
 
 		changeSelection(0, false);
 
@@ -94,6 +108,12 @@ class MainMenuState extends MusicBeatState
 				addVolume: .5,
 				elapsed: elapsed
 			});
+
+			if (TempoInput.keyJustPressed.T)
+			{
+				uiSelected = true;
+				TempoState.switchState(new TrophiesState());
+			}
 
 			var shiftMult:Int = 1;
 			if (TempoInput.keyPressed.SHIFT)
@@ -151,11 +171,15 @@ class MainMenuState extends MusicBeatState
 
 	function select():Void
 	{
+		if (Save.optionsData.flashing)
+			FlxFlicker.flicker(magenta, 1, .2, false, false);
+
 		menuGrp.forEach((spr:TempoSprite) ->
 		{
 			if (spr.zIndex == curSelected)
 			{
-				FlxFlicker.flicker(spr, 1, 0.06, false, false);
+				if (Save.optionsData.flashing)
+					FlxFlicker.flicker(spr, 1, 0.06, false, false);
 
 				if (ITEMS[curSelected] == 'freeplay')
 					FlxG.sound.music.fadeOut(0.8, 0, (_) ->
@@ -184,7 +208,14 @@ class MainMenuState extends MusicBeatState
 					if (nextState != null && nextSubState == null)
 						TempoState.switchState(nextState);
 					else if (nextState == null && nextSubState != null)
+					{
+						nextSubState.closeCallback = () -> {
+							#if FEATURE_DISCORD_RPC
+							DiscordClient.instance.changePresence({details: "Main Menu"});
+							#end
+						};
 						FlxG.state.openSubState(nextSubState);
+					}
 					else if (nextState != null && nextSubState != null)
 						throw "WHAT!? Why `state` and `subState` are not NULL? Check please, one of these want a NULL.";
 				});

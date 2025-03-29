@@ -7,5 +7,7 @@ class TempoUIRadio extends FlxSpriteGroup implements ITempoUI
 {
 	public var name:String;
 	public var broadcastToUI:Bool;
+	public var ignoreErrors:Bool;
+
 	public var overlaped:Bool;
 }

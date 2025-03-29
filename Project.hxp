@@ -197,6 +197,12 @@ class Project extends HXProject
   static final FEATURE_MODS_ENABLING:FeatureFlag = "FEATURE_MODS_ENABLING";
 
   /**
+   * `-DFEATURE_SMOOTH_UNFOCUS_MUSIC`
+   * If this flag is enabled, when a game window is unfocused, a music will fade out in low volume.
+   */
+  static final FEATURE_SMOOTH_UNFOCUS_MUSIC:FeatureFlag = "FEATURE_SMOOTH_UNFOCUS_MUSIC";
+
+  /**
    * `-DFEATURE_DEBUG_FUNCTIONS`
    * If this flag is enabled, some variables, functions, commands from debug mode will enabled.
    */
@@ -438,6 +444,7 @@ class Project extends HXProject
     FEATURE_DISCORD_RPC.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('neko'));
     FEATURE_CHECKING_UPDATE.apply(this, getPlatform(PlatformType.DESKTOP));
     FEATURE_VIDEO_PLAYBACK.apply(this, getPlatform(PlatformType.DESKTOP) && !getTargetFlag('hl') && !FEATURE_32_BITS.isEnabled(this));
+    FEATURE_SMOOTH_UNFOCUS_MUSIC.apply(this, getPlatform(PlatformType.DESKTOP));
 
     // DEBUG AND ETC. FEATURE FLAGS
     FEATURE_DEBUG_FUNCTIONS.apply(this, this.debug || GITHUB_BUILD.isEnabled(this));

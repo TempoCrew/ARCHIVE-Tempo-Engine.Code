@@ -8,54 +8,64 @@ import gamejolt.formats.User;
 
 class TempoState extends flixel.FlxState
 {
-	public static var fadeIn:Bool = false;
 	public static var camFade:FlxCamera;
+
+	public static var skipFadeIn:Bool = false;
+	public static var skipFadeOut:Bool = false;
 
 	public var player1(get, never):PlayerSettings;
 	public var player2(get, never):PlayerSettings;
 
 	override function create():Void
 	{
-		if (fadeIn)
-		{
-			if (camFade == null)
-			{
-				camFade = new FlxCamera();
-				camFade.bgColor.alpha = 0;
-				FlxG.cameras.add(camFade, false);
-			}
+		super.create();
 
-			FlxG.state.persistentUpdate = FlxG.state.persistentDraw = true;
-			FlxG.state.openSubState(new TransitionSubState(false, Constants.TRANSITION_DURATION, () ->
-			{
-				fadeIn = false;
+		if (!skipFadeIn)
+		{
+			if (FlxG.cameras.list.contains(camFade))
+				FlxG.cameras.remove(camFade);
+
+			if (camFade != null)
 				camFade = null;
-			}, camFade));
+
+			camFade = new FlxCamera();
+			camFade.bgColor.alpha = 0;
+			FlxG.cameras.add(camFade, false);
+
+			if (FlxG.state.subState != null)
+				FlxG.state.closeSubState();
+			FlxG.state.openSubState(new TransitionSubState(false, Constants.TRANSITION_DURATION, () -> {}, camFade));
 		}
 
-		super.create();
+		skipFadeIn = false;
 	}
 
 	public static function switchState(nextState:flixel.FlxState, ?onCallback:Void->Void):Void
 	{
-		if (camFade == null)
+		if (!skipFadeOut)
 		{
+			if (FlxG.cameras.list.contains(camFade))
+				FlxG.cameras.remove(camFade);
+
+			if (camFade != null)
+				camFade = null;
+
 			camFade = new FlxCamera();
 			camFade.bgColor.alpha = 0;
 			FlxG.cameras.add(camFade, false);
+
+			if (FlxG.state.subState != null)
+				FlxG.state.closeSubState();
+			FlxG.state.openSubState(new TransitionSubState(true, Constants.TRANSITION_DURATION, () ->
+			{
+				if (onCallback != null)
+					onCallback();
+
+				FlxG.switchState(() -> nextState);
+			}, camFade));
 		}
 
-		fadeIn = true;
-		var transitionSubState:TempoSubState = new TransitionSubState(true, Constants.TRANSITION_DURATION, () ->
-		{
-			FlxG.state.persistentUpdate = false;
-			if (onCallback != null)
-				onCallback();
-
-			camFade = null;
-			FlxG.switchState(() -> nextState);
-		}, camFade);
-		FlxG.state.openSubState(transitionSubState);
+		skipFadeOut = false;
 	}
 
 	function get_player1():PlayerSettings

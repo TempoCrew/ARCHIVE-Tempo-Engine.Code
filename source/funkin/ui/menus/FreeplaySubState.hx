@@ -9,6 +9,10 @@ class FreeplaySubState extends MusicBeatSubState
 	{
 		FlxG.state.persistentUpdate = false;
 
+		#if FEATURE_DISCORD_RPC
+		DiscordClient.instance.changePresence({details: "Freeplay Menu"});
+		#end
+
 		super.create();
 	}
 
@@ -30,6 +34,8 @@ class FreeplaySubState extends MusicBeatSubState
 
 	function exit():Void
 	{
+		FlxG.state.persistentUpdate = true;
+
 		MainMenuState.instance.uiSelected = false;
 		MainMenuState.instance.menuGrp.forEach((spr:TempoSprite) ->
 		{
@@ -39,7 +45,6 @@ class FreeplaySubState extends MusicBeatSubState
 
 		new FlxTimer().start(1, (t:FlxTimer) ->
 		{
-			FlxG.state.persistentUpdate = true;
 			close();
 		});
 	}

@@ -4,6 +4,10 @@ class TrophiesState extends MusicBeatState
 {
 	override function create():Void
 	{
+		#if FEATURE_DISCORD_RPC
+		DiscordClient.instance.changePresence({details: "Viewing a Trophies"});
+		#end
+
 		var bg = new TempoSprite(-5, -5, GRAPHIC).makeImage({
 			path: Paths.image('menuDesat', null, false),
 			width: 1290,
@@ -22,19 +26,17 @@ class TrophiesState extends MusicBeatState
 			width: 525,
 			height: 175,
 			color: FlxColor.BLACK,
-			gfxData: {
-				roundRect: {
-					elWidth: 10,
-					elHeight: 10
-				}
-			}
+			elWidth: 10,
+			elHeight: 10
 		});
 		blankBG.alpha = .6;
 		blankBG.scrollFactor.set();
 		add(blankBG);
 
 		var blankImage:TempoSprite = new TempoSprite(0, 0, GRAPHIC).makeImage({
-			path: Paths.image("thx-for-using", "trophies", false)
+			path: Paths.image("thx-for-using", "trophies", false),
+			width: 150,
+			height: 150
 		});
 		blankImage.x -= 0;
 		blankImage.y = blankBG.y + 10;

@@ -12,6 +12,10 @@ class GameJoltState extends MusicBeatState
 
 	override function create():Void
 	{
+		#if FEATURE_DISCORD_RPC
+		DiscordClient.instance.changePresence({details: "GameJolt Menu"});
+		#end
+
 		bg = new TempoSprite(-5, -5, GRAPHIC).makeImage({
 			path: Paths.image('menuDesat'),
 			width: 1290,
@@ -30,12 +34,8 @@ class GameJoltState extends MusicBeatState
 			width: 525,
 			height: 495,
 			color: FlxColor.fromString('0x70103629'),
-			gfxData: {
-				roundRect: {
-					elWidth: 10,
-					elHeight: 10
-				}
-			}
+			elWidth: 10,
+			elHeight: 10
 		});
 		blank.screenCenter();
 		add(blank);
@@ -53,12 +53,8 @@ class GameJoltState extends MusicBeatState
 				width: 500,
 				height: 32,
 				color: FlxColor.fromString('0x7F2C0526'),
-				gfxData: {
-					roundRect: {
-						elWidth: 10,
-						elHeight: 10
-					}
-				}
+				elWidth: 10,
+				elHeight: 10
 			});
 			bgT1.screenCenter();
 			bgT1.y -= 52;
@@ -80,12 +76,8 @@ class GameJoltState extends MusicBeatState
 				width: 500,
 				height: 32,
 				color: FlxColor.fromString('0x7F2C0526'),
-				gfxData: {
-					roundRect: {
-						elWidth: 10,
-						elHeight: 10
-					}
-				}
+				elWidth: 10,
+				elHeight: 10
 			});
 			bgT2.screenCenter();
 			bgT2.y += 20;
@@ -179,12 +171,8 @@ private class GJButton extends TempoSprite
 			width: width,
 			height: height,
 			color: FlxColor.WHITE,
-			gfxData: {
-				roundRect: {
-					elWidth: 10,
-					elHeight: 10
-				}
-			}
+			elWidth: 10,
+			elHeight: 10
 		});
 
 		this.color = color;
